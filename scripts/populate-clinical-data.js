@@ -1,31 +1,17 @@
-import { db } from './db'
+require('dotenv').config()
+const { PrismaClient } = require('@prisma/client')
+const db = new PrismaClient()
 
-const EXTERNAL_DATA_CACHE = new Map<string, { data: any; timestamp: number }>()
-const CACHE_TTL = 24 * 60 * 60 * 1000
-
-interface ExternalDrugData {
-  pregnancyCategory?: string
-  pregnancyPrecautions?: string
-  breastfeedingSafety?: string
-  g6pdSafety?: string
-  g6pdWarning?: string
-  baseDoseMgPerKg?: number
-  baseDoseIndication?: string
-  source: string
-}
-
-const FALLBACK_DATA: Record<string, ExternalDrugData> = {
+const FALLBACK_DATA = {
   'Amoxicillin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Crosses placenta. Use only if clearly needed.', breastfeedingSafety: 'Compatible. Excreted in low concentrations.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection', source: 'FDA' },
   'Metformin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Continue use in pregnancy for diabetes control.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 20, baseDoseIndication: 'Type 2 Diabetes', source: 'FDA' },
   'Atorvastatin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED IN PREGNANCY.', breastfeedingSafety: 'Contraindicated.', g6pdSafety: 'Safe', source: 'FDA' },
   'Ibuprofen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Caution', g6pdWarning: 'May trigger hemolysis in G6PD deficiency', baseDoseMgPerKg: 10, baseDoseIndication: 'Pain/Inflammation', source: 'FDA' },
   'Aspirin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester.', breastfeedingSafety: 'Compatible in low doses.', g6pdSafety: 'Caution', baseDoseMgPerKg: 10, source: 'FDA' },
   'Co-trimoxazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid near term.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Contraindicated', g6pdWarning: 'CONTRAINDICATED in G6PD deficiency', source: 'FDA' },
-  'Dapsone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks.', breastfeedingSafety: 'Contraindicated.', g6pdSafety: 'Contraindicated', source: 'FDA' },
-  'Nitrofurantoin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Avoid in G6PD-deficient infants.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Caution', source: 'FDA' },
   'Panadol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever', source: 'FDA' },
   'Paracetamol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever', source: 'FDA' },
-  'Augmentin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Crosses placenta.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection', source: 'FDA' },
+  'Augmentin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for most infections.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection', source: 'FDA' },
   'Adol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, source: 'FDA' },
   'Brufen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Caution', baseDoseMgPerKg: 10, source: 'FDA' },
   'Nurofen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Caution', baseDoseMgPerKg: 10, source: 'FDA' },
@@ -36,7 +22,6 @@ const FALLBACK_DATA: Record<string, ExternalDrugData> = {
   'Prednisolone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use lowest effective dose.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Inflammation', source: 'FDA' },
   'Ventolin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', source: 'FDA' },
   'Salbutamol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', source: 'FDA' },
-  'Augmentin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for most infections.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, source: 'FDA' },
   'Glucophage': { pregnancyCategory: 'B', pregnancyPrecautions: 'Continue for diabetes control.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 20, source: 'FDA' },
   'Novonorm': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks.', breastfeedingSafety: 'Excreted in milk.', g6pdSafety: 'Safe', source: 'FDA' },
   'Diamicron': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only in 2nd/3rd trimester if needed.', breastfeedingSafety: 'Not recommended.', g6pdSafety: 'Safe', source: 'FDA' },
@@ -57,89 +42,72 @@ const FALLBACK_DATA: Record<string, ExternalDrugData> = {
   'Betadine': { pregnancyCategory: 'X', pregnancyPrecautions: 'Avoid.', breastfeedingSafety: 'Avoid.', g6pdSafety: 'Safe', source: 'FDA' }
 }
 
-export async function getExternalDrugData(drugName: string): Promise<ExternalDrugData | null> {
-  const normalizedName = drugName.toLowerCase()
-  const cacheKey = normalizedName
+async function populateDatabase() {
+  console.log('Populating database with clinical data...\n')
+  
+  let updated = 0
+  let found = 0
 
-  const cached = EXTERNAL_DATA_CACHE.get(cacheKey)
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data
-  }
+  // Get all active drugs
+  const drugs = await db.drug.findMany({
+    where: { status: 'Active' },
+    select: { id: true, packageName: true, genericName: true, pregnancyCategory: true },
+    orderBy: { packageName: 'asc' },
+    take: 500
+  })
 
-  const fallbackData = FALLBACK_DATA[normalizedName] || 
-    Object.keys(FALLBACK_DATA).find(key => normalizedName.includes(key.toLowerCase()) || key.toLowerCase().includes(normalizedName))
+  console.log(`Found ${drugs.length} active drugs in database`)
 
-  if (fallbackData) {
-    EXTERNAL_DATA_CACHE.set(cacheKey, { data: fallbackData, timestamp: Date.now() })
-    return fallbackData
-  }
+  for (const drug of drugs) {
+    // Check if already has data
+    if (drug.pregnancyCategory) continue
 
-  return null
-}
-
-export async function supplementDrugData(drugId: string): Promise<{ supplemented: boolean; data?: ExternalDrugData }> {
-  try {
-    const drug = await db.drug.findUnique({
-      where: { id: drugId },
-      select: { genericName: true, packageName: true, pregnancyCategory: true, g6pdSafety: true }
-    })
-
-    if (!drug) {
-      return { supplemented: false }
-    }
-
-    const needsPregnancyData = !drug.pregnancyCategory
-    const needsG6PDData = !drug.g6pdSafety
-
-    if (!needsPregnancyData && !needsG6PDData) {
-      return { supplemented: false }
-    }
-
-    const externalData = await getExternalDrugData(drug.genericName || drug.packageName)
+    const name = (drug.genericName || drug.packageName || '').toLowerCase()
     
-    if (externalData) {
-      const updateData: any = {}
-      
-      if (needsPregnancyData && externalData.pregnancyCategory) {
-        updateData.pregnancyCategory = externalData.pregnancyCategory
-        updateData.pregnancyPrecautions = externalData.pregnancyPrecautions
-        updateData.breastfeedingSafety = externalData.breastfeedingSafety
-      }
-      
-      if (needsG6PDData && externalData.g6pdSafety) {
-        updateData.g6pdSafety = externalData.g6pdSafety
-        updateData.g6pdWarning = externalData.g6pdWarning
-      }
-
-      if (externalData.baseDoseMgPerKg) {
-        updateData.baseDoseMgPerKg = externalData.baseDoseMgPerKg
-        updateData.baseDoseIndication = externalData.baseDoseIndication
-      }
-
-      if (Object.keys(updateData).length > 0) {
-        await db.drug.update({
-          where: { id: drugId },
-          data: updateData
-        })
-        
-        return { 
-          supplemented: true, 
-          data: externalData 
-        }
+    // Find matching data
+    let data = null
+    for (const [key, value] of Object.entries(FALLBACK_DATA)) {
+      if (name.includes(key.toLowerCase()) || key.toLowerCase().includes(name)) {
+        data = value
+        break
       }
     }
 
-    return { supplemented: false }
-  } catch (error) {
-    console.error('Error supplementing drug data:', error)
-    return { supplemented: false }
+    if (data) {
+      found++
+      await db.drug.update({
+        where: { id: drug.id },
+        data: {
+          pregnancyCategory: data.pregnancyCategory,
+          pregnancyPrecautions: data.pregnancyPrecautions,
+          breastfeedingSafety: data.breastfeedingSafety,
+          g6pdSafety: data.g6pdSafety,
+          g6pdWarning: data.g6pdWarning,
+          baseDoseMgPerKg: data.baseDoseMgPerKg,
+          baseDoseIndication: data.baseDoseIndication
+        }
+      })
+      updated++
+      if (updated % 10 === 0) {
+        console.log(`Updated ${updated} drugs...`)
+      }
+    }
+  }
+
+  console.log(`\n✓ Found matching data for ${found} drugs`)
+  console.log(`✓ Updated ${updated} drugs in database`)
+  console.log(`✓ Data is now available offline!`)
+}
+
+async function main() {
+  try {
+    await populateDatabase()
+  } catch (e) {
+    console.error('Error:', e)
+  } finally {
+    await db.$disconnect()
+    process.exit(0)
   }
 }
 
-export function getDataSourceLabel(data: ExternalDrugData): string {
-  return `Data supplemented from ${data.source}`
-}
-
-export function isDataSupplemented(data: ExternalDrugData): boolean {
-  return !!data.source
-}
+main()

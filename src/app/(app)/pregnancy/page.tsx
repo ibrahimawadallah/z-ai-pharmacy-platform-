@@ -48,18 +48,25 @@ export default function PregnancyPage() {
   const { language, t } = useApp()
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [drugs, setDrugs] = useState<UAEDrug[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [drugs, setDrugs] = useState<any[]>([])
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
 
   const searchDrugs = async () => {
-    if (!searchTerm.trim()) return
     setIsLoading(true)
     try {
-      const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(searchTerm)}&limit=10`)
+      const res = await fetch(`/api/drugs/pregnancy?category=${selectedCategory || ''}&q=${encodeURIComponent(searchTerm)}&limit=50`)
       const data = await res.json()
       setDrugs(data.data || [])
+      if (data.counts) setCategoryCounts(data.counts)
     } catch {}
     setIsLoading(false)
   }
+
+  // Load counts on mount
+  React.useEffect(() => {
+    searchDrugs()
+  }, [])
 
   return (
     <div className="min-h-screen bg-[#000] text-white font-sans selection:bg-cyan-500/30">
@@ -86,20 +93,16 @@ export default function PregnancyPage() {
           <h2 className="text-xl font-black italic uppercase mb-6">FDA Pregnancy Categories</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {['A', 'B', 'C', 'D', 'X', 'N'].map((cat, i) => (
-              <div
+              <button
                 key={cat}
-                className={`p-4 rounded-2xl border text-center cursor-pointer hover:scale-105 transition-transform ${FDA_COLORS[cat]}`}
+                onClick={() => { setSelectedCategory(cat); searchDrugs() }}
+                className={`p-4 rounded-2xl border text-center cursor-pointer hover:scale-105 transition-transform ${FDA_COLORS[cat]} ${selectedCategory === cat ? 'ring-2 ring-white' : ''}`}
               >
                 <div className="text-3xl font-black italic mb-1">{cat}</div>
                 <div className="text-[10px] uppercase font-bold tracking-wider">
-                  {cat === 'A' && 'Safest'}
-                  {cat === 'B' && 'No Risk'}
-                  {cat === 'C' && 'Risk Unclear'}
-                  {cat === 'D' && 'Evidence of Risk'}
-                  {cat === 'X' && 'Contraindicated'}
-                  {cat === 'N' && 'Not Classified'}
+                  {categoryCounts[cat] || 0} drugs
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </GlassCard>
