@@ -1,0 +1,229 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth-options'
+import { getGroqService } from '@/lib/groq'
+
+const AI_SERVICE_URL = process.env.AI_DRUG_SERVICE_URL || 'http://localhost:3001'
+
+export async function POST(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { drugs, patientContext } = await req.json()
+
+    if (!drugs || !Array.isArray(drugs) || drugs.length < 2) {
+      return NextResponse.json(
+        { error: 'At least 2 drugs required for interaction analysis' },
+        { status: 400 }
+      )
+    }
+
+    // 1. Try AI Drug Analysis mini-service (Ollama)
+    try {
+      const response = await fetch(`${AI_SERVICE_URL}/analyze/interaction`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          drugs,
+          patientContext: patientContext || {},
+          includeAlternatives: true,
+          includeMechanism: true
+        })
+      })
+
+      if (response.ok) {
+        const aiResult = await response.json()
+        return NextResponse.json({
+          ...aiResult,
+          aiPowered: true,
+          analyzedAt: new Date().toISOString(),
+          provider: 'ollama-mini-service'
+        })
+      }
+    } catch (err) {
+      console.log('Ollama mini-service unavailable, trying Groq...')
+    }
+
+    // 2. Try Groq directly
+    try {
+      if (process.env.GROQ_API_KEY) {
+        const groqService = getGroqService()
+        const systemPrompt = `You are an expert Clinical Pharmacist. Analyze potential drug-drug interactions for the following medications.
+Consider the patient context if provided. 
+Return a JSON object with: 
+- interactions: array of { drugs: string[], severity: 'low'|'moderate'|'severe', mechanism: string, description: string, recommendation: string }
+- summary: string
+- severity: 'low'|'moderate'|'high'
+- recommendations: string[]`
+
+        const prompt = `Analyze interactions for: ${drugs.join(', ')}
+Patient Context: ${JSON.stringify(patientContext || {})}`
+
+        const aiResponse = await groqService.generateResponse(prompt, systemPrompt)
+        
+        // Try to parse JSON from AI response
+        try {
+          const jsonMatch = aiResponse.match(/\{[\s\S]*\}/)
+          if (jsonMatch) {
+            const result = JSON.parse(jsonMatch[0])
+            return NextResponse.json({
+              ...result,
+              aiPowered: true,
+              analyzedAt: new Date().toISOString(),
+              provider: 'groq'
+            })
+          }
+        } catch (parseErr) {
+          console.error('Failed to parse Groq JSON response:', parseErr)
+        }
+      }
+    } catch (groqErr) {
+      console.log('Groq analysis failed, using local fallback:', groqErr)
+    }
+
+    // 3. Fallback to local analysis if all AI services unavailable
+    const fallbackResult = performLocalAnalysis(drugs, patientContext)
+    return NextResponse.json({
+      ...fallbackResult,
+      aiPowered: false,
+      note: 'Using local database (AI service unavailable)'
+    })
+
+  } catch (error) {
+    console.error('AI Drug Interaction Analysis Error:', error)
+    return NextResponse.json(
+      { error: 'Failed to analyze drug interactions' },
+      { status: 500 }
+    )
+  }
+}
+
+// Local fallback analysis using known interaction patterns
+function performLocalAnalysis(drugs: string[], patientContext: any) {
+  const interactions: any[] = []
+  const recommendations: string[] = []
+  
+  // Check common interaction patterns
+  const drugList = drugs.map(d => d.toLowerCase())
+  
+  // CYP3A4 interactions
+  const cyp3a4Substrates = ['atorvastatin', 'simvastatin', 'lovastatin', 'cyclosporine', 'tacrolimus']
+  const cyp3a4Inhibitors = ['clarithromycin', 'ketoconazole', 'itraconazole', 'ritonavir', 'grapefruit']
+  const cyp3a4Inducers = ['rifampin', 'carbamazepine', 'phenytoin', 'st.john\'s wort']
+  
+  const hasCypSubstrate = drugList.some(d => cyp3a4Substrates.some(s => d.includes(s)))
+  const hasCypInhibitor = drugList.some(d => cyp3a4Inhibitors.some(i => d.includes(i)))
+  const hasCypInducer = drugList.some(d => cyp3a4Inducers.some(i => d.includes(i)))
+  
+  if (hasCypSubstrate && hasCypInhibitor) {
+    interactions.push({
+      drugs: drugs.filter(d => 
+        cyp3a4Substrates.some(s => d.toLowerCase().includes(s)) ||
+        cyp3a4Inhibitors.some(i => d.toLowerCase().includes(i))
+      ),
+      severity: 'moderate',
+      mechanism: 'CYP3A4 inhibition - increased substrate levels',
+      description: 'CYP3A4 inhibitor may increase levels of CYP3A4 substrate',
+      recommendation: 'Monitor for increased adverse effects; consider dose reduction of substrate'
+    })
+  }
+  
+  if (hasCypSubstrate && hasCypInducer) {
+    interactions.push({
+      drugs: drugs.filter(d => 
+        cyp3a4Substrates.some(s => d.toLowerCase().includes(s)) ||
+        cyp3a4Inducers.some(i => d.toLowerCase().includes(i))
+      ),
+      severity: 'moderate',
+      mechanism: 'CYP3A4 induction - decreased substrate levels',
+      description: 'CYP3A4 inducer may decrease levels of CYP3A4 substrate',
+      recommendation: 'Monitor for therapeutic failure; may need dose increase of substrate'
+    })
+  }
+  
+  // Serotonin syndrome risk
+  const serotonergicDrugs = ['ssri', 'snri', 'tca', 'tramadol', 'linezolid', 'triptan', 'maoi', 'st.john\'s wort']
+  const serotonergicCount = drugList.filter(d => 
+    serotonergicDrugs.some(s => d.includes(s.toLowerCase()))
+  ).length
+  
+  if (serotonergicCount >= 2) {
+    const seroDrugs = drugs.filter(d => 
+      serotonergicDrugs.some(s => d.toLowerCase().includes(s.toLowerCase()))
+    )
+    interactions.push({
+      drugs: seroDrugs,
+      severity: 'severe',
+      mechanism: 'Additive serotonergic effects',
+      description: 'Multiple serotonergic agents increase risk of serotonin syndrome',
+      recommendation: 'Avoid combination if possible; monitor for agitation, tremor, hyperthermia'
+    })
+  }
+  
+  // QT prolongation
+  const qtDrugs = ['amiodarone', 'sotalol', 'quinidine', 'erythromycin', 'moxifloxacin', 'haloperidol', 'ziprasidone']
+  const hasQtDrug = drugList.some(d => qtDrugs.some(q => d.includes(q)))
+  
+  if (hasQtDrug && serotonergicCount > 0) {
+    interactions.push({
+      severity: 'moderate',
+      mechanism: 'QT prolongation risk',
+      description: 'QT prolonging drug combined with other agents may increase arrhythmia risk',
+      recommendation: 'Monitor ECG; check electrolytes'
+    })
+  }
+  
+  // Anticoagulant + Antiplatelet
+  const anticoagulants = ['warfarin', 'heparin', 'rivaroxaban', 'apixaban', 'dabigatran']
+  const antiplatelets = ['aspirin', 'clopidogrel', 'prasugrel', 'ticagrelor']
+  
+  const hasAnticoag = drugList.some(d => anticoagulants.some(a => d.includes(a)))
+  const hasAntiplatelet = drugList.some(d => antiplatelets.some(a => d.includes(a)))
+  
+  if (hasAnticoag && hasAntiplatelet) {
+    interactions.push({
+      drugs: drugs.filter(d => 
+        anticoagulants.some(a => d.toLowerCase().includes(a)) ||
+        antiplatelets.some(a => d.toLowerCase().includes(a))
+      ),
+      severity: 'severe',
+      mechanism: 'Additive anticoagulant effects',
+      description: 'Dual anticoagulation significantly increases bleeding risk',
+      recommendation: 'Only use with clear indication; monitor for bleeding; ensure reversal agents available'
+    })
+  }
+  
+  // NSAIDs + ACE/ARB/Diuretic (triple whammy)
+  const nsaids = ['ibuprofen', 'naproxen', 'diclofenac', 'celecoxib']
+  const aceArbs = ['lisinopril', 'enalapril', 'losartan', 'valsartan']
+  const diuretics = ['furosemide', 'hydrochlorothiazide', 'spironolactone']
+  
+  const hasNsaid = drugList.some(d => nsaids.some(n => d.includes(n)))
+  const hasAceArb = drugList.some(d => aceArbs.some(a => d.includes(a)))
+  const hasDiuretic = drugList.some(d => diuretics.some(d2 => d.includes(d2)))
+  
+  if (hasNsaid && hasAceArb && hasDiuretic) {
+    interactions.push({
+      severity: 'severe',
+      mechanism: 'Triple whammy - reduced renal perfusion',
+      description: 'NSAID + ACE/ARB + Diuretic combination increases acute kidney injury risk',
+      recommendation: 'Avoid this triple combination; if essential, monitor renal function closely'
+    })
+  }
+  
+  // Generate summary
+  const summary = interactions.length > 0
+    ? `Found ${interactions.length} potential interaction(s). ${interactions.filter(i => i.severity === 'severe').length} severe.`
+    : 'No major interactions detected based on local database. Always verify with clinical judgment.'
+  
+  return {
+    interactions,
+    summary,
+    recommendations,
+    severity: interactions.some(i => i.severity === 'severe') ? 'high' : 
+              interactions.some(i => i.severity === 'moderate') ? 'moderate' : 'low'
+  }
+}

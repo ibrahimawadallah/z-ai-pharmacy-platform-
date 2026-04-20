@@ -1,0 +1,1 @@
+{"key":"DIRECT_URL","value":"postgresql://neondb_owner:npg_wWQtrs5fJo8B@ep-shiny-king-adsne10e-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require","type":"encrypted","target":["production","preview","development"]}

@@ -1,0 +1,59 @@
+id,drug_id,interacting_drug_id,interaction_type,severity,description,created_at
+1,2209,1569,,mild,May cause hypoglycemia. Monitor blood glucose levels closely.,2026-02-13 22:50:26
+2,2209,109371,,moderate,Increased risk of hypoglycemia. Dose adjustments may be needed.,2026-02-13 22:50:26
+3,2209,109372,,severe,May cause lactic acidosis. Avoid alcohol while taking metformin.,2026-02-13 22:50:26
+4,2209,109373,,severe,Risk of lactic acidosis. Hold metformin before and after contrast procedures.,2026-02-13 22:50:26
+5,202,327,,severe,Increased risk of bleeding. Avoid combination if possible.,2026-02-13 22:50:26
+6,202,2231,,moderate,May decrease cardioprotective effects of aspirin and increase GI bleeding risk.,2026-02-13 22:50:26
+7,202,698,,mild,Increased antiplatelet effect. Monitor for bleeding.,2026-02-13 22:50:26
+8,202,1555,,moderate,Increased risk of GI bleeding and ulceration.,2026-02-13 22:50:26
+9,1569,5849,,moderate,May cause hyperkalemia. Monitor potassium levels.,2026-02-13 22:50:26
+10,1569,4,,moderate,Increased risk of hyperkalemia. Monitor potassium levels closely.,2026-02-13 22:50:26
+11,1569,109374,,moderate,May reduce antihypertensive effect and increase risk of renal impairment.,2026-02-13 22:50:26
+12,1569,109375,,moderate,May increase lithium levels and toxicity risk.,2026-02-13 22:50:26
+13,109376,109377,,moderate,May increase atorvastatin levels up to 250%. Avoid grapefruit juice.,2026-02-13 22:50:26
+14,109376,718,,severe,May increase risk of myopathy and rhabdomyolysis.,2026-02-13 22:50:26
+15,109376,109378,,severe,Dramatically increased risk of myopathy and rhabdomyolysis.,2026-02-13 22:50:26
+16,109376,110,,severe,Increased risk of severe myopathy and rhabdomyolysis.,2026-02-13 22:50:26
+17,327,109379,,moderate,May decrease warfarin effectiveness. Maintain consistent vitamin K intake.,2026-02-13 22:50:26
+18,327,109380,,severe,Significantly increases warfarin effect. INR may increase by 50-100%.,2026-02-13 22:50:26
+19,327,109374,,severe,Increased risk of GI bleeding. Relative risk increases 13-fold.,2026-02-13 22:50:26
+20,327,296,,severe,May increase warfarin effect significantly.,2026-02-13 22:50:26
+21,327,1029,,severe,May double warfarin effect.,2026-02-13 22:50:26
+22,8256,756,,moderate,May decrease levothyroxine absorption by up to 40%.,2026-02-13 22:50:26
+23,8256,109381,,moderate,May decrease levothyroxine absorption significantly.,2026-02-13 22:50:26
+24,8256,109382,,moderate,May decrease levothyroxine absorption.,2026-02-13 22:50:26
+25,8256,109383,,mild,May slightly decrease levothyroxine absorption.,2026-02-13 22:50:26
+26,109384,109371,,moderate,Increased risk of hypoglycemia. Monitor blood glucose frequently.,2026-02-13 22:50:26
+27,109384,109385,,moderate,May enhance hypoglycemic effect significantly.,2026-02-13 22:50:26
+28,2848,109377,,severe,Significantly increases simvastatin levels (up to 16-fold). Avoid completely.,2026-02-13 22:50:26
+29,2848,327,,moderate,May increase anticoagulant effect.,2026-02-13 22:50:26
+30,2848,109386,,moderate,Increases simvastatin levels. Limit simvastatin to 20mg daily.,2026-02-13 22:50:26
+31,1555,109374,,moderate,Significantly increased risk of GI bleeding and ulceration.,2026-02-13 22:50:26
+32,1555,327,,moderate,May increase anticoagulant effect and bleeding risk.,2026-02-13 22:50:26
+33,1555,109387,,severe,May cause severe infections. Contraindicated.,2026-02-13 22:50:26
+34,109388,1619,,moderate,May increase digoxin toxicity due to hypokalemia.,2026-02-13 22:50:26
+35,109388,109375,,moderate,May increase lithium levels significantly.,2026-02-13 22:50:26
+36,109388,109389,,moderate,Increased risk of ototoxicity and nephrotoxicity.,2026-02-13 22:50:26
+37,109390,109391,,moderate,Increased risk of serotonin syndrome.,2026-02-13 22:50:26
+38,109390,327,,moderate,May increase anticoagulant effect.,2026-02-13 22:50:26
+39,109390,290,,moderate,Increased risk of serotonin syndrome.,2026-02-13 22:50:26
+40,109391,109390,,moderate,Increased risk of serotonin syndrome.,2026-02-13 22:50:26
+41,109391,327,,moderate,May increase bleeding risk.,2026-02-13 22:50:26
+42,109391,109374,,moderate,Increased bleeding risk.,2026-02-13 22:50:26
+43,4395,698,,moderate,May decrease effectiveness of clopidogrel.,2026-02-13 22:50:26
+44,4395,1492,,moderate,May increase methotrexate levels.,2026-02-13 22:50:26
+45,878,698,,severe,Significantly reduces antiplatelet effect of clopidogrel.,2026-02-13 22:50:26
+46,2648,327,,severe,May significantly increase warfarin effect.,2026-02-13 22:50:26
+47,2648,3235,,severe,May increase theophylline levels causing toxicity.,2026-02-13 22:50:26
+48,109392,327,,moderate,May increase warfarin effect.,2026-02-13 22:50:26
+49,109392,2848,,moderate,Increased risk of myopathy.,2026-02-13 22:50:26
+50,1440,202,,moderate,Increased bleeding risk.,2026-02-13 22:50:26
+51,1440,109374,,severe,Significantly increased bleeding risk.,2026-02-13 22:50:26
+52,18418,330,,severe,Significantly increases apixaban levels.,2026-02-13 22:50:26
+53,1492,109374,,severe,May increase methotrexate toxicity.,2026-02-13 22:50:27
+54,1492,4723,,severe,Increased risk of bone marrow suppression.,2026-02-13 22:50:27
+55,109386,2848,,moderate,Increases simvastatin levels.,2026-02-13 22:50:27
+56,109386,109377,,mild,May increase amlodipine levels.,2026-02-13 22:50:27
+57,1619,109380,,severe,May double digoxin levels.,2026-02-13 22:50:27
+58,1619,109393,,severe,Increases digoxin levels.,2026-02-13 22:50:27

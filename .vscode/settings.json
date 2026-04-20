@@ -1,0 +1,5 @@
+{
+    "diffEditor.codeLens": true,
+    "python.defaultInterpreterPath": "c:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "prisma.pinToPrisma6": true
+}

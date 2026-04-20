@@ -1,0 +1,88 @@
+/**
+ * SQLite Drug Database Utility
+ * Falls back to local SQLite when PostgreSQL is unavailable
+ */
+
+import Database from 'better-sqlite3'
+import * as path from 'path'
+
+const DB_PATH = path.join(process.cwd(), 'upload', 'drug-intelligence.db')
+
+let db: Database.Database | null = null
+
+export function getSQLiteDB(): Database.Database {
+  if (!db) {
+    db = new Database(DB_PATH, { readonly: true })
+    db.pragma('journal_mode = WAL')
+  }
+  return db
+}
+
+export interface DrugWithClinicalData {
+  id: string
+  drugCode: string
+  packageName: string
+  genericName: string
+  strength: string
+  dosageForm: string
+  status: string
+  icd10Codes: Array<{ code: string; description: string; category: string }>
+  interactions: Array<{ drugName: string; severity: string; description: string }>
+  sideEffects: Array<{ effect: string; frequency: string; severity: string }>
+}
+
+export function searchDrugsFromSQLite(query: string, limit: number = 10): any[] {
+  const db = getSQLiteDB()
+  const stmt = db.prepare(`
+    SELECT id, drug_code, package_name, generic_name, strength, dosage_form, status
+    FROM drugs
+    WHERE package_name LIKE ? OR generic_name LIKE ?
+    LIMIT ?
+  `)
+  return stmt.all(`%${query}%`, `%${query}%`, limit)
+}
+
+export function getDrugWithClinicalData(drugId: string): DrugWithClinicalData | null {
+  const db = getSQLiteDB()
+  
+  // Get drug info
+  const drug = db.prepare('SELECT * FROM drugs WHERE id = ?').get(drugId) as any
+  if (!drug) return null
+  
+  // Get ICD-10 codes
+  const icd10Stmt = db.prepare(`
+    SELECT icd10_code as code, description, category
+    FROM icd10_mappings
+    WHERE drug_id = ?
+  `)
+  const icd10Codes = icd10Stmt.all(drugId) as any[]
+  
+  // Get interactions
+  const interactionStmt = db.prepare(`
+    SELECT secondary_drug_name as drugName, severity, description
+    FROM drug_interactions
+    WHERE drug_id = ?
+  `)
+  const interactions = interactionStmt.all(drugId) as any[]
+  
+  // Get side effects
+  const sideEffectStmt = db.prepare(`
+    SELECT side_effect as effect, frequency, severity
+    FROM drug_side_effects
+    WHERE drug_id = ?
+  `)
+  const sideEffects = sideEffectStmt.all(drugId) as any[]
+  
+  return {
+    id: drug.id,
+    drugCode: drug.drug_code,
+    packageName: drug.package_name,
+    genericName: drug.generic_name,
+    strength: drug.strength,
+    dosageForm: drug.dosage_form,
+    status: drug.status,
+    icd10Codes: icd10Codes || [],
+    interactions: interactions || [],
+    sideEffects: sideEffects || []
+  }
+}

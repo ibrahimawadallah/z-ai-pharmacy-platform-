@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Allow AI chatbot to crawl
+User-agent: GPTBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+
+Sitemap: https://z-ai-pharmacy-platform.vercel.app/sitemap.xml

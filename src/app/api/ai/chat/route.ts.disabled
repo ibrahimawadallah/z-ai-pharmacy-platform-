@@ -1,0 +1,132 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth-options'
+import { db } from '@/lib/db'
+import { getOllamaService } from '@/lib/ollama'
+import { getGroqService } from '@/lib/groq'
+
+export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
+  try {
+    const { message, history = [], patientId } = await request.json()
+
+    if (!message) {
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 })
+    }
+
+    // Search for drugs in database using prisma
+    const words = message.split(/\s+/).filter((w: string) => w.length > 3)
+    const searchTerm = words[0] || message
+    
+    const drugs = await db.drug.findMany({
+      where: {
+        OR: [
+          { packageName: { contains: searchTerm, mode: 'insensitive' } },
+          { genericName: { contains: searchTerm, mode: 'insensitive' } }
+        ]
+      },
+      select: {
+        packageName: true,
+        genericName: true,
+        renalAdjustment: true,
+        hepaticAdjustment: true,
+        warnings: true,
+        pregnancyCategory: true,
+        status: true,
+        dispenseMode: true
+      },
+      take: 3
+    })
+
+    // Build context for AI
+    const context = drugs.map((d: any) => 
+      `Drug: ${d.packageName} (${d.genericName})
+Renal: ${d.renalAdjustment || 'N/A'}
+Hepatic: ${d.hepaticAdjustment || 'N/A'}
+Pregnancy: ${d.pregnancyCategory || 'N/A'}
+Warnings: ${d.warnings || 'None'}
+Status: ${d.status}`
+    ).join('\n\n')
+
+    const systemPrompt = `You are DrugEye Clinical Assistant, an AI pharmacist for UAE healthcare.
+Use ONLY the provided drug database context to answer. Be concise and clinical.
+
+DRUG DATABASE CONTEXT:
+${context || 'No matching drugs found.'}`
+
+    // 1. Try Groq (Primary)
+    try {
+      if (process.env.GROQ_API_KEY) {
+        const groqService = getGroqService()
+        const aiResponse = await groqService.generateResponse(message, systemPrompt, history)
+        
+        return NextResponse.json({
+          role: 'assistant',
+          content: aiResponse + "\n\n*Powered by Groq Llama*",
+          citations: drugs.map((d: any) => d.packageName),
+          model: 'groq-llama'
+        })
+      }
+    } catch (groqError) {
+      console.log('Groq unavailable, trying Ollama:', groqError)
+    }
+
+    // 2. Try Ollama (Secondary)
+    try {
+      const ollama = getOllamaService()
+      const aiResponse = await ollama.generateResponse(message, systemPrompt)
+      
+      return NextResponse.json({
+        role: 'assistant',
+        content: aiResponse + "\n\n*Powered by Llama via Ollama*",
+        citations: drugs.map((d: any) => d.packageName),
+        model: 'llama-ollama'
+      })
+    } catch (ollamaError) {
+      console.log('Ollama unavailable, using database fallback:', ollamaError)
+      
+      // Fallback to database-only response
+      const query = message.toLowerCase()
+      let response = ""
+      
+      if (drugs.length > 0) {
+        const drug = drugs[0]
+        
+        if (query.includes('renal') || query.includes('kidney')) {
+          response = `**${drug.packageName}** (${drug.genericName})\n\n**Renal Adjustment:** ${drug.renalAdjustment || 'No specific adjustment required.'}\n**Status:** ${drug.status}`
+        } 
+        else if (query.includes('pregnant') || query.includes('pregnancy')) {
+          response = `**${drug.packageName}** (${drug.genericName})\n\n**Pregnancy:** ${drug.pregnancyCategory || 'Not classified'}\n**Warnings:** ${drug.warnings || 'None'}`
+        }
+        else if (query.includes('side effect') || query.includes('adverse')) {
+          response = `**${drug.packageName}** (${drug.genericName})\n\nSide effects: ${drug.warnings || 'None documented.'}`
+        }
+        else {
+          response = `**${drug.packageName}** (${drug.genericName})\n\n**Status:** ${drug.status}\n**Pregnancy:** ${drug.pregnancyCategory || 'N/A'}\n**Warnings:** ${drug.warnings || 'None'}`
+        }
+      } else {
+        response = `I couldn't find "${message}" in the UAE MOH database. Try asking about a specific drug name.`
+      }
+
+      response += "\n\n*⚠️ Always verify with official MOH circulars.*"
+
+      return NextResponse.json({
+        role: 'assistant',
+        content: response,
+        citations: drugs.map((d: any) => d.packageName),
+        model: 'drugeye-db-fallback'
+      })
+    }
+
+  } catch (error: any) {
+    console.error('Chat API Error:', error)
+    return NextResponse.json({ 
+      error: 'Service error', 
+      content: "Technical issue. Please try again."
+    }, { status: 500 })
+  }
+}

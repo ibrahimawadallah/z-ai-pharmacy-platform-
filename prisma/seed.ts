@@ -1,0 +1,877 @@
+import { PrismaClient } from '@prisma/client'
+import * as fs from 'fs'
+import * as path from 'path'
+// Removed bun:sqlite import as it's not available in Node.js
+import { createReadStream } from 'node:fs'
+import { createInterface } from 'node:readline'
+
+const prisma = new PrismaClient()
+
+interface CSVRow {
+  drugCode: string
+  packageName: string
+  genericName: string
+  strength: string
+  dosageForm: string
+  packageSize: string
+  status: string
+  dispenseMode: string | null
+  packagePricePublic: number | null
+  packagePricePharmacy: number | null
+  unitPricePublic: number | null
+  unitPricePharmacy: number | null
+  agentName: string | null
+  manufacturerName: string | null
+  includedInThiqaABM: string | null
+  includedInBasic: string | null
+  includedInABM1: string | null
+  includedInABM7: string | null
+  lastChangeDate: Date | null
+}
+
+function parseCSV(filePath: string): CSVRow[] {
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const lines = content.split('\n').filter(line => line.trim())
+  
+  if (lines.length === 0) return []
+  
+  const headerLine = lines[0]
+  const headers = headerLine.split(',').map(h => h.trim().replace(/"/g, ''))
+  
+  const drugs: CSVRow[] = []
+  
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i]
+    if (!line.trim()) continue
+    
+    // Handle CSV with quoted fields that may contain commas
+    const values: string[] = []
+    let currentValue = ''
+    let inQuotes = false
+    
+    for (let j = 0; j < line.length; j++) {
+      const char = line[j]
+      if (char === '"') {
+        inQuotes = !inQuotes
+      } else if (char === ',' && !inQuotes) {
+        values.push(currentValue.trim().replace(/^"|"$/g, ''))
+        currentValue = ''
+      } else {
+        currentValue += char
+      }
+    }
+    values.push(currentValue.trim().replace(/^"|"$/g, ''))
+    
+    // Map values to expected fields based on UAE drug list structure
+    const getField = (name: string): string => {
+      const index = headers.findIndex(h => 
+        h.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(h.toLowerCase())
+      )
+      return index >= 0 ? (values[index] || '') : ''
+    }
+    
+    const parsePrice = (val: string): number | null => {
+      if (!val || val.trim() === '') return null
+      const num = parseFloat(val.replace(/,/g, ''))
+      return isNaN(num) ? null : num
+    }
+    
+    const parseDate = (val: string): Date | null => {
+      if (!val || val.trim() === '') return null
+      try {
+        // Handle format like "01/30/2020 12:00:00"
+        const dateStr = val.split(' ')[0]
+        const [month, day, year] = dateStr.split('/')
+        if (month && day && year) {
+          return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`)
+        }
+        return null
+      } catch {
+        return null
+      }
+    }
+    
+    const drug: CSVRow = {
+      drugCode: getField('Drug Code') || `DRUG-${i}`,
+      packageName: getField('Package Name') || 'Unknown',
+      genericName: getField('Generic Name') || 'Unknown',
+      strength: getField('Strength') || '',
+      dosageForm: getField('Dosage Form') || 'Tablets',
+      packageSize: getField('Package Size') || '',
+      status: getField('Status') || 'Active',
+      dispenseMode: getField('Dispense Mode') || null,
+      packagePricePublic: parsePrice(getField('Package Price to Public')),
+      packagePricePharmacy: parsePrice(getField('Package Price to Pharmacy')),
+      unitPricePublic: parsePrice(getField('Unit Price to Public')),
+      unitPricePharmacy: parsePrice(getField('Unit Price to Pharmacy')),
+      agentName: getField('Agent Name') || null,
+      manufacturerName: getField('Manufacturer Name') || null,
+      includedInThiqaABM: getField('Included in Thiqa') || 'No',
+      includedInBasic: getField('Included In Basic') || 'No',
+      includedInABM1: getField('Included In ABM 1') || 'No',
+      includedInABM7: getField('Included In ABM 7') || 'No',
+      lastChangeDate: parseDate(getField('Last Change Date'))
+    }
+    
+    drugs.push(drug)
+  }
+  
+  return drugs
+}
+
+function normalizeDrugName(value: string | null | undefined): string | null {
+  if (!value) return null
+  const normalized = value
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/[_/,;:+-]/g, ' ')
+    .replace(/[^\p{L}\p{N}\s.]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return normalized.length ? normalized : null
+}
+
+const SALT_WORDS = new Set(
+  [
+    'hydrochloride',
+    'hcl',
+    'sodium',
+    'potassium',
+    'calcium',
+    'magnesium',
+    'phosphate',
+    'sulfate',
+    'sulphate',
+    'acetate',
+    'citrate',
+    'maleate',
+    'mesylate',
+    'tartrate',
+    'succinate',
+    'oxalate',
+    'besylate',
+    'bromide',
+    'chloride',
+    'iodide',
+    'nitrate',
+    'carbonate',
+    'bicarbonate',
+    'gluconate',
+    'lactate',
+    'fumarate',
+    'valerate',
+    'pamoate',
+    'benzoate',
+    'edetate',
+    'monohydrate',
+    'dihydrate',
+    'trihydrate',
+    'anhydrous',
+    'hydrate',
+  ].map(v => v.toLowerCase())
+)
+
+function stripSaltWords(value: string): string {
+  const tokens = value
+    .split(/\s+/)
+    .map(t => t.trim())
+    .filter(Boolean)
+    .filter(t => !SALT_WORDS.has(t.toLowerCase()))
+  return tokens.join(' ')
+}
+
+function buildDrugNameKeys(packageName: string | null | undefined, genericName: string | null | undefined) {
+  const keys = new Set<string>()
+
+  const addKey = (raw: string | null | undefined) => {
+    const normalized = normalizeDrugName(raw)
+    if (normalized) keys.add(normalized)
+  }
+
+  addKey(packageName)
+  addKey(genericName)
+
+  if (genericName) {
+    const stripped = stripSaltWords(genericName)
+    addKey(stripped)
+
+    const strippedNormalized = normalizeDrugName(stripped)
+    if (strippedNormalized) {
+      const firstToken = strippedNormalized.split(' ')[0]
+      if (firstToken) keys.add(firstToken)
+    }
+  }
+
+  const genericNormalized = normalizeDrugName(genericName)
+  if (genericNormalized) {
+    const firstToken = genericNormalized.split(' ')[0]
+    if (firstToken) keys.add(firstToken)
+  }
+
+  const packageNormalized = normalizeDrugName(packageName)
+  if (packageNormalized) {
+    const firstToken = packageNormalized.split(' ')[0]
+    if (firstToken) keys.add(firstToken)
+  }
+
+  return Array.from(keys)
+}
+
+function addToMultiMap(map: Map<string, string[]>, key: string, id: string) {
+  const existing = map.get(key)
+  if (existing) existing.push(id)
+  else map.set(key, [id])
+}
+
+async function importSideEffectsFromSIDER(nameToDrugIds: Map<string, string[]>) {
+  const siderCandidates = [
+    path.join(process.cwd(), 'upload', 'sider-side-effects.tsv'),
+    path.join(process.cwd(), 'public', 'data', 'sider-side-effects.tsv'),
+  ]
+  const siderPath = siderCandidates.find((p) => fs.existsSync(p))
+  if (!siderPath) {
+    console.log(`SIDER side effects file not found at ${siderPath}`)
+    return
+  }
+
+  console.log('Importing side effects from SIDER...')
+  await prisma.drugSideEffect.deleteMany({})
+
+  const rl = createInterface({
+    input: createReadStream(siderPath, { encoding: 'utf8' }),
+    crlfDelay: Infinity,
+  })
+
+  const batchSize = 2000
+  let inserted = 0
+  const batch: { drugId: string; sideEffect: string; frequency?: string | null; severity?: string | null; mechanism?: string | null }[] =
+    []
+  const seen = new Set<string>()
+
+  const flush = async () => {
+    if (!batch.length) return
+    await prisma.drugSideEffect.createMany({ data: batch })
+    inserted += batch.length
+    batch.length = 0
+    console.log(`Inserted ${inserted} side effects (SIDER)...`)
+  }
+
+  let isHeader = true
+  for await (const line of rl) {
+    if (isHeader) {
+      isHeader = false
+      continue
+    }
+    if (!line) continue
+    const parts = line.split('\t')
+    if (parts.length < 4) continue
+    const drugName = parts[1]
+    const sideEffectName = parts[3]
+    const key = normalizeDrugName(drugName)
+    if (!key) continue
+    const drugIds = nameToDrugIds.get(key)
+    if (!drugIds?.length) continue
+    if (!sideEffectName) continue
+
+    for (const drugId of drugIds) {
+      const dedupeKey = `${drugId}\u0000${sideEffectName}`
+      if (seen.has(dedupeKey)) continue
+      seen.add(dedupeKey)
+
+      batch.push({
+        drugId,
+        sideEffect: sideEffectName,
+        frequency: null,
+        severity: null,
+        mechanism: null,
+      })
+
+      if (batch.length >= batchSize) await flush()
+    }
+  }
+
+  await flush()
+  console.log(`SIDER side effects import done. Total side effects: ${inserted}`)
+}
+
+async function importICD10Mappings() {
+  const mappingsPath = path.join(process.cwd(), 'upload', 'uae-drugs-complete-icd10-mappings.txt')
+  if (!fs.existsSync(mappingsPath)) {
+    console.log(`ICD-10 mappings file not found at ${mappingsPath}`)
+    return
+  }
+
+  const raw = fs.readFileSync(mappingsPath, 'utf-8')
+  const mappingsByName = JSON.parse(raw.replace(/^\uFEFF/, '')) as Record<
+    string,
+    { code: string; description?: string | null }[]
+  >
+
+  const drugs = await prisma.drug.findMany({
+    select: { id: true, packageName: true, genericName: true },
+  })
+
+  const nameToDrugIds = new Map<string, string[]>()
+  for (const drug of drugs) {
+    const names = [normalizeDrugName(drug.packageName), normalizeDrugName(drug.genericName)].filter(
+      (v): v is string => Boolean(v)
+    )
+    for (const name of names) {
+      const existing = nameToDrugIds.get(name)
+      if (existing) existing.push(drug.id)
+      else nameToDrugIds.set(name, [drug.id])
+    }
+  }
+
+  console.log('Importing ICD-10 mappings...')
+  await prisma.iCD10Mapping.deleteMany({})
+
+  const batchSize = 2000
+  let created = 0
+  let matchedDrugs = 0
+  let unmatchedKeys = 0
+  const batch: { drugId: string; icd10Code: string; description?: string | null; category?: string | null }[] =
+    []
+
+  const flush = async () => {
+    if (!batch.length) return
+    await prisma.iCD10Mapping.createMany({ data: batch })
+    created += batch.length
+    batch.length = 0
+    console.log(`Inserted ${created} ICD-10 mappings...`)
+  }
+
+  for (const [nameKey, codes] of Object.entries(mappingsByName)) {
+    const normalizedKey = normalizeDrugName(nameKey)
+    if (!normalizedKey) continue
+    const drugIds = nameToDrugIds.get(normalizedKey)
+    if (!drugIds?.length) {
+      unmatchedKeys += 1
+      continue
+    }
+
+    matchedDrugs += drugIds.length
+
+    for (const drugId of drugIds) {
+      for (const entry of codes) {
+        const code = (entry.code || '').trim().toUpperCase()
+        if (!code) continue
+        batch.push({
+          drugId,
+          icd10Code: code,
+          description: entry.description ?? null,
+          category: null,
+        })
+        if (batch.length >= batchSize) await flush()
+      }
+    }
+  }
+
+  await flush()
+
+  console.log(`ICD-10 import done. Total mappings: ${created}`)
+  console.log(`ICD-10 keys matched to drugs: ${matchedDrugs}`)
+  console.log(`ICD-10 keys without match: ${unmatchedKeys}`)
+}
+
+async function importInteractionsAndSideEffects() {
+  const intelligencePath = path.join(process.cwd(), 'upload', 'drug-intelligence.db')
+  const drugs = await prisma.drug.findMany({
+    select: { id: true, drugCode: true, packageName: true, genericName: true },
+  })
+
+  const codeToId = new Map<string, string>()
+  const nameToDrugIds = new Map<string, string[]>()
+
+  for (const drug of drugs) {
+    if (drug.drugCode) codeToId.set(drug.drugCode.trim(), drug.id)
+    for (const key of buildDrugNameKeys(drug.packageName, drug.genericName)) {
+      addToMultiMap(nameToDrugIds, key, drug.id)
+    }
+  }
+
+  const importInteractionsFromJsonFallback = async () => {
+    const candidates = [
+      path.join(process.cwd(), 'upload', 'drug-interactions.json'),
+      path.join(process.cwd(), 'public', 'data', 'drug-interactions.json'),
+    ]
+    const interactionsJsonPath = candidates.find((p) => fs.existsSync(p))
+    if (!interactionsJsonPath) {
+      console.log('No fallback interactions file found')
+      return 0
+    }
+
+    const raw = fs.readFileSync(interactionsJsonPath, 'utf-8')
+    const interactionDb = JSON.parse(raw) as Record<
+      string,
+      Record<
+        string,
+        {
+          severity?: string
+          description?: string
+          mechanism?: string
+          recommendation?: string
+        }
+      >
+    >
+
+    await prisma.drugInteraction.deleteMany({})
+
+    const batchSize = 2000
+    let inserted = 0
+    const seen = new Set<string>()
+    const batch: {
+      drugId: string
+      secondaryDrugName?: string | null
+      secondaryDrugId?: string | null
+      severity?: string | null
+      interactionType?: string | null
+      description?: string | null
+      management?: string | null
+      evidence?: string | null
+    }[] = []
+
+    const flush = async () => {
+      if (!batch.length) return
+      await prisma.drugInteraction.createMany({ data: batch })
+      inserted += batch.length
+      batch.length = 0
+      console.log(`Inserted ${inserted} interactions (fallback)...`)
+    }
+
+    for (const [primaryKey, secondaryMap] of Object.entries(interactionDb)) {
+      const primaryNorm = normalizeDrugName(primaryKey)
+      if (!primaryNorm) continue
+      const primaryIds = nameToDrugIds.get(primaryNorm)
+      if (!primaryIds?.length) continue
+
+      for (const [secondaryKey, details] of Object.entries(secondaryMap)) {
+        const normalizedSecondary = normalizeDrugName(secondaryKey)
+        const secondaryIds = normalizedSecondary ? nameToDrugIds.get(normalizedSecondary) : undefined
+        const secondaryName = (secondaryKey || '').replace(/_/g, ' ') || null
+        const severity = details.severity ?? null
+        const interactionType = details.mechanism ?? null
+        const description = details.description ?? null
+        const management = details.recommendation ?? null
+
+        for (const primaryId of primaryIds) {
+          if (secondaryIds?.length) {
+            for (const secondaryId of secondaryIds) {
+              if (secondaryId === primaryId) continue
+              const dedupeKey = `${primaryId}|${secondaryId}|${severity}|${description}|${management}|${interactionType}`
+              if (seen.has(dedupeKey)) continue
+              seen.add(dedupeKey)
+
+              batch.push({
+                drugId: primaryId,
+                secondaryDrugName: secondaryName,
+                secondaryDrugId: secondaryId,
+                severity,
+                interactionType,
+                description,
+                management,
+                evidence: null,
+              })
+              if (batch.length >= batchSize) await flush()
+            }
+          } else {
+            const dedupeKey = `${primaryId}|${secondaryName}|${severity}|${description}|${management}|${interactionType}`
+            if (seen.has(dedupeKey)) continue
+            seen.add(dedupeKey)
+
+            batch.push({
+              drugId: primaryId,
+              secondaryDrugName: secondaryName,
+              secondaryDrugId: null,
+              severity,
+              interactionType,
+              description,
+              management,
+              evidence: null,
+            })
+            if (batch.length >= batchSize) await flush()
+          }
+        }
+
+        if (batch.length >= batchSize) await flush()
+      }
+    }
+
+    await flush()
+    console.log(`Fallback DrugInteraction import done. Total interactions: ${inserted}`)
+    return inserted
+  }
+
+  if (!fs.existsSync(intelligencePath)) {
+    await importInteractionsFromJsonFallback()
+    await importSideEffectsFromSIDER(nameToDrugIds)
+    return
+  }
+
+  let Database: any
+  try {
+    const bunSqlite = await import('bun:sqlite')
+    Database = (bunSqlite as any).Database
+  } catch (e) {
+    await importInteractionsFromJsonFallback()
+    await importSideEffectsFromSIDER(nameToDrugIds)
+    return
+  }
+
+  let sqlite: any
+  try {
+    sqlite = new Database(intelligencePath, { readonly: true })
+  } catch (error) {
+    console.log('Could not open upload/drug-intelligence.db as a valid SQLite database.')
+    console.log(String(error))
+    await importInteractionsFromJsonFallback()
+    await importSideEffectsFromSIDER(nameToDrugIds)
+    return
+  }
+
+  try {
+    sqlite.query('SELECT name FROM sqlite_master LIMIT 1').all()
+  } catch (error) {
+    try {
+      sqlite.close()
+    } catch {}
+
+    console.log('upload/drug-intelligence.db could not be queried as a valid SQLite database.')
+    console.log(String(error))
+    await importInteractionsFromJsonFallback()
+    await importSideEffectsFromSIDER(nameToDrugIds)
+    return
+  }
+
+  await prisma.drugSideEffect.deleteMany({})
+  await prisma.drugInteraction.deleteMany({})
+
+  console.log('Importing side effects...')
+
+  const sideEffectsQuery = sqlite.query(`
+    SELECT
+      d.drug_code AS drugCode,
+      d.drug_name AS drugName,
+      d.generic_name AS genericName,
+      se.side_effect AS sideEffect,
+      se.frequency AS frequency,
+      se.severity AS severity
+    FROM drug_side_effects se
+    JOIN drugs d ON se.drug_id = d.id
+  `)
+
+  const sideEffectsBatchSize = 2000
+  let sideEffectsInserted = 0
+  const sideEffectsBatch: { drugId: string; sideEffect: string; frequency?: string | null; severity?: string | null; mechanism?: string | null }[] =
+    []
+
+  const flushSideEffects = async () => {
+    if (!sideEffectsBatch.length) return
+    await prisma.drugSideEffect.createMany({ data: sideEffectsBatch })
+    sideEffectsInserted += sideEffectsBatch.length
+    sideEffectsBatch.length = 0
+    console.log(`Inserted ${sideEffectsInserted} side effects...`)
+  }
+
+  for (const row of sideEffectsQuery.iterate() as Iterable<{
+    drugCode: string | null
+    drugName: string | null
+    genericName: string | null
+    sideEffect: string | null
+    frequency: string | null
+    severity: string | null
+  }>) {
+    if (!row.sideEffect) continue
+
+    const resolved =
+      (row.drugCode ? [codeToId.get(row.drugCode.trim())].filter((v): v is string => Boolean(v)) : []) ||
+      []
+    const nameResolved =
+      (normalizeDrugName(row.drugName) ? nameToDrugIds.get(normalizeDrugName(row.drugName)!) : undefined) ??
+      (normalizeDrugName(row.genericName) ? nameToDrugIds.get(normalizeDrugName(row.genericName)!) : undefined) ??
+      []
+    const drugIds = resolved.length ? resolved : nameResolved
+
+    if (!drugIds.length) continue
+
+    for (const drugId of drugIds) {
+      sideEffectsBatch.push({
+        drugId,
+        sideEffect: row.sideEffect,
+        frequency: row.frequency,
+        severity: row.severity,
+        mechanism: null,
+      })
+
+      if (sideEffectsBatch.length >= sideEffectsBatchSize) await flushSideEffects()
+    }
+  }
+
+  await flushSideEffects()
+
+  console.log('Importing drug interactions...')
+
+  const interactionsQuery = sqlite.query(`
+    SELECT
+      d1.drug_code AS primaryCode,
+      d1.drug_name AS primaryName,
+      d1.generic_name AS primaryGeneric,
+      d2.drug_code AS secondaryCode,
+      d2.drug_name AS secondaryName,
+      d2.generic_name AS secondaryGeneric,
+      di.interaction_type AS interactionType,
+      di.severity AS severity,
+      di.description AS description
+    FROM drug_interactions di
+    JOIN drugs d1 ON di.drug_id = d1.id
+    LEFT JOIN drugs d2 ON di.interacting_drug_id = d2.id
+  `)
+
+  const interactionsBatchSize = 2000
+  let interactionsInserted = 0
+  const interactionsBatch: {
+    drugId: string
+    secondaryDrugName?: string | null
+    secondaryDrugId?: string | null
+    severity?: string | null
+    interactionType?: string | null
+    description?: string | null
+    management?: string | null
+    evidence?: string | null
+  }[] = []
+
+  const flushInteractions = async () => {
+    if (!interactionsBatch.length) return
+    await prisma.drugInteraction.createMany({ data: interactionsBatch })
+    interactionsInserted += interactionsBatch.length
+    interactionsBatch.length = 0
+    console.log(`Inserted ${interactionsInserted} interactions...`)
+  }
+
+  for (const row of interactionsQuery.iterate() as Iterable<{
+    primaryCode: string | null
+    primaryName: string | null
+    primaryGeneric: string | null
+    secondaryCode: string | null
+    secondaryName: string | null
+    secondaryGeneric: string | null
+    interactionType: string | null
+    severity: string | null
+    description: string | null
+  }>) {
+    const primaryResolved =
+      (row.primaryCode ? [codeToId.get(row.primaryCode.trim())].filter((v): v is string => Boolean(v)) : []) || []
+    const primaryNameResolved =
+      (normalizeDrugName(row.primaryName) ? nameToDrugIds.get(normalizeDrugName(row.primaryName)!) : undefined) ??
+      (normalizeDrugName(row.primaryGeneric) ? nameToDrugIds.get(normalizeDrugName(row.primaryGeneric)!) : undefined) ??
+      []
+    const primaryIds = primaryResolved.length ? primaryResolved : primaryNameResolved
+
+    if (!primaryIds.length) continue
+
+    const secondaryId =
+      (row.secondaryCode ? codeToId.get(row.secondaryCode.trim()) : undefined) ??
+      (normalizeDrugName(row.secondaryName) ? nameToDrugIds.get(normalizeDrugName(row.secondaryName)!)?.[0] : undefined) ??
+      (normalizeDrugName(row.secondaryGeneric)
+        ? nameToDrugIds.get(normalizeDrugName(row.secondaryGeneric)!)?.[0]
+        : undefined)
+
+    const secondaryName = row.secondaryName ?? row.secondaryGeneric ?? null
+
+    for (const primaryId of primaryIds) {
+      interactionsBatch.push({
+        drugId: primaryId,
+        secondaryDrugName: secondaryName,
+        secondaryDrugId: secondaryId ?? null,
+        severity: row.severity,
+        interactionType: row.interactionType,
+        description: row.description,
+        management: null,
+        evidence: null,
+      })
+
+      if (interactionsBatch.length >= interactionsBatchSize) await flushInteractions()
+    }
+  }
+
+  await flushInteractions()
+  sqlite.close()
+
+  console.log(`Side effects imported: ${sideEffectsInserted}`)
+  console.log(`Interactions imported: ${interactionsInserted}`)
+}
+
+async function main() {
+  console.log('Starting seed process...')
+  const seedDrugs = process.env.SEED_DRUGS !== '0'
+  const seedICD10 = process.env.SEED_ICD10 !== '0'
+  const seedIntelligence = process.env.SEED_INTELLIGENCE !== '0'
+  
+  // Path to the uploaded CSV file
+  const csvPath = path.join(process.cwd(), 'upload', 'UAE drug list.csv')
+  
+  if (seedDrugs && !fs.existsSync(csvPath)) {
+    console.error(`CSV file not found at ${csvPath}`)
+    console.log('Creating sample data instead...')
+    
+    // Create sample drugs if CSV doesn't exist
+    const sampleDrugs = [
+      {
+        drugCode: 'SAMPLE-001',
+        packageName: 'AMOXIL',
+        genericName: 'Amoxicillin',
+        strength: '500 mg',
+        dosageForm: 'Capsules',
+        packageSize: '20s',
+        status: 'Active',
+        dispenseMode: 'Prescription Only Medicine',
+        packagePricePublic: 25.00,
+        packagePricePharmacy: 20.00,
+        unitPricePublic: 1.25,
+        unitPricePharmacy: 1.00,
+        agentName: 'Sample Agent',
+        manufacturerName: 'Sample Manufacturer',
+        includedInThiqaABM: 'Yes',
+        includedInBasic: 'Yes',
+        includedInABM1: 'No',
+        includedInABM7: 'No'
+      },
+      {
+        drugCode: 'SAMPLE-002',
+        packageName: 'PANADOL',
+        genericName: 'Paracetamol',
+        strength: '500 mg',
+        dosageForm: 'Tablets',
+        packageSize: '24s',
+        status: 'Active',
+        dispenseMode: 'Over The Counter',
+        packagePricePublic: 12.00,
+        packagePricePharmacy: 9.50,
+        unitPricePublic: 0.50,
+        unitPricePharmacy: 0.40,
+        agentName: 'Sample Agent',
+        manufacturerName: 'GSK',
+        includedInThiqaABM: 'Yes',
+        includedInBasic: 'Yes',
+        includedInABM1: 'Yes',
+        includedInABM7: 'Yes'
+      },
+      {
+        drugCode: 'SAMPLE-003',
+        packageName: 'GLUCOPHAGE',
+        genericName: 'Metformin',
+        strength: '500 mg',
+        dosageForm: 'Tablets',
+        packageSize: '60s',
+        status: 'Active',
+        dispenseMode: 'Prescription Only Medicine',
+        packagePricePublic: 35.00,
+        packagePricePharmacy: 28.00,
+        unitPricePublic: 0.58,
+        unitPricePharmacy: 0.47,
+        agentName: 'Sample Agent',
+        manufacturerName: 'Merck',
+        includedInThiqaABM: 'Yes',
+        includedInBasic: 'Yes',
+        includedInABM1: 'Yes',
+        includedInABM7: 'No'
+      }
+    ]
+    
+    for (const drug of sampleDrugs) {
+      await prisma.drug.create({
+        data: {
+          drugCode: drug.drugCode,
+          packageName: drug.packageName,
+          genericName: drug.genericName,
+          strength: drug.strength,
+          dosageForm: drug.dosageForm,
+          packageSize: drug.packageSize,
+          status: drug.status,
+          dispenseMode: drug.dispenseMode,
+          packagePricePublic: drug.packagePricePublic,
+          packagePricePharmacy: drug.packagePricePharmacy,
+        }
+      })
+    }
+  }
+  
+  if (seedDrugs && fs.existsSync(csvPath)) {
+    console.log('Parsing CSV file...')
+    const drugs = parseCSV(csvPath)
+    console.log(`Found ${drugs.length} drugs in CSV`)
+    
+    console.log('Clearing existing data...')
+    await prisma.$executeRawUnsafe(
+      'TRUNCATE TABLE "DrugSideEffect", "DrugInteraction", "ICD10Mapping", "Drug" RESTART IDENTITY CASCADE'
+    )
+    
+    const batchSize = 100
+    let inserted = 0
+    
+    for (let i = 0; i < drugs.length; i += batchSize) {
+      const batch = drugs.slice(i, i + batchSize)
+      
+      try {
+        await prisma.drug.createMany({
+          data: batch.map(drug => ({
+            id: drug.drugCode,
+            drugCode: drug.drugCode,
+            packageName: drug.packageName,
+            genericName: drug.genericName,
+            strength: drug.strength,
+            dosageForm: drug.dosageForm,
+            packageSize: drug.packageSize,
+            status: drug.status,
+            dispenseMode: drug.dispenseMode,
+            packagePricePublic: drug.packagePricePublic,
+            packagePricePharmacy: drug.packagePricePharmacy,
+            manufacturerName: drug.manufacturerName,
+            includedInABM7: drug.includedInABM7,
+          }))
+        })
+        
+        inserted += batch.length
+        console.log(`Inserted ${inserted}/${drugs.length} drugs...`)
+      } catch (error) {
+        console.error(`Error inserting batch ${i}:`, error)
+      }
+    }
+    
+    console.log(`Successfully imported ${inserted} drugs!`)
+    
+    const stats = await prisma.drug.aggregate({
+      _count: { id: true },
+      where: { status: 'Active' }
+    })
+    
+    const pricingStats = await prisma.drug.aggregate({
+      _count: { id: true },
+      where: {
+        packagePricePublic: { not: null }
+      }
+    })
+    
+    console.log('\nDatabase Statistics:')
+    console.log(`- Total active drugs: ${stats._count.id}`)
+    console.log(`- Drugs with pricing: ${pricingStats._count.id}`)
+  }
+
+  if (seedICD10) {
+    await importICD10Mappings()
+  }
+
+  if (seedIntelligence) {
+    await importInteractionsAndSideEffects()
+  }
+}
+
+main()
+  .catch((e) => {
+    console.error('Seed error:', e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })

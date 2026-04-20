@@ -1,0 +1,16 @@
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Home | AI Pharmacy Platform for UAE Clinicians",
+  description: "Z-AI Pharmacy Platform - Advanced AI-powered clinical decision support for UAE healthcare professionals. Access 21,885+ MOH-approved drugs, check interactions, verify pregnancy safety, and get AI-powered treatment recommendations.",
+  keywords: ["UAE pharmacy", "drug database", "AI clinical assistant", "drug interactions", "MOH drugs"],
+  openGraph: {
+    title: "Z-AI Pharmacy Platform | Home",
+    description: "AI-powered pharmaceutical intelligence for UAE clinicians",
+    url: "https://z-ai-pharmacy-platform.vercel.app",
+  },
+}
+
+export default function HomePage() {
+  // ... rest of existing code
+}

@@ -1,0 +1,21 @@
+{
+  "name": "DrugEye Intelligence",
+  "short_name": "DrugEye",
+  "description": "Next-Gen Pharmaceutical Intelligence Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/drugeye-new.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/drugeye-new.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

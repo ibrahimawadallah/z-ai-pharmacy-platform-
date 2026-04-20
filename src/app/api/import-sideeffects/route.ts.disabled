@@ -1,0 +1,177 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import fs from 'fs'
+import path from 'path'
+import { parse } from 'csv-parse/sync'
+
+function normalizeKey(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[_-]+/g, ' ')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function resolveExistingPath(candidates: string[]): string | null {
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate
+    }
+  }
+  return null
+}
+
+// GET status
+export async function GET(request: Request) {
+  try {
+    const count = await db.drugSideEffect.count()
+    return NextResponse.json({
+      success: true,
+      currentStats: {
+        totalSideEffects: count
+      }
+    })
+  } catch (error) {
+    return NextResponse.json({ success: false, error: String(error) }, { status: 500 })
+  }
+}
+
+// POST import side effects from SIDER TSV - Streamlined version
+export async function POST(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const batchSize = Math.min(parseInt(searchParams.get('batchSize') || '100'), 100) // Reduced default batch size
+  const offset = parseInt(searchParams.get('offset') || '0')
+  
+  try {
+    const tsvPath = resolveExistingPath([
+      path.join(process.cwd(), 'upload', 'sider-side-effects.tsv'),
+      path.join(process.cwd(), 'public', 'data', 'sider-side-effects.tsv')
+    ])
+    if (!tsvPath) {
+      return NextResponse.json({ success: false, error: 'Side effects file not found' }, { status: 404 })
+    }
+    
+    const countBefore = await db.drugSideEffect.count()
+    console.log(`[import-sideeffects] Starting import from offset ${offset}`)
+
+    // Stream file reading to reduce memory usage
+    const fileStream = fs.createReadStream(tsvPath, { encoding: 'utf-8' })
+    const headers = []
+    let isFirstLine = true
+    
+    // Process TSV in smaller chunks
+    const results = []
+    let processedCount = 0
+    let inserted = 0
+    let updated = 0
+    
+    for await (const chunk of readTSVChunks(fileStream, 100)) {
+      for (const record of chunk) {
+        if (isFirstLine) {
+          headers.push(...record.map((h: string) => h.trim()))
+          isFirstLine = false
+          continue
+        }
+        
+        processedCount++
+        
+        // Process record immediately instead of storing all
+        const drugName = normalizeKey(record.drugbank_name || '')
+        const sideEffect = record.side_effect_name
+        
+        if (!drugName || !sideEffect) {
+          continue
+        }
+        
+        // Simplified drug lookup - just use first match
+        const drug = await db.drug.findFirst({
+          where: {
+            OR: [
+              { genericName: drugName },
+              { packageName: drugName }
+            ]
+          },
+          select: { id: true }
+        })
+        
+        if (!drug) {
+          continue
+        }
+        
+        const frequency = (record.frequency_label || '').trim() || null
+        
+        // Check if side effect already exists
+        const existing = await db.drugSideEffect.findFirst({
+          where: { drugId: drug.id, sideEffect },
+          select: { id: true }
+        })
+
+        if (existing) {
+          await db.drugSideEffect.update({
+            where: { id: existing.id },
+            data: { frequency }
+          })
+          updated++
+        } else {
+          await db.drugSideEffect.create({
+            data: { drugId: drug.id, sideEffect, frequency }
+          })
+          inserted++
+        }
+        
+        // Yield progress every 50 records
+        if (processedCount % 50 === 0) {
+          console.log(`[import-sideeffects] Processed ${processedCount} records`)
+        }
+      }
+    }
+    
+    const countAfter = await db.drugSideEffect.count()
+    console.log(`[import-sideeffects] Complete. Total processed: ${processedCount}`)
+    
+    return NextResponse.json({
+      success: true,
+      message: `Imported ${processedCount} side effects`,
+      stats: {
+        processed: processedCount,
+        totalBefore: countBefore,
+        totalAfter: countAfter
+      }
+    })
+    
+  } catch (error) {
+    console.error('Import error:', error)
+    return NextResponse.json({ success: false, error: 'Import failed', details: String(error) }, { status: 500 })
+  }
+}
+
+// Helper function to read TSV in chunks
+async function* readTSVChunks(stream: fs.ReadStream, chunkSize: number): AsyncGenerator<string[]> {
+  return new Promise((resolve, reject) => {
+    const chunks: string[][] = []
+    let currentChunk: string[] = []
+    
+    stream.on('data', (data: string) => {
+      const lines = data.split('\n')
+      for (const line of lines) {
+        if (line.trim()) {
+          currentChunk.push(line)
+          if (currentChunk.length >= chunkSize) {
+            chunks.push([...currentChunk])
+            currentChunk = [line]
+          }
+        }
+      }
+    })
+    
+    stream.on('end', () => {
+      if (currentChunk.length > 0) {
+        chunks.push(currentChunk)
+      }
+      resolve(chunks)
+    })
+    
+    stream.on('error', reject)
+  })
+}
