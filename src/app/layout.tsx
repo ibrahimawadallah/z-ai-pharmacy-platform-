@@ -54,11 +54,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: {
-    icon: "/drugeye-new.png",
-    apple: "/drugeye-new.png",
-    shortcut: "/drugeye-new.png",
-  },
   verification: {
     google: "your-google-verification-code",
   },
@@ -98,7 +93,7 @@ import { AppProvider } from "@/providers/AppProvider";
 import type { Viewport } from 'next'
 
 export const viewport: Viewport = {
-  themeColor: "#2563eb",
+  themeColor: "#0f766e",
   width: 'device-width',
   initialScale: 1,
 }

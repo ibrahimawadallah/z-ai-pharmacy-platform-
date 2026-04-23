@@ -1,107 +1,123 @@
 'use client'
 
-import React from 'react'
+import * as React from 'react'
+import { LogoMark, type LogoMarkTone } from './LogoMark'
 
 interface DrugEyeLogoProps {
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   showIcon?: boolean
+  showWordmark?: boolean
+  /** Stack the wordmark + tagline below the mark instead of beside it. */
+  layout?: 'horizontal' | 'vertical'
+  /** Show the "Intelligence" tagline under the wordmark. */
+  showTagline?: boolean
   className?: string
-  variant?: 'default' | 'glass'
+  variant?: 'default' | 'glass' | 'mono-light' | 'mono-dark'
 }
 
-export function DrugEyeLogo({ size = 'md', showIcon = true, className = '', variant = 'glass' }: DrugEyeLogoProps) {
-  const sizes = {
-    sm: { text: 'text-lg', icon: 'w-6 h-6' },
-    md: { text: 'text-2xl', icon: 'w-8 h-8' },
-    lg: { text: 'text-4xl', icon: 'w-12 h-12' }
-  }
+const sizeMap = {
+  sm: {
+    text: 'text-lg',
+    tagline: 'text-[0.7rem] tracking-[0.18em]',
+    icon: 'w-9 h-6',
+    gap: 'gap-2',
+    stackGap: 'gap-1.5',
+  },
+  md: {
+    text: 'text-2xl',
+    tagline: 'text-[0.8rem] tracking-[0.2em]',
+    icon: 'w-12 h-8',
+    gap: 'gap-2.5',
+    stackGap: 'gap-2',
+  },
+  lg: {
+    text: 'text-4xl',
+    tagline: 'text-sm tracking-[0.22em]',
+    icon: 'w-20 h-[3.3rem]',
+    gap: 'gap-4',
+    stackGap: 'gap-3',
+  },
+  xl: {
+    text: 'text-6xl',
+    tagline: 'text-lg tracking-[0.24em]',
+    icon: 'w-32 h-[5.3rem]',
+    gap: 'gap-5',
+    stackGap: 'gap-4',
+  },
+} as const
 
-  if (variant === 'glass') {
-    return (
-      <div className={`flex items-center gap-2 ${className}`}>
-        {showIcon && (
-          <div
-            className={`${sizes[size].icon} relative rounded-xl flex items-center justify-center overflow-hidden`}
-            style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(79, 209, 197, 0.3)',
-              boxShadow: '0 0 20px rgba(79, 209, 197, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05)'
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-blue-600/20" />
-            <svg viewBox="0 0 24 24" className="w-3/4 h-3/4 text-white relative z-10" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
-              <circle cx="12" cy="12" r="3" fill="currentColor" />
-              <path d="M4 8c2-2 5-3 8-3s6 1 8 3" strokeLinecap="round" />
-            </svg>
-          </div>
-        )}
-        
-        <div className={`font-black italic tracking-tighter ${sizes[size].text} flex items-baseline`}>
-          <span className="text-white">Drug</span>
-          <span className="relative inline-flex items-baseline">
-            <span className="relative text-white">
-              e
-              <svg className="absolute -top-1 left-0 w-full h-2" viewBox="0 0 10 4" preserveAspectRatio="none">
-                <path d="M0 3c2-2 3-2 5-2s3 0 5 2" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" className="text-cyan-400"/>
-              </svg>
-            </span>
-            <span className="relative text-white">
-              y
-              <svg className="absolute -top-1 left-0 w-full h-2" viewBox="0 0 10 4" preserveAspectRatio="none">
-                <path d="M0 3c2-2 3-2 5-2s3 0 5 2" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" className="text-cyan-400"/>
-              </svg>
-            </span>
-            <span className="relative text-white">
-              e
-              <svg className="absolute -top-1 left-0 w-full h-2" viewBox="0 0 10 4" preserveAspectRatio="none">
-                <path d="M0 3c2-2 3-2 5-2s3 0 5 2" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" className="text-cyan-400"/>
-              </svg>
-            </span>
-          </span>
-        </div>
-      </div>
-    )
-  }
+export function DrugEyeLogo({
+  size = 'md',
+  showIcon = true,
+  showWordmark = true,
+  showTagline = false,
+  layout = 'horizontal',
+  className = '',
+  variant = 'default',
+}: DrugEyeLogoProps) {
+  const s = sizeMap[size]
+
+  const tone: LogoMarkTone =
+    variant === 'mono-light'
+      ? 'mono-light'
+      : variant === 'mono-dark'
+        ? 'mono-dark'
+        : 'brand'
+
+  const isGlass = variant === 'glass'
+  const isMonoDark = variant === 'mono-dark' || isGlass
+  const isMonoLight = variant === 'mono-light'
+
+  const drugTone = isMonoLight
+    ? 'text-slate-900'
+    : isMonoDark
+      ? 'text-white'
+      : 'text-teal-800'
+  const eyeTone = isMonoLight
+    ? 'text-slate-900'
+    : isMonoDark
+      ? 'text-cyan-200'
+      : 'text-teal-500'
+  const taglineTone = isMonoLight
+    ? 'text-slate-700'
+    : isMonoDark
+      ? 'text-orange-300'
+      : 'text-orange-500'
+
+  const containerLayout =
+    layout === 'vertical'
+      ? `flex flex-col items-center ${s.stackGap}`
+      : `inline-flex items-center ${s.gap}`
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`${containerLayout} ${className}`}>
       {showIcon && (
+        <LogoMark tone={tone} className={`${s.icon} shrink-0`} />
+      )}
+
+      {showWordmark && (
         <div
-          className={`${sizes[size].icon} bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.4)]`}
+          className={
+            layout === 'vertical'
+              ? 'flex flex-col items-center'
+              : 'flex flex-col'
+          }
         >
-          <svg viewBox="0 0 24 24" className="w-3/4 h-3/4 text-white" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
-            <circle cx="12" cy="12" r="3" fill="currentColor" />
-            <path d="M4 8c2-2 5-3 8-3s6 1 8 3" strokeLinecap="round" />
-          </svg>
+          <span
+            className={`font-extrabold tracking-tight leading-none select-none ${s.text}`}
+          >
+            <span className={drugTone}>Drug</span>
+            <span className={eyeTone}>Eye</span>
+          </span>
+          {showTagline && (
+            <span
+              className={`mt-1 font-semibold uppercase ${s.tagline} ${taglineTone}`}
+            >
+              Intelligence
+            </span>
+          )}
         </div>
       )}
-      
-      <div className={`font-black italic tracking-tighter ${sizes[size].text} flex items-baseline`}>
-        <span>Drug</span>
-        <span className="relative inline-flex items-baseline">
-          <span className="relative">
-            e
-            <svg className="absolute -top-1 left-0 w-full h-2" viewBox="0 0 10 4" preserveAspectRatio="none">
-              <path d="M0 3c2-2 3-2 5-2s3 0 5 2" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" className="text-cyan-400"/>
-            </svg>
-          </span>
-          <span className="relative">
-            y
-            <svg className="absolute -top-1 left-0 w-full h-2" viewBox="0 0 10 4" preserveAspectRatio="none">
-              <path d="M0 3c2-2 3-2 5-2s3 0 5 2" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" className="text-cyan-400"/>
-            </svg>
-          </span>
-          <span className="relative">
-            e
-            <svg className="absolute -top-1 left-0 w-full h-2" viewBox="0 0 10 4" preserveAspectRatio="none">
-              <path d="M0 3c2-2 3-2 5-2s3 0 5 2" stroke="currentColor" strokeWidth="0.8" fill="none" strokeLinecap="round" className="text-cyan-400"/>
-            </svg>
-          </span>
-        </span>
-      </div>
     </div>
   )
 }

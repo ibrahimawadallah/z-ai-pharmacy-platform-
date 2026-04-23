@@ -1,34 +1,27 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-
-export const alt = 'DrugEye Intelligence - AI Clinical Decision Support'
-export const size = {
-  width: 1200,
-  height: 630,
-}
-
+export const size = { width: 180, height: 180 }
 export const contentType = 'image/png'
 
-export default async function Image() {
+export default function AppleIcon() {
   return new ImageResponse(
     (
       <div
         style={{
-          height: '100%',
           width: '100%',
+          height: '100%',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           background:
-            'linear-gradient(135deg, #f8fafc 0%, #f0fdfa 60%, #ccfbf1 100%)',
-          padding: '80px',
+            'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 60%, #5eead4 100%)',
+          borderRadius: 40,
         }}
       >
         <svg
-          width="360"
-          height="240"
+          width="150"
+          height="100"
           viewBox="0 0 240 160"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -70,49 +63,8 @@ export default async function Image() {
             />
           </g>
         </svg>
-
-        <div
-          style={{
-            display: 'flex',
-            fontSize: '120px',
-            fontWeight: 800,
-            letterSpacing: '-0.03em',
-            lineHeight: 1,
-            marginTop: '24px',
-          }}
-        >
-          <span style={{ color: '#115e59' }}>Drug</span>
-          <span style={{ color: '#14b8a6' }}>Eye</span>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            fontSize: '38px',
-            fontWeight: 600,
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: '#ea580c',
-            marginTop: '8px',
-          }}
-        >
-          Intelligence
-        </div>
-        <p
-          style={{
-            fontSize: '28px',
-            color: '#475569',
-            textAlign: 'center',
-            maxWidth: '900px',
-            lineHeight: 1.3,
-            marginTop: '32px',
-          }}
-        >
-          AI-Powered Clinical Decision Support for UAE Healthcare Professionals
-        </p>
       </div>
     ),
-    {
-      ...size,
-    },
+    { ...size },
   )
 }
