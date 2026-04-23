@@ -169,10 +169,11 @@ const DefaultErrorFallback: React.FC<{ error?: Error; reset: () => void }> = ({ 
               </div>
             </Button>
           </div>
-        </PremiumGlassCard>
+        </div>
+      </PremiumGlassCard>
     </div>
   </div>
-)
+  )
 }
 
 // Async Error Boundary for handling async errors

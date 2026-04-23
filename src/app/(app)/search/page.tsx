@@ -124,15 +124,13 @@ export default function SearchPage() {
         console.error('Autocomplete error:', e)
       }
     }
-    const timer = setTimeout(fetchSuggestions, 250)
+    const timer = setTimeout(fetchSuggestions, 100)
     return () => clearTimeout(timer)
   }, [searchTerm])
 
   useEffect(() => {
-    if (searchTerm && (searchMode === 'drug' || searchMode === 'icd10')) {
-      searchDrugs()
-    }
-  }, [searchTerm, searchMode])
+    // Removed auto-search on type - only search on button click or Enter
+  }, [])
 
   return (
     <div className="space-y-6">

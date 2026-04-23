@@ -255,7 +255,9 @@ model DrugInteraction {
   interactionType   String?
   description       String?
   management        String?
+  mechanism         String?
   evidence          String?
+  source            String?
   createdAt         DateTime @default(now())
   drug              Drug     @relation(fields: [drugId], references: [id])
 

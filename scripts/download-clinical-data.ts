@@ -1,3 +1,7 @@
+// Manually set environment variables to bypass dotenv issues
+process.env.DATABASE_URL = "postgresql://neondb_owner:npg_QNEzlKjg4J3p@ep-shiny-king-adsne10e-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&pool_timeout=10&connection_limit=1"
+process.env.DIRECT_URL = "postgresql://neondb_owner:npg_QNEzlKjg4J3p@ep-shiny-king-adsne10e-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
 import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
 
@@ -98,8 +102,8 @@ async function populateFromFavoritesList() {
 async function supplementWithExternalData() {
   console.log('Supplementing database with clinical data...')
   
-  // Load external data service
-  const { supplementDrugData } = await import('./src/lib/external-data-service')
+   // Load external data service
+   const { supplementDrugData } = await import('../src/lib/external-data-service')
 
   // Get drugs missing pregnancy data
   const drugs = await db.drug.findMany({

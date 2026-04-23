@@ -1,0 +1,3 @@
+// vitest setup file
+// In vitest 3.x, globals are available by default in test files
+import '@testing-library/jest-dom'

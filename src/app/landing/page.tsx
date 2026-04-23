@@ -4,11 +4,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { DrugEyeLogo } from '@/components/logo/DrugEyeLogo';
 import { 
-  Pill, 
-  MessageCircle, 
   Activity, 
-  Truck, 
   FileText, 
   Sparkles,
   Bell,
@@ -17,10 +15,10 @@ import {
   Stethoscope,
   Shield,
   Brain,
-  Calendar,
   ChevronLeft,
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  Search
 } from 'lucide-react';
 
 const features = [
@@ -32,38 +30,38 @@ const features = [
     color: 'bg-cyan-100 text-cyan-600'
   },
   {
-    icon: Activity,
-    title: 'Health Tracking',
-    desc: 'Monitor your vital signs daily with advanced analytics and predictive health insights.',
-    href: '/dashboard',
+    icon: Search,
+    title: 'Drug Search',
+    desc: 'Search 19,000+ UAE-approved medications with detailed information on dosages, interactions, and side effects.',
+    href: '/search',
     color: 'bg-emerald-100 text-emerald-600'
   },
   {
-    icon: Pill,
-    title: 'Smart Pharmacy',
-    desc: 'Order medications with ease from UAE\'s largest verified pharmaceutical database.',
-    href: '/shop',
+    icon: Activity,
+    title: 'Drug Interactions',
+    desc: 'Check potential interactions between multiple medications instantly with AI-powered analysis.',
+    href: '/interactions',
     color: 'bg-violet-100 text-violet-600'
   },
   {
-    icon: Truck,
-    title: 'Fast Delivery',
-    desc: 'Same-day delivery to your door with real-time tracking and temperature-controlled shipping.',
-    href: '/delivery',
+    icon: FileText,
+    title: 'Health Reports',
+    desc: 'Generate comprehensive health reports with drug analysis and personalized recommendations.',
+    href: '/reports',
     color: 'bg-amber-100 text-amber-600'
   },
   {
-    icon: FileText,
-    title: 'Prescriptions',
-    desc: 'Manage all your prescriptions digitally with automatic refill reminders and pharmacy synchronization.',
-    href: '/prescriptions',
+    icon: Heart,
+    title: 'Favorites',
+    desc: 'Save and organize your frequently used medications for quick access.',
+    href: '/favorites',
     color: 'bg-rose-100 text-rose-600'
   },
   {
-    icon: Heart,
-    title: 'Health Insights',
-    desc: 'Personalized health analytics with comprehensive reports and trend analysis.',
-    href: '/analytics',
+    icon: Bell,
+    title: 'Safety Alerts',
+    desc: 'Stay updated with the latest drug safety warnings and recalls from UAE health authorities.',
+    href: '/alerts',
     color: 'bg-pink-100 text-pink-600'
   }
 ]
@@ -95,18 +93,15 @@ export default function LandingPage() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                <Pill className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">DrugEye</span>
+              <DrugEyeLogo size="sm" variant="default" />
             </Link>
             
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
-              <Link href="/search" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Drug Search</Link>
+              <Link href="/consultation" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Consultation</Link>
+              <Link href="/search" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Drugs</Link>
               <Link href="/interactions" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Interactions</Link>
-              <Link href="/patients" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Patients</Link>
-              <Link href="/courses" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Courses</Link>
+              <Link href="/reports" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Reports</Link>
             </div>
 
             {/* Right Side */}
@@ -277,10 +272,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center">
-                <Pill className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-bold text-gray-900">DrugEye</span>
+              <DrugEyeLogo size="sm" variant="default" />
             </div>
             <div className="flex items-center gap-8 text-sm text-gray-500">
               <Link href="/privacy" className="hover:text-cyan-600 transition-colors">Privacy Policy</Link>

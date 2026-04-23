@@ -1,0 +1,185 @@
+process.env.DATABASE_URL = "postgresql://neondb_owner:npg_QNEzlKjg4J3p@ep-shiny-king-adsne10e-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&pool_timeout=10&connection_limit=1"
+
+import { db } from '@/lib/db'
+
+interface InteractionDetails {
+  severity: string
+  description: string
+  mechanism: string
+  recommendation: string
+}
+
+type InteractionDatabase = Record<string, Record<string, InteractionDetails>>
+
+const drugInteractionDatabase: InteractionDatabase = {
+  metformin: {
+    lisinopril: { severity: 'mild', description: 'May cause hypoglycemia. Monitor blood glucose levels closely.', mechanism: 'Additive hypoglycemic effect', recommendation: 'Monitor blood glucose, adjust doses as needed' },
+    insulin: { severity: 'moderate', description: 'Increased risk of hypoglycemia. Dose adjustments may be needed.', mechanism: 'Additive hypoglycemic effect', recommendation: 'Reduce insulin dose by 10-20% when initiating metformin' },
+    alcohol: { severity: 'severe', description: 'May cause lactic acidosis. Avoid alcohol while taking metformin.', mechanism: 'Increased lactate production', recommendation: 'Avoid alcohol consumption' },
+    contrast_dye: { severity: 'severe', description: 'Risk of lactic acidosis. Hold metformin before and after contrast procedures.', mechanism: 'Renal impairment increases metformin levels', recommendation: 'Hold 48 hours before and after contrast studies' },
+  },
+  aspirin: {
+    warfarin: { severity: 'severe', description: 'Increased risk of bleeding. Avoid combination if possible.', mechanism: 'Additive anticoagulant and antiplatelet effects', recommendation: 'Consider alternatives or use lowest effective aspirin dose with close INR monitoring' },
+    ibuprofen: { severity: 'moderate', description: 'May decrease cardioprotective effects of aspirin and increase GI bleeding risk.', mechanism: 'Competitive inhibition of COX-1', recommendation: 'Take aspirin at least 2 hours before ibuprofen' },
+    clopidogrel: { severity: 'mild', description: 'Increased antiplatelet effect. Monitor for bleeding.', mechanism: 'Additive antiplatelet effects', recommendation: 'Use combination only when clearly indicated, monitor for bleeding' },
+    prednisone: { severity: 'moderate', description: 'Increased risk of GI bleeding and ulceration.', mechanism: 'Both drugs irritate GI mucosa', recommendation: 'Consider PPI prophylaxis' },
+  },
+  lisinopril: {
+    potassium: { severity: 'moderate', description: 'May cause hyperkalemia. Monitor potassium levels.', mechanism: 'ACE inhibitors reduce potassium excretion', recommendation: 'Monitor serum potassium, especially in renal impairment' },
+    spironolactone: { severity: 'moderate', description: 'Increased risk of hyperkalemia. Monitor potassium levels closely.', mechanism: 'Both drugs increase serum potassium', recommendation: 'Monitor potassium levels weekly initially' },
+    nsaids: { severity: 'moderate', description: 'May reduce antihypertensive effect and increase risk of renal impairment.', mechanism: 'NSAIDs inhibit renal prostaglandin synthesis', recommendation: 'Monitor blood pressure and renal function' },
+    lithium: { severity: 'moderate', description: 'May increase lithium levels and toxicity risk.', mechanism: 'ACE inhibitors reduce lithium clearance', recommendation: 'Monitor lithium levels closely' },
+  },
+  atorvastatin: {
+    grapefruit: { severity: 'moderate', description: 'May increase atorvastatin levels up to 250%. Avoid grapefruit juice.', mechanism: 'Inhibition of CYP3A4 metabolism', recommendation: 'Avoid grapefruit and grapefruit juice' },
+    clarithromycin: { severity: 'severe', description: 'May increase risk of myopathy and rhabdomyolysis.', mechanism: 'CYP3A4 inhibition increases statin levels', recommendation: 'Consider alternative antibiotic or temporarily hold statin' },
+    cyclosporine: { severity: 'severe', description: 'Dramatically increased risk of myopathy and rhabdomyolysis.', mechanism: 'CYP3A4 inhibition and transporter inhibition', recommendation: 'Avoid combination; use alternative statin if needed' },
+    gemfibrozil: { severity: 'severe', description: 'Increased risk of severe myopathy and rhabdomyolysis.', mechanism: 'Multiple mechanisms increase statin levels', recommendation: 'Avoid combination; consider fenofibrate if fibrate needed' },
+  },
+  warfarin: {
+    vitamin_k: { severity: 'moderate', description: 'May decrease warfarin effectiveness. Maintain consistent vitamin K intake.', mechanism: 'Vitamin K antagonizes warfarin effect', recommendation: 'Maintain consistent dietary vitamin K intake' },
+    amiodarone: { severity: 'severe', description: 'Significantly increases warfarin effect. INR may increase by 50-100%.', mechanism: 'CYP2C9 inhibition', recommendation: 'Reduce warfarin dose by 30-50%, monitor INR closely' },
+    nsaids: { severity: 'severe', description: 'Increased risk of GI bleeding. Relative risk increases 13-fold.', mechanism: 'Additive anticoagulant effect and GI toxicity', recommendation: 'Avoid combination; use acetaminophen instead' },
+    metronidazole: { severity: 'severe', description: 'May increase warfarin effect significantly.', mechanism: 'CYP2C9 inhibition', recommendation: 'Reduce warfarin dose by 20-30%, monitor INR every 2-3 days' },
+    fluconazole: { severity: 'severe', description: 'May double warfarin effect.', mechanism: 'CYP2C9 inhibition', recommendation: 'Reduce warfarin dose by 25-50%, monitor INR closely' },
+  },
+  levothyroxine: {
+    calcium: { severity: 'moderate', description: 'May decrease levothyroxine absorption by up to 40%.', mechanism: 'Chelation in GI tract', recommendation: 'Separate administration by at least 4 hours' },
+    iron: { severity: 'moderate', description: 'May decrease levothyroxine absorption significantly.', mechanism: 'Chelation in GI tract', recommendation: 'Separate administration by at least 4 hours' },
+    antacids: { severity: 'moderate', description: 'May decrease levothyroxine absorption.', mechanism: 'Altered gastric pH', recommendation: 'Take levothyroxine on empty stomach, separate from antacids by 4 hours' },
+    proton_pump_inhibitors: { severity: 'mild', description: 'May slightly decrease levothyroxine absorption.', mechanism: 'Reduced gastric acidity', recommendation: 'Monitor TSH levels, may need dose increase' },
+  },
+  simvastatin: {
+    grapefruit: { severity: 'severe', description: 'Significantly increases simvastatin levels (up to 16-fold). Avoid completely.', mechanism: 'Inhibition of intestinal CYP3A4', recommendation: 'Avoid all grapefruit products' },
+    warfarin: { severity: 'moderate', description: 'May increase anticoagulant effect.', mechanism: 'Metabolic interference', recommendation: 'Monitor INR when starting or stopping simvastatin' },
+    amlodipine: { severity: 'moderate', description: 'Increases simvastatin levels. Limit simvastatin to 20mg daily.', mechanism: 'CYP3A4 inhibition', recommendation: 'Do not exceed simvastatin 20mg daily with amlodipine' },
+  },
+  prednisone: {
+    nsaids: { severity: 'moderate', description: 'Significantly increased risk of GI bleeding and ulceration.', mechanism: 'Both drugs damage GI mucosa', recommendation: 'Consider PPI prophylaxis, use lowest effective doses' },
+    warfarin: { severity: 'moderate', description: 'May increase anticoagulant effect and bleeding risk.', mechanism: 'Multiple mechanisms', recommendation: 'Monitor INR more frequently' },
+    live_vaccines: { severity: 'severe', description: 'May cause severe infections. Contraindicated.', mechanism: 'Immunosuppression', recommendation: 'Avoid live vaccines while on prednisone >=20mg daily' },
+  },
+  furosemide: {
+    digoxin: { severity: 'moderate', description: 'May increase digoxin toxicity due to hypokalemia.', mechanism: 'Potassium depletion enhances digoxin binding', recommendation: 'Monitor potassium and digoxin levels closely' },
+    lithium: { severity: 'moderate', description: 'May increase lithium levels significantly.', mechanism: 'Reduced renal clearance', recommendation: 'Monitor lithium levels, may need dose reduction' },
+    aminoglycosides: { severity: 'moderate', description: 'Increased risk of ototoxicity and nephrotoxicity.', mechanism: 'Additive toxicity', recommendation: 'Monitor renal function and hearing' },
+  },
+  tramadol: {
+    sertraline: { severity: 'moderate', description: 'Increased risk of serotonin syndrome.', mechanism: 'Additive serotonergic activity', recommendation: 'Monitor for agitation, confusion, rapid heart rate, high blood pressure' },
+    warfarin: { severity: 'moderate', description: 'May increase anticoagulant effect.', mechanism: 'Unknown', recommendation: 'Monitor INR closely' },
+    ondansetron: { severity: 'moderate', description: 'Increased risk of serotonin syndrome.', mechanism: 'Additive serotonergic activity', recommendation: 'Use with caution, monitor for serotonin syndrome' },
+  },
+  sertraline: {
+    tramadol: { severity: 'moderate', description: 'Increased risk of serotonin syndrome.', mechanism: 'Additive serotonergic activity', recommendation: 'Use combination with caution, educate patient about symptoms' },
+    warfarin: { severity: 'moderate', description: 'May increase bleeding risk.', mechanism: 'Inhibition of platelet function', recommendation: 'Monitor INR and for signs of bleeding' },
+    nsaids: { severity: 'moderate', description: 'Increased bleeding risk.', mechanism: 'SSRIs inhibit platelet function', recommendation: 'Monitor for unusual bleeding or bruising' },
+  },
+  pantoprazole: {
+    clopidogrel: { severity: 'moderate', description: 'May decrease effectiveness of clopidogrel.', mechanism: 'CYP2C19 inhibition', recommendation: 'Consider alternative PPI (pantoprazole least affected) or H2 blocker' },
+    methotrexate: { severity: 'moderate', description: 'May increase methotrexate levels.', mechanism: 'Reduced renal clearance', recommendation: 'Monitor methotrexate levels and toxicity' },
+  },
+  omeprazole: {
+    clopidogrel: { severity: 'severe', description: 'Significantly reduces antiplatelet effect of clopidogrel.', mechanism: 'CYP2C19 inhibition', recommendation: 'Avoid combination; use alternative PPI or H2 blocker' },
+  },
+  ciprofloxacin: {
+    warfarin: { severity: 'severe', description: 'May significantly increase warfarin effect.', mechanism: 'CYP metabolism inhibition', recommendation: 'Monitor INR closely, may need dose reduction' },
+    theophylline: { severity: 'severe', description: 'May increase theophylline levels causing toxicity.', mechanism: 'CYP1A2 inhibition', recommendation: 'Monitor theophylline levels, reduce dose by 50%' },
+  },
+  azithromycin: {
+    warfarin: { severity: 'moderate', description: 'May increase warfarin effect.', mechanism: 'Unknown', recommendation: 'Monitor INR' },
+    simvastatin: { severity: 'moderate', description: 'Increased risk of myopathy.', mechanism: 'Unknown', recommendation: 'Use with caution, educate about muscle pain' },
+  },
+  rivaroxaban: {
+    aspirin: { severity: 'moderate', description: 'Increased bleeding risk.', mechanism: 'Additive anticoagulant and antiplatelet effects', recommendation: 'Use combination only when clearly indicated' },
+    nsaids: { severity: 'severe', description: 'Significantly increased bleeding risk.', mechanism: 'Additive effects', recommendation: 'Avoid combination if possible' },
+  },
+  apixaban: {
+    ketoconazole: { severity: 'severe', description: 'Significantly increases apixaban levels.', mechanism: 'CYP3A4 and P-gp inhibition', recommendation: 'Reduce apixaban dose by 50%' },
+  },
+  methotrexate: {
+    nsaids: { severity: 'severe', description: 'May increase methotrexate toxicity.', mechanism: 'Reduced renal clearance', recommendation: 'Avoid combination; use acetaminophen instead' },
+    trimethoprim: { severity: 'severe', description: 'Increased risk of bone marrow suppression.', mechanism: 'Additive antifolate effect', recommendation: 'Avoid combination' },
+  },
+  amlodipine: {
+    simvastatin: { severity: 'moderate', description: 'Increases simvastatin levels.', mechanism: 'CYP3A4 inhibition', recommendation: 'Limit simvastatin to 20mg daily' },
+    grapefruit: { severity: 'mild', description: 'May increase amlodipine levels.', mechanism: 'CYP3A4 inhibition', recommendation: 'Avoid large amounts of grapefruit' },
+  },
+  digoxin: {
+    amiodarone: { severity: 'severe', description: 'May double digoxin levels.', mechanism: 'P-glycoprotein inhibition', recommendation: 'Reduce digoxin dose by 50%' },
+    verapamil: { severity: 'severe', description: 'Increases digoxin levels.', mechanism: 'P-glycoprotein inhibition', recommendation: 'Reduce digoxin dose, monitor levels' },
+  },
+}
+
+async function importInteractions() {
+  console.log('Starting drug interactions import...')
+  
+  let importedCount = 0
+  let skippedCount = 0
+  
+  for (const [drug1, interactions] of Object.entries(drugInteractionDatabase)) {
+    const drugs1 = await db.drug.findMany({
+      where: {
+        OR: [
+          { genericName: { equals: drug1, mode: 'insensitive' } },
+          { packageName: { contains: drug1, mode: 'insensitive' } }
+        ]
+      }
+    })
+    
+    if (drugs1.length === 0) {
+      console.log(`Drug not found: ${drug1}`)
+      skippedCount++
+      continue
+    }
+    
+    for (const [drug2, details] of Object.entries(interactions)) {
+      const drugs2 = await db.drug.findMany({
+        where: {
+          OR: [
+            { genericName: { equals: drug2, mode: 'insensitive' } },
+            { packageName: { contains: drug2, mode: 'insensitive' } }
+          ]
+        }
+      })
+      
+      if (drugs2.length === 0) {
+        continue
+      }
+      
+      for (const d1 of drugs1) {
+        for (const d2 of drugs2) {
+          const existing = await db.drugInteraction.findFirst({
+            where: {
+              drugId: d1.id,
+              secondaryDrugId: d2.id
+            }
+          })
+          
+          if (!existing) {
+            await db.drugInteraction.create({
+              data: {
+                drugId: d1.id,
+                secondaryDrugId: d2.id,
+                severity: details.severity,
+                description: details.description,
+                mechanism: details.mechanism,
+                management: details.recommendation,
+                source: 'imported'
+              }
+            })
+            importedCount++
+          }
+        }
+      }
+    }
+  }
+  
+  console.log(`Import complete: ${importedCount} interactions imported, ${skippedCount} drugs not found`)
+}
+
+importInteractions()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })

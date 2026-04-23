@@ -8,11 +8,12 @@ import { useTheme } from 'next-themes'
 // framer-motion removed for SSR compatibility
 import { 
   Shield, Languages, Moon, Sun, User, LogIn, Info,
-  Search, AlertTriangle, Users, TrendingDown, FileWarning, 
-  Microscope, GraduationCap, Sparkles, Pill
+  Search, Settings, HelpCircle, FileText, Sparkles,
+  AlertTriangle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { AuthModal } from '@/components/auth/auth-modal'
@@ -21,8 +22,9 @@ import { ClinicalAIChat } from '@/components/ai/ClinicalAIChat'
 import { DrugEyeLogo } from '@/components/logo/DrugEyeLogo'
 
 const navItems = [
-  { id: 'search', label: 'Search', labelAr: 'بحث', icon: Search, href: '/search' },
-  { id: 'interactions', label: 'Interactions', labelAr: 'تداخلات', icon: AlertTriangle, href: '/interactions' },
+  { id: 'settings', label: 'Settings', labelAr: 'الإعدادات', icon: Settings, href: '/settings' },
+  { id: 'support', label: 'Support', labelAr: 'الدعم', icon: HelpCircle, href: '/support' },
+  { id: 'about', label: 'About', labelAr: 'حول', icon: FileText, href: '/about' },
 ]
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -101,6 +103,37 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <span className="text-[10px] uppercase font-bold tracking-widest text-cyan-400">APPROVED</span>
               </div>
             </Link>
+            
+            {/* Global Search Bar */}
+            <div className="flex-1 max-w-xl mx-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search drugs, interactions, warnings..." 
+                  className="w-full pl-10 h-10 bg-muted/50 border-border rounded-xl text-sm"
+                  onFocus={() => window.location.href = '/search'}
+                  readOnly
+                />
+              </div>
+            </div>
+            
+            {/* Navigation Links */}
+            <nav className="flex items-center gap-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    pathname === item.href 
+                      ? 'bg-primary/10 text-primary' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <item.icon className="w-4 h-4" />
+                  <span className="hidden md:inline">{language === 'en' ? item.label : item.labelAr}</span>
+                </Link>
+              ))}
+            </nav>
             
             <div className="flex items-center gap-3">
               <Button 
@@ -181,30 +214,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-8 py-8 flex-1 flex flex-col">
-        {/* Sub-navigation Tabs */}
-        <div className="flex gap-2 mb-8 overflow-x-auto">
-          {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href)
-            return (
-              <div
-                key={item.id}
-              >
-                <Link 
-                  href={item.href} 
-                  className={`flex items-center gap-2 px-5 py-3 rounded-xl transition-all text-xs font-bold uppercase tracking-wider whitespace-nowrap hover:scale-105 active:scale-95 ${
-                    isActive 
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25' 
-                      : 'bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted border border-border'
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span>{language === 'en' ? item.label : item.labelAr}</span>
-                </Link>
-              </div>
-            )
-          })}
-        </div>
-
         <div className="flex-1">
           {children}
         </div>
@@ -223,11 +232,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             
             <div className="flex flex-wrap justify-center gap-6">
               {[
-                { href: '/pricing', label: 'Pricing' },
-                { href: '/safety', label: 'Safety' },
-                { href: '/privacy', label: 'Privacy' },
-                { href: '/compliance', label: 'Compliance' },
-                { href: '/support', label: 'Support' }
+                { href: '/settings', label: 'Settings' },
+                { href: '/support', label: 'Support' },
+                { href: '/about', label: 'About' },
               ].map((link) => (
                 <Link 
                   key={link.href}
@@ -237,6 +244,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   {link.label}
                 </Link>
               ))}
+              {status === 'authenticated' && (
+                <Link 
+                  href="/settings" 
+                  className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
+                  My Account
+                </Link>
+              )}
             </div>
             
             <div className="flex items-center gap-3">

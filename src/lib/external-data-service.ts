@@ -36,7 +36,6 @@ const FALLBACK_DATA: Record<string, ExternalDrugData> = {
   'Prednisolone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use lowest effective dose.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Inflammation', source: 'FDA' },
   'Ventolin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', source: 'FDA' },
   'Salbutamol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', source: 'FDA' },
-  'Augmentin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for most infections.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, source: 'FDA' },
   'Glucophage': { pregnancyCategory: 'B', pregnancyPrecautions: 'Continue for diabetes control.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 20, source: 'FDA' },
   'Novonorm': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks.', breastfeedingSafety: 'Excreted in milk.', g6pdSafety: 'Safe', source: 'FDA' },
   'Diamicron': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only in 2nd/3rd trimester if needed.', breastfeedingSafety: 'Not recommended.', g6pdSafety: 'Safe', source: 'FDA' },
@@ -143,3 +142,5 @@ export function getDataSourceLabel(data: ExternalDrugData): string {
 export function isDataSupplemented(data: ExternalDrugData): boolean {
   return !!data.source
 }
+
+export { FALLBACK_DATA }

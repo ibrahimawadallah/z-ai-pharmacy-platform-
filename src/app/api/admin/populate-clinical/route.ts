@@ -1,69 +1,290 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getExternalDrugData } from '@/lib/external-data-service'
 
-// API route to populate database with clinical data
-// POST /api/admin/populate-clinical
-// Run once to download and save data for offline use
+const COMPREHENSIVE_CLINICAL_DATA: Record<string, any> = {
+  // Pain & Fever
+  'paracetamol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever' },
+  'panadol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever' },
+  'adol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever' },
+  'calpol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever' },
+  'ibuprofen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Caution', g6pdWarning: 'May trigger hemolysis', baseDoseMgPerKg: 10, baseDoseIndication: 'Pain/Inflammation' },
+  'brufen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Caution', baseDoseMgPerKg: 10, baseDoseIndication: 'Pain/Inflammation' },
+  'nurofen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Caution', baseDoseMgPerKg: 10, baseDoseIndication: 'Pain/Inflammation' },
+  'advil': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Caution', baseDoseMgPerKg: 10, baseDoseIndication: 'Pain/Inflammation' },
+  'diclofenac': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Pain/Inflammation' },
+  'cataflam': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Pain/Inflammation' },
+  'voltaren': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'aspirin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible in low doses', g6pdSafety: 'Caution', baseDoseMgPerKg: 10, baseDoseIndication: 'Pain/Antiplatelet' },
+  'naproxen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'mefenamic': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'tramadol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Pain' },
+  'codeine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid near term', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
 
-const CLINICAL_DATA = {
-  'amoxicillin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Crosses placenta. Use only if clearly needed.', breastfeedingSafety: 'Compatible. Excreted in low concentrations.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection' },
-  'metformin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Continue use in pregnancy for diabetes control.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 20, baseDoseIndication: 'Type 2 Diabetes' },
-  'atorvastatin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED IN PREGNANCY.', breastfeedingSafety: 'Contraindicated.', g6pdSafety: 'Safe' },
-  'ibuprofen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Caution', g6pdWarning: 'May trigger hemolysis in G6PD deficiency', baseDoseMgPerKg: 10, baseDoseIndication: 'Pain/Inflammation' },
-  'paracetamol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever' },
-  'panadol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe at recommended doses.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'Pain/Fever' },
-  'augmentin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for infections.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection' },
-  'azithromycin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 10, baseDoseIndication: 'Respiratory infection' },
-  'omeprazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe' },
-  'losartan': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED in pregnancy.', breastfeedingSafety: 'Not recommended.', g6pdSafety: 'Safe' },
-  'lisinopril': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED in pregnancy.', breastfeedingSafety: 'Not recommended.', g6pdSafety: 'Safe' },
-  'amlodipine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe' },
-  'gliclazide': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only in 2nd/3rd trimester if needed.', breastfeedingSafety: 'Not recommended.', g6pdSafety: 'Safe' },
-  'salbutamol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe' },
-  'prednisolone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use lowest effective dose.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Inflammation' },
-  'ranitidine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe' },
-  'metronidazole': { pregnancyCategory: 'B', pregnancyPrecautions: 'Avoid in 1st trimester.', breastfeedingSafety: 'Discontinue for 24h.', g6pdSafety: 'Safe' },
-  'diclofenac': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 3rd trimester.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe' },
-  'cetirizine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe' },
-  'loratadine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe.', breastfeedingSafety: 'Compatible.', g6pdSafety: 'Safe' }
+  // Antibiotics
+  'amoxicillin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Crosses placenta', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection' },
+  'augmentin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for infections', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection' },
+  'azithromycin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 10, baseDoseIndication: 'Respiratory infection' },
+  'zithromax': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 10, baseDoseIndication: 'Respiratory infection' },
+  'ciprofloxacin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in pregnancy', breastfeedingSafety: 'Discontinue breastfeeding', g6pdSafety: 'Safe' },
+  'cipro': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in pregnancy', breastfeedingSafety: 'Discontinue breastfeeding', g6pdSafety: 'Safe' },
+  'metronidazole': { pregnancyCategory: 'B', pregnancyPrecautions: 'Avoid in 1st trimester', breastfeedingSafety: 'Discontinue for 24h', g6pdSafety: 'Safe' },
+  'flagyl': { pregnancyCategory: 'B', pregnancyPrecautions: 'Avoid in 1st trimester', breastfeedingSafety: 'Discontinue for 24h', g6pdSafety: 'Safe' },
+  'doxycycline': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - affects fetal bones', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'tetracycline': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - affects fetal bones', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'ceftriaxone': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 50, baseDoseIndication: 'Bacterial infection' },
+  'cefuroxime': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 30, baseDoseIndication: 'Bacterial infection' },
+  'cephalexin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Bacterial infection' },
+  'clindamycin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'nitrofurantoin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Avoid in G6PD-deficient infants', breastfeedingSafety: 'Compatible', g6pdSafety: 'Caution' },
+  'co-trimoxazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid near term', breastfeedingSafety: 'Compatible', g6pdSafety: 'Contraindicated', g6pdWarning: 'Hemolytic anemia in G6PD' },
+  'bactrim': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid near term', breastfeedingSafety: 'Compatible', g6pdSafety: 'Contraindicated', g6pdWarning: 'Hemolytic anemia in G6PD' },
+  'septrin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid near term', breastfeedingSafety: 'Compatible', g6pdSafety: 'Contraindicated' },
+  'gentamicin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed - ototoxic', breastfeedingSafety: 'Minimal excretion', g6pdSafety: 'Safe', baseDoseMgPerKg: 5, baseDoseIndication: 'Gram negative infection' },
+  'amikacin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed - ototoxic', breastfeedingSafety: 'Minimal excretion', g6pdSafety: 'Safe' },
+  'vancomycin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 15, baseDoseIndication: 'MRSA' },
+  'flucloxacillin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 50, baseDoseIndication: 'Staph infection' },
+  'penicillin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'benzylpenicillin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 50000, baseDoseIndication: 'Serious infection' },
+
+  // Diabetes
+  'metformin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Continue for diabetes control', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 20, baseDoseIndication: 'Type 2 Diabetes' },
+  'glucophage': { pregnancyCategory: 'B', pregnancyPrecautions: 'Continue for diabetes control', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 20, baseDoseIndication: 'Type 2 Diabetes' },
+  'gliclazide': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only in 2nd/3rd trimester if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Type 2 Diabetes' },
+  'diamicron': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'glimepiride': { pregnancyCategory: 'C', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'glipizide': { pregnancyCategory: 'C', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'pioglitazone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'sitagliptin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'novonorm': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'repaglinide': { pregnancyCategory: 'C', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'insulin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe - preferred for gestational diabetes', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Diabetes' },
+  'lantus': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'novorapid': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'humalog': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+
+  // Cardiovascular
+  'amlodipine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'norvasc': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'losartan': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED in pregnancy', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'cozaar': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED in pregnancy', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'valsartan': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED in pregnancy', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'diovan': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED in pregnancy', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'captopril': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - fetal renal failure', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'enalapril': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - fetal renal failure', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'lisinopril': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - fetal renal failure', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'ramipril': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'bisoprolol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.1, baseDoseIndication: 'Hypertension' },
+  'metoprolol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Hypertension/Heart' },
+  'atenolol': { pregnancyCategory: 'D', pregnancyPrecautions: 'Use only if needed - fetal growth restriction', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'carvedilol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'nebivolol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'propranolol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Hypertension' },
+  'atenolol': { pregnancyCategory: 'D', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'furosemide': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed - fetal hydration', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Edema' },
+  'lasix': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'hydrochlorothiazide': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Edema/Hypertension' },
+  'aldactone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'spironolactone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'digoxin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.01, baseDoseIndication: 'Heart failure' },
+  'amiodarone': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - fetal hypothyroidism', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'warfarin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED - fetal bleeding', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'coumadin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'heparin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe - does not cross placenta', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'clexane': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Anticoagulation' },
+  'enoxaparin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'atorvastatin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED - fetal toxicity', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'lipitor': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'simvastatin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'zocor': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'rosuvastatin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'crestor': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+
+  // Respiratory
+  'salbutamol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.15, baseDoseIndication: 'Asthma' },
+  'ventolin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'asthalin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'budesonide': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe - inhaled steroids preferred', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Asthma' },
+  'pulmicort': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'fluticasone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'seretide': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'symbicort': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'montelukast': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'singulair': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'theophylline': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed - narrow therapeutic index', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 10, baseDoseIndication: 'Asthma' },
+  'prednisolone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use lowest effective dose', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Inflammation/Asthma' },
+  'prednisone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use lowest effective dose', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Inflammation' },
+  'dexamethasone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.1, baseDoseIndication: 'Inflammation' },
+  'hydrocortisone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Safe in low doses', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+
+  // GI
+  'omeprazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'losec': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'pantoprazole': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'esomeprazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'nexium': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'ranitidine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'zantac': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'famotidine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'pepcid': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'ondansetron': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.15, baseDoseIndication: 'Nausea' },
+  'zofran': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'domperidone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'motilium': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'metoclopramide': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Nausea' },
+  'reglan': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'loperamide': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe - not absorbed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.1, baseDoseIndication: 'Diarrhea' },
+  'imodium': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'bisacodyl': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 1st trimester', breastfeedingSafety: 'Minimal absorption', g6pdSafety: 'Safe' },
+  'lactulose': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'movicol': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'mesalazine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for IBD', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'sulfasalazine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for IBD', breastfeedingSafety: 'Compatible - monitor infant', g6pdSafety: 'Safe' },
+
+  // Psychiatric/Neurological
+  'fluoxetine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'prozac': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'sertraline': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'zoloft': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'paroxetine': { pregnancyCategory: 'D', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'paxil': { pregnancyCategory: 'D', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'citalopram': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'escitalopram': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'venlafaxine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'duloxetine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'amitriptyline': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'tricyclic': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'diazepam': { pregnancyCategory: 'D', pregnancyPrecautions: 'Avoid - fetal sedation', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'valium': { pregnancyCategory: 'D', pregnancyPrecautions: 'Avoid', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'lorazepam': { pregnancyCategory: 'D', pregnancyPrecautions: 'Avoid', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'ativan': { pregnancyCategory: 'D', pregnancyPrecautions: 'Avoid', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'clonazepam': { pregnancyCategory: 'D', pregnancyPrecautions: 'Avoid', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'risperidone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'olanzapine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'quetiapine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'seroquel': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'carbamazepine': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - fetal malformations', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'tegretol': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'valproate': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED - neural tube defects', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'epilim': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'levetiracetam': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 30, baseDoseIndication: 'Epilepsy' },
+  'keppra': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'lamotrigine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 5, baseDoseIndication: 'Epilepsy' },
+  'gabapentin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'pregabalin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'levodopa': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'sinemet': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+
+  // Thyroid
+  'levothyroxine': { pregnancyCategory: 'A', pregnancyPrecautions: 'Safe - required for hypothyroidism', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1.5, baseDoseIndication: 'Hypothyroidism' },
+  'thyroxine': { pregnancyCategory: 'A', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'eltroxin': { pregnancyCategory: 'A', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'carbimazole': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED - fetal hypothyroidism', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'methimazole': { pregnancyCategory: 'D', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'propylthiouracil': { pregnancyCategory: 'D', pregnancyPrecautions: 'Use only if needed in 1st trimester', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+
+  // Antihistamines
+  'cetirizine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.25, baseDoseIndication: 'Allergy' },
+  'zyrtec': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'loratadine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.2, baseDoseIndication: 'Allergy' },
+  'claritin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'desloratadine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'fexofenadine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'allegra': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'diphenhydramine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'benadryl': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+
+  // Antivirals
+  'acyclovir': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for herpes', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 20, baseDoseIndication: 'Herpes' },
+  'valacyclovir': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'oseltamivir': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 4, baseDoseIndication: 'Influenza' },
+  'tamiflu': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'ribavirin': { pregnancyCategory: 'X', pregnancyPrecautions: 'CONTRAINDICATED', breastfeedingSafety: 'Contraindicated', g6pdSafety: 'Safe' },
+  'lamivudine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for HIV/ Hepatitis', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'zidovudine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for HIV PMTCT', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'tenofovir': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for HIV', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'entecavir': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+
+  // Antifungals
+  'fluconazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid high doses', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 6, baseDoseIndication: 'Fungal infection' },
+  'clotrimazole': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe topical', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'miconazole': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe topical', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'nystatin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe - not absorbed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'amphotericin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+
+  // Muscle Relaxants
+  'cyclobenzaprine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'baclofen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+  'tizanidine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'diazepam': { pregnancyCategory: 'D', pregnancyPrecautions: 'Avoid', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
+
+  // Gout
+  'allopurinol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 8, baseDoseIndication: 'Gout' },
+  'colchicine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Gout' },
+  'febuxostat': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+
+  // Ophthalmic
+  'timolol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'latanoprost': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Unknown', g6pdSafety: 'Safe' },
+  'polymyxin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe topical', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'tobramycin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe topical', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'chloramphenicol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid systemic', breastfeedingSafety: 'Compatible topical', g6pdSafety: 'Safe' },
+
+  // Dental
+  'lidocaine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe local anesthetic', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'articaine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'benzocaine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid large amounts', breastfeedingSafety: 'Minimal absorption', g6pdSafety: 'Safe' },
+
+  // Antiemetics
+  'granisetron': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for chemotherapy nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'ondansetron': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'metoclopramide': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'promethazine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'phenergan': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+
+  // Corticosteroids
+  'methylprednisolone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use lowest effective dose', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Inflammation' },
+  'solu-medrol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'betamethasone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for fetal lung maturity', breastfeedingSafety: 'Minimal', g6pdSafety: 'Safe' },
+  'dexamethasone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for fetal maturity', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+
+  // Others
+  'sildenafil': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'viagra': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'tadalafil': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'acyclovir': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'valtrex': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'albendazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'CONTRAINDICATED in 1st trimester', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'mebendazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 1st trimester', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'ivermectin': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
+  'chloroquine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for malaria prophylaxis', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'hydroxychloroquine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for lupus/RA', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
+  'primaquine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Discontinue', g6pdSafety: 'Contraindicated', g6pdWarning: 'Hemolytic anemia in G6PD' },
+  'praziquantel': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Get drugs missing clinical data
+    const { searchParams } = new URL(request.url)
+    const limit = parseInt(searchParams.get('limit') || '500')
+
     const drugs = await db.drug.findMany({
-      where: {
-        status: 'Active',
-        pregnancyCategory: null
-      },
-      select: {
-        id: true,
-        packageName: true,
-        genericName: true
-      },
-      take: 500
+      where: { status: 'Active', pregnancyCategory: null },
+      select: { id: true, packageName: true, genericName: true },
+      take: limit
     })
 
     console.log(`Found ${drugs.length} drugs needing clinical data`)
 
     let updated = 0
     for (const drug of drugs) {
-      const name = (drug.genericName || drug.packageName || '').toLowerCase()
-
-      // Find matching data
+      const name = (drug.genericName || drug.packageName || '').toLowerCase().trim()
+      
       let data = null
-      for (const [key, value] of Object.entries(CLINICAL_DATA)) {
-        if (name.includes(key) || key.includes(name)) {
+      for (const [key, value] of Object.entries(COMPREHENSIVE_CLINICAL_DATA)) {
+        if (name.includes(key) || key.includes(name) || name.split(' ').some(w => w === key)) {
           data = value
           break
         }
-      }
-
-      // Also try external service
-      if (!data) {
-        const external = await getExternalDrugData(drug.genericName || drug.packageName)
-        if (external) data = external
       }
 
       if (data) {
@@ -80,16 +301,13 @@ export async function POST(request: NextRequest) {
           }
         })
         updated++
+        if (updated % 50 === 0) console.log(`Updated ${updated} drugs...`)
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      updated,
-      message: `Updated ${updated} drugs with clinical data for offline use`
-    })
+    return NextResponse.json({ success: true, updated, message: `Updated ${updated} drugs with clinical data` })
   } catch (error) {
-    console.error('Populate error:', error)
-return NextResponse.json({ error: 'Failed to populate data' }, { status: 500 })
+    console.error('Error:', error)
+    return NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
 }
