@@ -105,10 +105,10 @@ export default function LandingPage() {
             
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
-              <Link href="/search" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Drug Search</Link>
+              <Link href="/consultation" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Consultation</Link>
+              <Link href="/search" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Drugs</Link>
               <Link href="/interactions" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Interactions</Link>
-              <Link href="/patients" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Patients</Link>
-              <Link href="/courses" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Courses</Link>
+              <Link href="/reports" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Reports</Link>
             </div>
 
             {/* Right Side */}
