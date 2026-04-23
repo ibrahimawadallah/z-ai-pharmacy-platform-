@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { DrugEyeLogo } from '@/components/logo/DrugEyeLogo';
 import { 
+  Pill, 
+  MessageCircle, 
   Activity, 
+  Truck, 
   FileText, 
   Sparkles,
   Bell,
@@ -15,11 +17,12 @@ import {
   Stethoscope,
   Shield,
   Brain,
+  Calendar,
   ChevronLeft,
   ChevronRight,
-  ArrowRight,
-  Search
+  ArrowRight
 } from 'lucide-react';
+import { DrugEyeLogo } from '@/components/logo/DrugEyeLogo';
 
 const features = [
   {
@@ -30,38 +33,38 @@ const features = [
     color: 'bg-cyan-100 text-cyan-600'
   },
   {
-    icon: Search,
-    title: 'Drug Search',
-    desc: 'Search 19,000+ UAE-approved medications with detailed information on dosages, interactions, and side effects.',
-    href: '/search',
+    icon: Activity,
+    title: 'Health Tracking',
+    desc: 'Monitor your vital signs daily with advanced analytics and predictive health insights.',
+    href: '/dashboard',
     color: 'bg-emerald-100 text-emerald-600'
   },
   {
-    icon: Activity,
-    title: 'Drug Interactions',
-    desc: 'Check potential interactions between multiple medications instantly with AI-powered analysis.',
-    href: '/interactions',
+    icon: Pill,
+    title: 'Smart Pharmacy',
+    desc: 'Order medications with ease from UAE\'s largest verified pharmaceutical database.',
+    href: '/shop',
     color: 'bg-violet-100 text-violet-600'
   },
   {
-    icon: FileText,
-    title: 'Health Reports',
-    desc: 'Generate comprehensive health reports with drug analysis and personalized recommendations.',
-    href: '/reports',
+    icon: Truck,
+    title: 'Fast Delivery',
+    desc: 'Same-day delivery to your door with real-time tracking and temperature-controlled shipping.',
+    href: '/delivery',
     color: 'bg-amber-100 text-amber-600'
   },
   {
-    icon: Heart,
-    title: 'Favorites',
-    desc: 'Save and organize your frequently used medications for quick access.',
-    href: '/favorites',
+    icon: FileText,
+    title: 'Prescriptions',
+    desc: 'Manage all your prescriptions digitally with automatic refill reminders and pharmacy synchronization.',
+    href: '/prescriptions',
     color: 'bg-rose-100 text-rose-600'
   },
   {
-    icon: Bell,
-    title: 'Safety Alerts',
-    desc: 'Stay updated with the latest drug safety warnings and recalls from UAE health authorities.',
-    href: '/alerts',
+    icon: Heart,
+    title: 'Health Insights',
+    desc: 'Personalized health analytics with comprehensive reports and trend analysis.',
+    href: '/analytics',
     color: 'bg-pink-100 text-pink-600'
   }
 ]
@@ -92,8 +95,12 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <DrugEyeLogo size="sm" variant="default" />
+            <Link
+              href="/"
+              className="group transition-transform hover:scale-[1.02]"
+              aria-label="DrugEye home"
+            >
+              <DrugEyeLogo size="md" />
             </Link>
             
             {/* Nav Links */}
@@ -271,9 +278,7 @@ export default function LandingPage() {
       <footer className="bg-white border-t border-gray-100 py-10 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-              <DrugEyeLogo size="sm" variant="default" />
-            </div>
+            <DrugEyeLogo size="sm" showTagline />
             <div className="flex items-center gap-8 text-sm text-gray-500">
               <Link href="/privacy" className="hover:text-cyan-600 transition-colors">Privacy Policy</Link>
               <Link href="/safety" className="hover:text-cyan-600 transition-colors">Safety</Link>
