@@ -73,8 +73,9 @@ export default function ConsultationPage() {
     setIsLoading(true)
 
     try {
-      // Format messages for the streaming API
-      const apiMessages = messages.map(m => ({
+      // Format messages for the streaming API — include the new user message
+      // (React state updates are async, so reading `messages` here would miss it).
+      const apiMessages = [...messages, userMessage].map(m => ({
         role: m.role,
         content: m.content
       }))
