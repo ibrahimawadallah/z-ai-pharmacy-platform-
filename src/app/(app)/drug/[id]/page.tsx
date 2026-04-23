@@ -47,6 +47,7 @@ interface Drug {
   g6pdWarning?: string
   baseDoseMgPerKg?: number
   baseDoseIndication?: string
+  icd10Codes?: Array<{ code: string; description: string }>
 }
 
 export default function DrugDetailsPage() {
@@ -255,6 +256,7 @@ export default function DrugDetailsPage() {
               <TabsList className="bg-white shadow-sm">
                 <TabsTrigger value="interactions">Interactions</TabsTrigger>
                 <TabsTrigger value="sideeffects">Side Effects</TabsTrigger>
+                <TabsTrigger value="icd10">ICD-10</TabsTrigger>
                 <TabsTrigger value="contraindications">Contraindications</TabsTrigger>
                 <TabsTrigger value="dosing">Dosing</TabsTrigger>
               </TabsList>
@@ -342,6 +344,44 @@ export default function DrugDetailsPage() {
                             )}
                           </div>
                         ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="icd10">
+                <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+                  <CardContent className="p-6">
+                    {!drug.icd10Codes || drug.icd10Codes.length === 0 ? (
+                      <p className="text-gray-500 text-center py-8">
+                        No ICD-10 mappings available for this drug.
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-semibold text-gray-900">Related Diagnoses (ICD-10)</h4>
+                          <Badge variant="outline">{drug.icd10Codes.length} codes</Badge>
+                        </div>
+                        <div className="grid gap-2">
+                          {drug.icd10Codes.map((icd10, i) => (
+                            <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                              <div className="flex items-center gap-3">
+                                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 font-mono">
+                                  {icd10.code}
+                                </Badge>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">{icd10.description}</span>
+                              </div>
+                              <Link 
+                                href={`https://icd.who.int/browse/Search:${encodeURIComponent(icd10.code)}`}
+                                target="_blank"
+                                className="text-xs text-cyan-600 hover:underline"
+                              >
+                                WHO Ref →
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </CardContent>
@@ -452,19 +492,19 @@ export default function DrugDetailsPage() {
               <CardContent className="p-6 space-y-3">
                 <h3 className="font-semibold">Need more information?</h3>
                 <div className="space-y-2">
-                  <Link href={`/interactions?drug=${drug.drugCode}`}>
+                  <Link href={`/interactions?drug=${drug.id}`}>
                     <Button variant="secondary" className="w-full justify-start" size="sm">
                       <AlertTriangle className="w-4 h-4 mr-2" />
                       Check Interactions
                     </Button>
                   </Link>
-                  <Link href="/dosage">
+                  <Link href={`/dosage?drug=${drug.id}&name=${encodeURIComponent(drug.packageName)}`}>
                     <Button variant="secondary" className="w-full justify-start" size="sm">
                       <Activity className="w-4 h-4 mr-2" />
                       Calculate Dosage
                     </Button>
                   </Link>
-                  <Link href="/adr">
+                  <Link href={`/drug/${drug.id}#sideeffects`}>
                     <Button variant="secondary" className="w-full justify-start" size="sm">
                       <Heart className="w-4 h-4 mr-2" />
                       View Side Effects

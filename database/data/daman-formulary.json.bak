@@ -1,0 +1,582 @@
+[
+  {
+    "Drug Name": "Glucophage",
+    "Generic Name": "Metformin",
+    "Strength": "500mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Metformin",
+    "Manufacturer": "Merck",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/glucophage.pdf",
+      "pil_url": "https://medical-reference.ae/pil/glucophage.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B98084",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Januvia",
+    "Generic Name": "Sitagliptin",
+    "Strength": "100mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Sitagliptin",
+    "Manufacturer": "MSD",
+    "Coverage": "Covered",
+    "Tier": "Tier 2",
+    "Restrictions": "Prior Authorization",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/januvia.pdf",
+      "pil_url": "https://medical-reference.ae/pil/januvia.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B98287",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Lantus",
+    "Generic Name": "Insulin Glargine",
+    "Strength": "100 Units/ml",
+    "Dosage Form": "Injection",
+    "Route": "Subcutaneous",
+    "Active Ingredient": "Insulin Glargine",
+    "Manufacturer": "Sanofi",
+    "Coverage": "Covered",
+    "Tier": "Tier 2",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/lantus.pdf",
+      "pil_url": "https://medical-reference.ae/pil/lantus.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "2°C - 8°C",
+      "description": "Store in a refrigerator (2°C - 8°C). Do not freeze."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B92801",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Diamicron",
+    "Generic Name": "Gliclazide",
+    "Strength": "60mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Gliclazide",
+    "Manufacturer": "Servier",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/diamicron.pdf",
+      "pil_url": "https://medical-reference.ae/pil/diamicron.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B97106",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Norvasc",
+    "Generic Name": "Amlodipine",
+    "Strength": "5mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Amlodipine",
+    "Manufacturer": "Pfizer",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/norvasc.pdf",
+      "pil_url": "https://medical-reference.ae/pil/norvasc.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B91764",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Lipitor",
+    "Generic Name": "Atorvastatin",
+    "Strength": "20mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Atorvastatin",
+    "Manufacturer": "Pfizer",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/lipitor.pdf",
+      "pil_url": "https://medical-reference.ae/pil/lipitor.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B96315",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Ventolin",
+    "Generic Name": "Salbutamol",
+    "Strength": "100mcg/dose",
+    "Dosage Form": "Inhaler",
+    "Route": "Inhalation",
+    "Active Ingredient": "Salbutamol",
+    "Manufacturer": "GSK",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/ventolin.pdf",
+      "pil_url": "https://medical-reference.ae/pil/ventolin.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B94087",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Symbicort",
+    "Generic Name": "Budesonide + Formoterol",
+    "Strength": "160/4.5mcg",
+    "Dosage Form": "Turbuhaler",
+    "Route": "Inhalation",
+    "Active Ingredient": "Budesonide, Formoterol",
+    "Manufacturer": "AstraZeneca",
+    "Coverage": "Covered",
+    "Tier": "Tier 2",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/symbicort.pdf",
+      "pil_url": "https://medical-reference.ae/pil/symbicort.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B95379",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Augmentin",
+    "Generic Name": "Amoxicillin + Clavulanate",
+    "Strength": "625mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Amoxicillin, Clavulanic Acid",
+    "Manufacturer": "GSK",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/augmentin.pdf",
+      "pil_url": "https://medical-reference.ae/pil/augmentin.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B94916",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Zithromax",
+    "Generic Name": "Azithromycin",
+    "Strength": "500mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Azithromycin",
+    "Manufacturer": "Pfizer",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/zithromax.pdf",
+      "pil_url": "https://medical-reference.ae/pil/zithromax.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B95361",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Panadol",
+    "Generic Name": "Paracetamol",
+    "Strength": "500mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Paracetamol",
+    "Manufacturer": "GSK",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/panadol.pdf",
+      "pil_url": "https://medical-reference.ae/pil/panadol.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B92337",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Brufen",
+    "Generic Name": "Ibuprofen",
+    "Strength": "400mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Ibuprofen",
+    "Manufacturer": "Abbott",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/brufen.pdf",
+      "pil_url": "https://medical-reference.ae/pil/brufen.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B98897",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Voltaren",
+    "Generic Name": "Diclofenac",
+    "Strength": "50mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Diclofenac",
+    "Manufacturer": "Novartis",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/voltaren.pdf",
+      "pil_url": "https://medical-reference.ae/pil/voltaren.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B92734",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Nexium",
+    "Generic Name": "Esomeprazole",
+    "Strength": "40mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Esomeprazole",
+    "Manufacturer": "AstraZeneca",
+    "Coverage": "Covered",
+    "Tier": "Tier 2",
+    "Restrictions": "Prior Authorization",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/nexium.pdf",
+      "pil_url": "https://medical-reference.ae/pil/nexium.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B91767",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Crestor",
+    "Generic Name": "Rosuvastatin",
+    "Strength": "10mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Rosuvastatin",
+    "Manufacturer": "AstraZeneca",
+    "Coverage": "Covered",
+    "Tier": "Tier 2",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/crestor.pdf",
+      "pil_url": "https://medical-reference.ae/pil/crestor.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B96293",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Singulair",
+    "Generic Name": "Montelukast",
+    "Strength": "10mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Montelukast",
+    "Manufacturer": "MSD",
+    "Coverage": "Covered",
+    "Tier": "Tier 2",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/singulair.pdf",
+      "pil_url": "https://medical-reference.ae/pil/singulair.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B98114",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Lyrica",
+    "Generic Name": "Pregabalin",
+    "Strength": "75mg",
+    "Dosage Form": "Capsule",
+    "Route": "Oral",
+    "Active Ingredient": "Pregabalin",
+    "Manufacturer": "Pfizer",
+    "Coverage": "Covered",
+    "Tier": "Tier 3",
+    "Restrictions": "Prior Authorization",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/lyrica.pdf",
+      "pil_url": "https://medical-reference.ae/pil/lyrica.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B93102",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Ciprobay",
+    "Generic Name": "Ciprofloxacin",
+    "Strength": "500mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Ciprofloxacin",
+    "Manufacturer": "Bayer",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/ciprobay.pdf",
+      "pil_url": "https://medical-reference.ae/pil/ciprobay.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B91528",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Klacid",
+    "Generic Name": "Clarithromycin",
+    "Strength": "500mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Clarithromycin",
+    "Manufacturer": "Abbott",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/klacid.pdf",
+      "pil_url": "https://medical-reference.ae/pil/klacid.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B94416",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  },
+  {
+    "Drug Name": "Flagyl",
+    "Generic Name": "Metronidazole",
+    "Strength": "500mg",
+    "Dosage Form": "Tablet",
+    "Route": "Oral",
+    "Active Ingredient": "Metronidazole",
+    "Manufacturer": "Sanofi",
+    "Coverage": "Covered",
+    "Tier": "Tier 1",
+    "Restrictions": "None",
+    "documentation": {
+      "pi_url": "https://medical-reference.ae/pi/flagyl.pdf",
+      "pil_url": "https://medical-reference.ae/pil/flagyl.pdf",
+      "last_updated": "2025-12-01"
+    },
+    "storage_conditions": {
+      "temperature_range": "15°C - 25°C",
+      "description": "Store in a dry place below 25°C. Protect from light."
+    },
+    "shelf_life": "24 months",
+    "batch_data": {
+      "current_batch_number": "B97105",
+      "manufacturing_date": "2026-01-05",
+      "expiry_date": "2028-01-05",
+      "qc_status": "Passed",
+      "last_qc_date": "2026-01-05"
+    }
+  }
+]

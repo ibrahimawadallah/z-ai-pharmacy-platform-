@@ -1,0 +1,9 @@
+{
+  "totalProcessed": 19645,
+  "withMappings": 16424,
+  "withoutMappings": 3221,
+  "totalIcd10CodesAssigned": 51878,
+  "categoryBreakdown": {},
+  "averageCodesPerDrug": "3.16",
+  "coveragePercentage": "83.60"
+}

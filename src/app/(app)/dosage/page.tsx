@@ -1,15 +1,18 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Calculator, Search, User, Weight, Clock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useApp, UAEDrug } from '@/providers/AppProvider'
 
 export default function DosagePage() {
   const { language } = useApp()
+  const searchParams = useSearchParams()
   
   const [patientWeight, setPatientWeight] = useState('')
   const [patientAge, setPatientAge] = useState('')
@@ -18,6 +21,17 @@ export default function DosagePage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [drugs, setDrugs] = useState<UAEDrug[]>([])
+  const [selectedDrug, setSelectedDrug] = useState<UAEDrug | null>(null)
+
+  const drugParam = searchParams.get('name')
+  const drugId = searchParams.get('drug')
+
+  useEffect(() => {
+    if (drugParam) {
+      setSearchTerm(drugParam)
+      setTimeout(searchDrugs, 100)
+    }
+  }, [drugParam])
 
   const searchDrugs = async () => {
     if (!searchTerm.trim()) return
@@ -28,6 +42,11 @@ export default function DosagePage() {
       setDrugs(data.data || [])
     } catch {}
     setIsLoading(false)
+  }
+
+  const selectDrug = (drug: UAEDrug) => {
+    setSelectedDrug(drug)
+    setSearchTerm(drug.packageName)
   }
 
   return (

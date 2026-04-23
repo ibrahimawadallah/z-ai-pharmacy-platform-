@@ -47,6 +47,9 @@ export async function GET() {
       }
     })
 
+    // Get unique drug pairs with interactions
+    const interactionsCount = await db.drugInteraction.count()
+
     return NextResponse.json({
       success: true,
       source: 'UAE Ministry of Health Drug Database',
@@ -62,7 +65,8 @@ export async function GET() {
         formulary: {
           thiqa: drugsInThiqa,
           basic: drugsInBasic
-        }
+        },
+        interactions: interactionsCount
       },
       dosageForms: dosageForms.map(d => ({
         form: d.dosageForm,

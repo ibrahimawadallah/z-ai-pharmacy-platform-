@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-04-23T18:12:01.017Z",
+  "stats": {
+    "total": 302,
+    "fromHotfixes": 9,
+    "fromBase": 154,
+    "fromAdditional": 0,
+    "fromEnriched": 140,
+    "fromUAEComplete": 0,
+    "fromComprehensive": 0,
+    "conflicts": 82
+  },
+  "sources": {
+    "hotfixes": 9,
+    "base": 236,
+    "additional": 0,
+    "enriched": 140,
+    "uaeComplete": 0,
+    "comprehensive": 0
+  }
+}

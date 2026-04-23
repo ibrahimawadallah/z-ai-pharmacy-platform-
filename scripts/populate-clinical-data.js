@@ -1,6 +1,17 @@
+// Manually set environment variables to bypass dotenv issues
+process.env.DATABASE_URL = "postgresql://neondb_owner:npg_QNEzlKjg4J3p@ep-shiny-king-adsne10e-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&pool_timeout=10&connection_limit=1"
+process.env.DIRECT_URL = "postgresql://neondb_owner:npg_QNEzlKjg4J3p@ep-shiny-king-adsne10e-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
 require('dotenv').config()
 const { PrismaClient } = require('@prisma/client')
-const db = new PrismaClient()
+
+const db = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  }
+})
 
 const FALLBACK_DATA = {
   'Amoxicillin': { pregnancyCategory: 'B', pregnancyPrecautions: 'Crosses placenta. Use only if clearly needed.', breastfeedingSafety: 'Compatible. Excreted in low concentrations.', g6pdSafety: 'Safe', baseDoseMgPerKg: 25, baseDoseIndication: 'Respiratory infection', source: 'FDA' },
@@ -48,13 +59,31 @@ async function populateDatabase() {
   let updated = 0
   let found = 0
 
-  // Get all active drugs
-  const drugs = await db.drug.findMany({
-    where: { status: 'Active' },
-    select: { id: true, packageName: true, genericName: true, pregnancyCategory: true },
-    orderBy: { packageName: 'asc' },
-    take: 500
-  })
+  // Get all active drugs in batches
+  let allDrugs = []
+  let hasMore = true
+  let skip = 0
+  const batchSize = 1000
+  
+  while (hasMore) {
+    const drugs = await db.drug.findMany({
+      where: { status: 'Active' },
+      select: { id: true, packageName: true, genericName: true, pregnancyCategory: true },
+      orderBy: { packageName: 'asc' },
+      skip: skip,
+      take: batchSize
+    })
+    
+    if (drugs.length === 0) {
+      hasMore = false
+    } else {
+      allDrugs = [...allDrugs, ...drugs]
+      skip += batchSize
+      console.log(`Processed ${allDrugs.length} drugs so far...`)
+    }
+  }
+  
+  const drugs = allDrugs
 
   console.log(`Found ${drugs.length} active drugs in database`)
 

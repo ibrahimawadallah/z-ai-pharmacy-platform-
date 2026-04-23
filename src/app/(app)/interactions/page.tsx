@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { 
   AlertTriangle, Search, X, Activity
 } from 'lucide-react'
@@ -26,12 +27,24 @@ const SEVERITY_COLORS: Record<string, { badge: string, bg: string }> = {
 
 export default function InteractionsPage() {
   const { language } = useApp()
+  const searchParams = useSearchParams()
+  const drugParam = searchParams.get('drug')
   
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [drugs, setDrugs] = useState<UAEDrug[]>([])
   const [selectedDrugs, setSelectedDrugs] = useState<UAEDrug[]>([])
   const [interactionResults, setInteractionResults] = useState<any[]>([])
+
+  useEffect(() => {
+    if (drugParam) {
+      fetch(`/api/drugs/${drugParam}`).then(r => r.json()).then(d => {
+        if (d.data) {
+          setSelectedDrugs([d.data])
+        }
+      })
+    }
+  }, [drugParam])
 
   const searchDrugs = async () => {
     if (!searchTerm.trim()) return

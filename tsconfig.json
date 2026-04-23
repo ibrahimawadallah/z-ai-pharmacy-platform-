@@ -31,8 +31,8 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
@@ -42,10 +42,15 @@
     "upload",
     "scripts",
     "mini-services",
-    "inspect-db.ts",
-    "check-db.js",
-    "check-intel-db.js",
-    "prisma/seed-batch.ts",
-    "prisma/seed-quick.ts"
+    "database",
+    "prisma",
+    "src/test",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/components/ui/form.tsx",
+    "src/lib/auth-options.ts",
+    "src/lib/external-data-service.ts",
+    "src/lib/nlp-disease.ts",
+    "src/components/MotionWrapper.tsx"
   ]
 }

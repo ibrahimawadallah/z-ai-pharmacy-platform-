@@ -1,0 +1,64 @@
+{
+  "unified": {
+    "mapping": "data/unified/drug-icd10-map.json",
+    "metadata": "data/unified/drug-icd10-map-metadata.json",
+    "stats": "data/unified/unification-stats.json"
+  },
+  "uae_complete": {
+    "mapping": "data/uae-drugs-complete-icd10-mappings.json",
+    "statistics": "data/uae-drugs-mapping-statistics.json",
+    "report": "data/uae-drugs-mapping-report.json"
+  },
+  "icd10_local": {
+    "core": "data/json/icd10-data.json",
+    "fast": "data/json/icd10-data-fast.json"
+  },
+  "icd10_statistics": {
+    "mapping_stats": "data/icd10-mapping-statistics.json"
+  },
+  "icd10_comprehensive": {
+    "codes_2026": "icd10cm-Code Descriptions-2026/icd10cm-codes-2026.txt",
+    "comprehensive_mappings": "data/icd10-comprehensive-mappings.json"
+  },
+  "archived": {
+    "icd10_data": "data/archived_old_files/icd10-data.json",
+    "icd10_fast": "data/archived_old_files/icd10-data-fast.json"
+  },
+  "database": {
+    "uae_drug_list_csv": "data/csv/UAE drug list.csv",
+    "drugs_source_csv": "database/Drugs 1.csv",
+    "categories_csv": "database/categories.csv"
+  },
+  "schema": {
+    "icd10_sql": "database/icd10_schema.sql"
+  },
+  "scripts": {
+    "unify_sources": "scripts/unify-data-sources.js",
+    "generate_uae_complete": "scripts/generate-complete-uae-icd10-mappings.js",
+    "add_uae_to_mapping": "scripts/data-processing/addUAEDrugsToMapping.js",
+    "icd10_flag_stats": "scripts/icd10_flag_stats.py",
+    "icd10_flagged_stats": "scripts/icd10_flagged_stats.py",
+    "icd10_merge_clean_flagged": "scripts/icd10_merge_clean_flagged.py"
+  },
+  "pipeline": {
+    "preprocess_uae": "pipeline/preprocess_uae_drug_list.py",
+    "mapping_pipeline": "drug_icd10_mapping_pipeline.py",
+    "map_drugs_nlp": "pipeline/map_drugs_nlp.js",
+    "requirements": "pipeline/requirements.txt"
+  },
+  "lib": {
+    "unified_loader": "lib/drug-data/unifiedLoader.js",
+    "mapping_loader": "lib/drug-data/mappingLoader.js",
+    "drug_mappings_base": "lib/drug-data/drugMappings.js",
+    "drug_mappings_additional": "lib/drug-data/drugMappings2.js",
+    "drug_mappings_enriched": "lib/drug-data/drugMappings-enriched.js",
+    "drug_mappings_expanded": "lib/drug-data/drugMappings-expanded-20percent.js",
+    "uae_mappings": "lib/drug-data/uaeMappings.js",
+    "drug_mapper": "lib/drug_mapper.js"
+  },
+  "docs": {
+    "data_files": "docs/DATA_FILES.md",
+    "icd10_index": "ICD10_COMPLETE_FILE_INDEX.md",
+    "changes_summary": "CHANGES_SUMMARY.md"
+  }
+}

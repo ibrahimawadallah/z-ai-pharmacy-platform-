@@ -1,0 +1,4766 @@
+{
+  "acyclovir": [
+    {
+      "code": "B00.9",
+      "description": "Herpes simplex infection, unspecified"
+    },
+    {
+      "code": "B00.1",
+      "description": "Herpesviral vesicular dermatitis"
+    },
+    {
+      "code": "B00.2",
+      "description": "Herpesviral gingivostomatitis and pharyngotonsillitis"
+    },
+    {
+      "code": "B00.89",
+      "description": "Other herpesviral infection"
+    },
+    {
+      "code": "B01.9",
+      "description": "Varicella without complication"
+    },
+    {
+      "code": "B02.9",
+      "description": "Zoster without complication"
+    },
+    {
+      "code": "B02.29",
+      "description": "Postherpetic neuralgia"
+    },
+    {
+      "code": "B00.0",
+      "description": "Herpesviral encephalitis"
+    }
+  ],
+  "valacyclovir": [
+    {
+      "code": "B00.9",
+      "description": "Herpes simplex infection, unspecified"
+    },
+    {
+      "code": "B00.1",
+      "description": "Herpesviral vesicular dermatitis"
+    },
+    {
+      "code": "B01.9",
+      "description": "Varicella without complication"
+    },
+    {
+      "code": "B02.9",
+      "description": "Zoster without complication"
+    },
+    {
+      "code": "B02.29",
+      "description": "Postherpetic neuralgia"
+    }
+  ],
+  "oseltamivir": [
+    {
+      "code": "J11.1",
+      "description": "Influenza with other respiratory manifestations"
+    },
+    {
+      "code": "J10.1",
+      "description": "Influenza with other respiratory manifestations, seasonal influenza virus identified"
+    },
+    {
+      "code": "J09.X2",
+      "description": "Influenza due to identified novel influenza A virus with other respiratory manifestations"
+    },
+    {
+      "code": "Z20.828",
+      "description": "Contact with and (suspected) exposure to other viral communicable diseases"
+    }
+  ],
+  "ganciclovir": [
+    {
+      "code": "B25.9",
+      "description": "Cytomegaloviral disease, unspecified"
+    },
+    {
+      "code": "B25.0",
+      "description": "Cytomegaloviral pneumonitis"
+    },
+    {
+      "code": "B25.1",
+      "description": "Cytomegaloviral hepatitis"
+    },
+    {
+      "code": "B25.2",
+      "description": "Cytomegaloviral pancreatitis"
+    },
+    {
+      "code": "B25.8",
+      "description": "Other cytomegaloviral diseases"
+    }
+  ],
+  "ribavirin": [
+    {
+      "code": "B97.4",
+      "description": "Respiratory syncytial virus as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "J21.0",
+      "description": "Acute bronchiolitis due to respiratory syncytial virus"
+    },
+    {
+      "code": "B17.10",
+      "description": "Acute hepatitis C without hepatic coma"
+    },
+    {
+      "code": "B18.2",
+      "description": "Chronic viral hepatitis C"
+    }
+  ],
+  "cetirizine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "J30.2",
+      "description": "Other seasonal allergic rhinitis"
+    },
+    {
+      "code": "J30.3",
+      "description": "Other allergic rhinitis"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    },
+    {
+      "code": "T78.40XA",
+      "description": "Allergy, unspecified, initial encounter"
+    }
+  ],
+  "fexofenadine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "J30.2",
+      "description": "Other seasonal allergic rhinitis"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    }
+  ],
+  "hydroxyzine": [
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder, unspecified"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "code": "L29.9",
+      "description": "Pruritus, unspecified"
+    },
+    {
+      "code": "L29.0",
+      "description": "Pruritus ani"
+    },
+    {
+      "code": "L29.1",
+      "description": "Pruritus scroti"
+    }
+  ],
+  "chlorpheniramine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "T78.40XA",
+      "description": "Allergy, unspecified, initial encounter"
+    }
+  ],
+  "promethazine": [
+    {
+      "code": "R11.2",
+      "description": "Nausea with vomiting, unspecified"
+    },
+    {
+      "code": "R11.0",
+      "description": "Nausea"
+    },
+    {
+      "code": "R11.1",
+      "description": "Vomiting"
+    },
+    {
+      "code": "T75.3XXA",
+      "description": "Motion sickness, initial encounter"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    }
+  ],
+  "cyproheptadine": [
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "R63.0",
+      "description": "Anorexia"
+    }
+  ],
+  "desloratadine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    }
+  ],
+  "levocetirizine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    }
+  ],
+  "azelastine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "J30.2",
+      "description": "Other seasonal allergic rhinitis"
+    }
+  ],
+  "olopatadine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    }
+  ],
+  "loratadine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    }
+  ],
+  "diphenhydramine": [
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "T78.40XA",
+      "description": "Allergy, unspecified, initial encounter"
+    }
+  ],
+  "phenytoin": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.901",
+      "description": "Epilepsy, unspecified, not intractable, with status epilepticus"
+    },
+    {
+      "code": "G40.109",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with simple partial seizures, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.209",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with complex partial seizures, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    }
+  ],
+  "valproicacid": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.901",
+      "description": "Epilepsy, unspecified, not intractable, with status epilepticus"
+    },
+    {
+      "code": "G40.109",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with simple partial seizures, not intractable, without status epilepticus"
+    },
+    {
+      "code": "F31.9",
+      "description": "Bipolar disorder, unspecified"
+    }
+  ],
+  "valproic": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.901",
+      "description": "Epilepsy, unspecified, not intractable, with status epilepticus"
+    },
+    {
+      "code": "F31.9",
+      "description": "Bipolar disorder, unspecified"
+    }
+  ],
+  "carbamazepine": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.109",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with simple partial seizures, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G50.1",
+      "description": "Atypical facial pain"
+    },
+    {
+      "code": "G50.0",
+      "description": "Trigeminal neuralgia"
+    },
+    {
+      "code": "F31.9",
+      "description": "Bipolar disorder, unspecified"
+    }
+  ],
+  "phenobarbital": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.901",
+      "description": "Epilepsy, unspecified, not intractable, with status epilepticus"
+    },
+    {
+      "code": "G40.109",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with simple partial seizures, not intractable, without status epilepticus"
+    }
+  ],
+  "levetiracetam": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.109",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with simple partial seizures, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.209",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with complex partial seizures, not intractable, without status epilepticus"
+    }
+  ],
+  "lamotrigine": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G40.109",
+      "description": "Localization-related (focal) (partial) symptomatic epilepsy and epileptic syndromes with simple partial seizures, not intractable, without status epilepticus"
+    },
+    {
+      "code": "F31.9",
+      "description": "Bipolar disorder, unspecified"
+    }
+  ],
+  "furosemide": [
+    {
+      "code": "I50.9",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "I50.1",
+      "description": "Left ventricular failure"
+    },
+    {
+      "code": "I50.2",
+      "description": "Systolic heart failure"
+    },
+    {
+      "code": "I50.3",
+      "description": "Diastolic heart failure"
+    },
+    {
+      "code": "E87.6",
+      "description": "Hypokalemia"
+    },
+    {
+      "code": "R60.9",
+      "description": "Edema, unspecified"
+    },
+    {
+      "code": "I50.20",
+      "description": "Unspecified systolic heart failure"
+    }
+  ],
+  "spironolactone": [
+    {
+      "code": "I50.9",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "code": "E87.6",
+      "description": "Hypokalemia"
+    },
+    {
+      "code": "E28.2",
+      "description": "Polycystic ovarian syndrome"
+    },
+    {
+      "code": "R60.9",
+      "description": "Edema, unspecified"
+    }
+  ],
+  "captopril": [
+    {
+      "code": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "I25.10",
+      "description": "Atherosclerotic heart disease of native coronary artery without angina pectoris"
+    },
+    {
+      "code": "I50.1",
+      "description": "Left ventricular failure"
+    }
+  ],
+  "enalapril": [
+    {
+      "code": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "I25.10",
+      "description": "Atherosclerotic heart disease of native coronary artery without angina pectoris"
+    },
+    {
+      "code": "I50.1",
+      "description": "Left ventricular failure"
+    }
+  ],
+  "propranolol": [
+    {
+      "code": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "code": "I48.91",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "G43.909",
+      "description": "Migraine, unspecified, not intractable, without status migrainosus"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina pectoris, unspecified"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder, unspecified"
+    }
+  ],
+  "digoxin": [
+    {
+      "code": "I50.9",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "I50.1",
+      "description": "Left ventricular failure"
+    },
+    {
+      "code": "I48.91",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "I48.0",
+      "description": "Paroxysmal atrial fibrillation"
+    }
+  ],
+  "theophylline": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J44.9",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    }
+  ],
+  "budesonide": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J05.0",
+      "description": "Acute obstructive laryngitis [croup]"
+    },
+    {
+      "code": "J44.9",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    }
+  ],
+  "fluticasone": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    }
+  ],
+  "ipratropium": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J44.9",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    }
+  ],
+  "ipratropiumalbuterol": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    }
+  ],
+  "budesonideformoterol": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    }
+  ],
+  "salbutamol": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    }
+  ],
+  "albuterol": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    }
+  ],
+  "montelukast": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    }
+  ],
+  "prednisolone": [
+    {
+      "code": "J45.901",
+      "description": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    },
+    {
+      "code": "M79.3",
+      "description": "Panniculitis, unspecified"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    }
+  ],
+  "ranitidine": [
+    {
+      "code": "K21.9",
+      "description": "Gastro-esophageal reflux disease without esophagitis"
+    },
+    {
+      "code": "K21.0",
+      "description": "Gastro-esophageal reflux disease with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer, unspecified as acute or chronic, without hemorrhage or perforation"
+    },
+    {
+      "code": "K27.9",
+      "description": "Peptic ulcer, site unspecified, unspecified as acute or chronic, without hemorrhage or perforation"
+    }
+  ],
+  "famotidine": [
+    {
+      "code": "K21.9",
+      "description": "Gastro-esophageal reflux disease without esophagitis"
+    },
+    {
+      "code": "K21.0",
+      "description": "Gastro-esophageal reflux disease with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer, unspecified as acute or chronic, without hemorrhage or perforation"
+    }
+  ],
+  "domperidone": [
+    {
+      "code": "R11.2",
+      "description": "Nausea with vomiting, unspecified"
+    },
+    {
+      "code": "R11.0",
+      "description": "Nausea"
+    },
+    {
+      "code": "K31.84",
+      "description": "Gastroparesis"
+    }
+  ],
+  "ondansetron": [
+    {
+      "code": "R11.2",
+      "description": "Nausea with vomiting, unspecified"
+    },
+    {
+      "code": "R11.0",
+      "description": "Nausea"
+    },
+    {
+      "code": "R11.1",
+      "description": "Vomiting"
+    },
+    {
+      "code": "Z51.11",
+      "description": "Encounter for antineoplastic chemotherapy"
+    }
+  ],
+  "omeprazole": [
+    {
+      "code": "K21.9",
+      "description": "Gastro-esophageal reflux disease without esophagitis"
+    },
+    {
+      "code": "K21.0",
+      "description": "Gastro-esophageal reflux disease with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer, unspecified as acute or chronic, without hemorrhage or perforation"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    }
+  ],
+  "amitriptyline": [
+    {
+      "code": "F32.9",
+      "description": "Major depressive disorder, single episode, unspecified"
+    },
+    {
+      "code": "F33.9",
+      "description": "Major depressive disorder, recurrent, unspecified"
+    },
+    {
+      "code": "G89.29",
+      "description": "Other chronic pain"
+    },
+    {
+      "code": "G43.909",
+      "description": "Migraine, unspecified, not intractable, without status migrainosus"
+    }
+  ],
+  "fluoxetine": [
+    {
+      "code": "F32.9",
+      "description": "Major depressive disorder, single episode, unspecified"
+    },
+    {
+      "code": "F33.9",
+      "description": "Major depressive disorder, recurrent, unspecified"
+    },
+    {
+      "code": "F42.9",
+      "description": "Obsessive-compulsive disorder, unspecified"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder, unspecified"
+    }
+  ],
+  "methylphenidate": [
+    {
+      "code": "F90.9",
+      "description": "Attention-deficit hyperactivity disorder, unspecified type"
+    },
+    {
+      "code": "F90.0",
+      "description": "Attention-deficit hyperactivity disorder, predominantly inattentive type"
+    },
+    {
+      "code": "F90.1",
+      "description": "Attention-deficit hyperactivity disorder, predominantly hyperactive type"
+    },
+    {
+      "code": "F90.2",
+      "description": "Attention-deficit hyperactivity disorder, combined type"
+    }
+  ],
+  "dextroamphetamine": [
+    {
+      "code": "F90.9",
+      "description": "Attention-deficit hyperactivity disorder, unspecified type"
+    },
+    {
+      "code": "F90.0",
+      "description": "Attention-deficit hyperactivity disorder, predominantly inattentive type"
+    },
+    {
+      "code": "F90.1",
+      "description": "Attention-deficit hyperactivity disorder, predominantly hyperactive type"
+    },
+    {
+      "code": "F90.2",
+      "description": "Attention-deficit hyperactivity disorder, combined type"
+    }
+  ],
+  "cefixime": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "N39.0",
+      "description": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "J01.90",
+      "description": "Acute sinusitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "A54.9",
+      "description": "Gonococcal infection, unspecified"
+    }
+  ],
+  "cefdinir": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "J01.90",
+      "description": "Acute sinusitis, unspecified"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis, unspecified"
+    }
+  ],
+  "omnicef": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "J01.90",
+      "description": "Acute sinusitis, unspecified"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis, unspecified"
+    }
+  ],
+  "clarithromycin": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "J01.90",
+      "description": "Acute sinusitis, unspecified"
+    },
+    {
+      "code": "J20.9",
+      "description": "Acute bronchitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "H66.90",
+      "description": "Otitis media, unspecified, unspecified ear"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    }
+  ],
+  "vancomycin": [
+    {
+      "code": "A41.9",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis, unspecified"
+    },
+    {
+      "code": "M00.9",
+      "description": "Pyogenic arthritis, unspecified"
+    },
+    {
+      "code": "A49.9",
+      "description": "Bacterial infection, unspecified"
+    }
+  ],
+  "gentamicin": [
+    {
+      "code": "A41.9",
+      "description": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "N39.0",
+      "description": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    }
+  ],
+  "metronidazole": [
+    {
+      "code": "A07.1",
+      "description": "Giardiasis [lambliasis]"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    },
+    {
+      "code": "A49.9",
+      "description": "Bacterial infection, unspecified"
+    },
+    {
+      "code": "K63.89",
+      "description": "Other specified diseases of intestine"
+    }
+  ],
+  "clindamycin": [
+    {
+      "code": "L03.90",
+      "description": "Cellulitis, unspecified"
+    },
+    {
+      "code": "K04.7",
+      "description": "Periapical abscess without sinus"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "M86.9",
+      "description": "Osteomyelitis, unspecified"
+    }
+  ],
+  "omnic": [
+    {
+      "code": "N40.0",
+      "description": "Benign prostatic hyperplasia without lower urinary tract symptoms"
+    },
+    {
+      "code": "N40.1",
+      "description": "Benign prostatic hyperplasia with lower urinary tract symptoms"
+    },
+    {
+      "code": "N32.81",
+      "description": "Overactive bladder"
+    }
+  ],
+  "omnicocas": [
+    {
+      "code": "N40.0",
+      "description": "Benign prostatic hyperplasia without lower urinary tract symptoms"
+    },
+    {
+      "code": "N40.1",
+      "description": "Benign prostatic hyperplasia with lower urinary tract symptoms"
+    }
+  ],
+  "flomax": [
+    {
+      "code": "N40.0",
+      "description": "Benign prostatic hyperplasia without lower urinary tract symptoms"
+    },
+    {
+      "code": "N40.1",
+      "description": "Benign prostatic hyperplasia with lower urinary tract symptoms"
+    }
+  ],
+  "orofar": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "J31.2",
+      "description": "Chronic pharyngitis"
+    },
+    {
+      "code": "K12.0",
+      "description": "Recurrent oral aphthae"
+    }
+  ],
+  "orofarspray": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    }
+  ],
+  "tanaflex": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "J31.2",
+      "description": "Chronic pharyngitis"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "tanaflexspray": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    }
+  ],
+  "betadine": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    },
+    {
+      "code": "L08.9",
+      "description": "Local infection of skin and subcutaneous tissue, unspecified"
+    }
+  ],
+  "betadinegargle": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "betadineoral": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    }
+  ],
+  "betadinespray": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    }
+  ],
+  "povidoneiodine": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "L08.9",
+      "description": "Local infection of skin and subcutaneous tissue, unspecified"
+    }
+  ],
+  "benzydamine": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "strepsils": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "J31.2",
+      "description": "Chronic pharyngitis"
+    }
+  ],
+  "difflam": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "difflamspray": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    }
+  ],
+  "tantum": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "tantumverde": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "hexoral": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "sorethroat": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    }
+  ],
+  "pharyngitis": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J31.2",
+      "description": "Chronic pharyngitis"
+    }
+  ],
+  "tonsillitis": [
+    {
+      "code": "J03.90",
+      "description": "Acute tonsillitis, unspecified"
+    },
+    {
+      "code": "J35.01",
+      "description": "Chronic tonsillitis"
+    }
+  ],
+  "laryngitis": [
+    {
+      "code": "J04.0",
+      "description": "Acute laryngitis"
+    },
+    {
+      "code": "J37.0",
+      "description": "Chronic laryngitis"
+    }
+  ],
+  "brufen": [
+    {
+      "code": "M79.3",
+      "description": "Panniculitis, unspecified"
+    },
+    {
+      "code": "M25.50",
+      "description": "Pain in unspecified joint"
+    },
+    {
+      "code": "R52",
+      "description": "Pain, unspecified"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    }
+  ],
+  "voltaren": [
+    {
+      "code": "M25.50",
+      "description": "Pain in unspecified joint"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M79.1",
+      "description": "Myalgia"
+    },
+    {
+      "code": "R52",
+      "description": "Pain, unspecified"
+    }
+  ],
+  "cataflam": [
+    {
+      "code": "M25.50",
+      "description": "Pain in unspecified joint"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "K08.89",
+      "description": "Other specified disorders of teeth and supporting structures"
+    }
+  ],
+  "panadol": [
+    {
+      "code": "R50.9",
+      "description": "Fever, unspecified"
+    },
+    {
+      "code": "R51",
+      "description": "Headache"
+    },
+    {
+      "code": "R52",
+      "description": "Pain, unspecified"
+    },
+    {
+      "code": "M79.1",
+      "description": "Myalgia"
+    }
+  ],
+  "tylenol": [
+    {
+      "code": "R50.9",
+      "description": "Fever, unspecified"
+    },
+    {
+      "code": "R51",
+      "description": "Headache"
+    },
+    {
+      "code": "R52",
+      "description": "Pain, unspecified"
+    }
+  ],
+  "advil": [
+    {
+      "code": "R50.9",
+      "description": "Fever, unspecified"
+    },
+    {
+      "code": "R51",
+      "description": "Headache"
+    },
+    {
+      "code": "M25.50",
+      "description": "Pain in unspecified joint"
+    }
+  ],
+  "ventolin": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.20",
+      "description": "Mild intermittent asthma, uncomplicated"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with acute exacerbation"
+    },
+    {
+      "code": "R06.2",
+      "description": "Wheezing"
+    }
+  ],
+  "seretide": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.30",
+      "description": "Mild persistent asthma, uncomplicated"
+    },
+    {
+      "code": "J44.9",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    }
+  ],
+  "symbicort": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.40",
+      "description": "Moderate persistent asthma, uncomplicated"
+    },
+    {
+      "code": "J44.9",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    }
+  ],
+  "pulmicort": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.30",
+      "description": "Mild persistent asthma, uncomplicated"
+    }
+  ],
+  "atrovent": [
+    {
+      "code": "J44.9",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    },
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma, uncomplicated"
+    }
+  ],
+  "spiriva": [
+    {
+      "code": "J44.9",
+      "description": "Chronic obstructive pulmonary disease, unspecified"
+    },
+    {
+      "code": "J44.1",
+      "description": "Chronic obstructive pulmonary disease with acute exacerbation"
+    }
+  ],
+  "nexium": [
+    {
+      "code": "K21.0",
+      "description": "Gastro-esophageal reflux disease with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer, unspecified as acute or chronic, without hemorrhage or perforation"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    }
+  ],
+  "losec": [
+    {
+      "code": "K21.0",
+      "description": "Gastro-esophageal reflux disease with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer, unspecified"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    }
+  ],
+  "pantoloc": [
+    {
+      "code": "K21.0",
+      "description": "Gastro-esophageal reflux disease with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer, unspecified"
+    }
+  ],
+  "zantac": [
+    {
+      "code": "K21.0",
+      "description": "Gastro-esophageal reflux disease with esophagitis"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    }
+  ],
+  "motilium": [
+    {
+      "code": "R11.0",
+      "description": "Nausea"
+    },
+    {
+      "code": "R11.2",
+      "description": "Nausea with vomiting, unspecified"
+    },
+    {
+      "code": "K30",
+      "description": "Functional dyspepsia"
+    }
+  ],
+  "imodium": [
+    {
+      "code": "K59.1",
+      "description": "Functional diarrhea"
+    },
+    {
+      "code": "A09",
+      "description": "Infectious gastroenteritis and colitis, unspecified"
+    }
+  ],
+  "duphalac": [
+    {
+      "code": "K59.00",
+      "description": "Constipation, unspecified"
+    },
+    {
+      "code": "K59.09",
+      "description": "Other constipation"
+    }
+  ],
+  "lipitor": [
+    {
+      "code": "E78.00",
+      "description": "Pure hypercholesterolemia, unspecified"
+    },
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia, unspecified"
+    }
+  ],
+  "crestor": [
+    {
+      "code": "E78.00",
+      "description": "Pure hypercholesterolemia, unspecified"
+    },
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia, unspecified"
+    }
+  ],
+  "zocor": [
+    {
+      "code": "E78.00",
+      "description": "Pure hypercholesterolemia, unspecified"
+    },
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia, unspecified"
+    }
+  ],
+  "norvasc": [
+    {
+      "code": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina pectoris, unspecified"
+    }
+  ],
+  "concor": [
+    {
+      "code": "I10",
+      "description": "Essential (primary) hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure, unspecified"
+    },
+    {
+      "code": "I25.10",
+      "description": "Atherosclerotic heart disease of native coronary artery"
+    }
+  ],
+  "plavix": [
+    {
+      "code": "I25.10",
+      "description": "Atherosclerotic heart disease of native coronary artery"
+    },
+    {
+      "code": "I63.9",
+      "description": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "Z95.1",
+      "description": "Presence of aortocoronary bypass graft"
+    }
+  ],
+  "aspirin": [
+    {
+      "code": "I25.10",
+      "description": "Atherosclerotic heart disease of native coronary artery"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina pectoris, unspecified"
+    },
+    {
+      "code": "R51",
+      "description": "Headache"
+    }
+  ],
+  "glucophage": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes mellitus with hyperglycemia"
+    }
+  ],
+  "januvia": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes mellitus with hyperglycemia"
+    }
+  ],
+  "amaryl": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes mellitus with hyperglycemia"
+    }
+  ],
+  "lantus": [
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes mellitus without complications"
+    },
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    }
+  ],
+  "novorapid": [
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes mellitus without complications"
+    },
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus without complications"
+    }
+  ],
+  "augmentin": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "N39.0",
+      "description": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis, unspecified"
+    }
+  ],
+  "zithromax": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "J20.9",
+      "description": "Acute bronchitis, unspecified"
+    }
+  ],
+  "ciprobay": [
+    {
+      "code": "N39.0",
+      "description": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "A09",
+      "description": "Infectious gastroenteritis and colitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    }
+  ],
+  "klacid": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    }
+  ],
+  "flagyl": [
+    {
+      "code": "A07.1",
+      "description": "Giardiasis [lambliasis]"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis, unspecified, without bleeding"
+    },
+    {
+      "code": "N76.0",
+      "description": "Acute vaginitis"
+    }
+  ],
+  "zyrtec": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    }
+  ],
+  "claritine": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    }
+  ],
+  "telfast": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    }
+  ],
+  "aerius": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria, unspecified"
+    }
+  ],
+  "flixonase": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    }
+  ],
+  "nasonex": [
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis, unspecified"
+    },
+    {
+      "code": "J32.9",
+      "description": "Chronic sinusitis, unspecified"
+    }
+  ],
+  "lexapro": [
+    {
+      "code": "F32.9",
+      "description": "Major depressive disorder, single episode, unspecified"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    }
+  ],
+  "zoloft": [
+    {
+      "code": "F32.9",
+      "description": "Major depressive disorder, single episode, unspecified"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "code": "F40.10",
+      "description": "Social phobia, unspecified"
+    }
+  ],
+  "prozac": [
+    {
+      "code": "F32.9",
+      "description": "Major depressive disorder, single episode, unspecified"
+    },
+    {
+      "code": "F50.00",
+      "description": "Anorexia nervosa, unspecified"
+    }
+  ],
+  "xanax": [
+    {
+      "code": "F41.0",
+      "description": "Panic disorder [episodic paroxysmal anxiety]"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    }
+  ],
+  "stilnox": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "F51.01",
+      "description": "Primary insomnia"
+    }
+  ],
+  "lyrica": [
+    {
+      "code": "G89.29",
+      "description": "Other chronic pain"
+    },
+    {
+      "code": "G62.9",
+      "description": "Polyneuropathy, unspecified"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    }
+  ],
+  "neurontin": [
+    {
+      "code": "G40.909",
+      "description": "Epilepsy, unspecified, not intractable"
+    },
+    {
+      "code": "G89.29",
+      "description": "Other chronic pain"
+    },
+    {
+      "code": "G62.9",
+      "description": "Polyneuropathy, unspecified"
+    }
+  ],
+  "dermovate": [
+    {
+      "code": "L30.9",
+      "description": "Dermatitis, unspecified"
+    },
+    {
+      "code": "L40.9",
+      "description": "Psoriasis, unspecified"
+    },
+    {
+      "code": "L20.9",
+      "description": "Atopic dermatitis, unspecified"
+    }
+  ],
+  "elocon": [
+    {
+      "code": "L30.9",
+      "description": "Dermatitis, unspecified"
+    },
+    {
+      "code": "L20.9",
+      "description": "Atopic dermatitis, unspecified"
+    }
+  ],
+  "fucicort": [
+    {
+      "code": "L30.9",
+      "description": "Dermatitis, unspecified"
+    },
+    {
+      "code": "L08.9",
+      "description": "Local infection of skin and subcutaneous tissue, unspecified"
+    }
+  ],
+  "fucidin": [
+    {
+      "code": "L08.9",
+      "description": "Local infection of skin and subcutaneous tissue, unspecified"
+    },
+    {
+      "code": "L01.00",
+      "description": "Impetigo, unspecified"
+    }
+  ],
+  "canesten": [
+    {
+      "code": "B37.3",
+      "description": "Candidiasis of vulva and vagina"
+    },
+    {
+      "code": "B35.3",
+      "description": "Tinea pedis"
+    },
+    {
+      "code": "B35.6",
+      "description": "Tinea cruris"
+    }
+  ],
+  "lamisil": [
+    {
+      "code": "B35.1",
+      "description": "Tinea unguium"
+    },
+    {
+      "code": "B35.3",
+      "description": "Tinea pedis"
+    },
+    {
+      "code": "B35.4",
+      "description": "Tinea corporis"
+    }
+  ],
+  "viagra": [
+    {
+      "code": "N52.9",
+      "description": "Male erectile dysfunction, unspecified"
+    },
+    {
+      "code": "I27.0",
+      "description": "Primary pulmonary hypertension"
+    }
+  ],
+  "cialis": [
+    {
+      "code": "N52.9",
+      "description": "Male erectile dysfunction, unspecified"
+    },
+    {
+      "code": "N40.0",
+      "description": "Benign prostatic hyperplasia without lower urinary tract symptoms"
+    }
+  ],
+  "levitra": [
+    {
+      "code": "N52.9",
+      "description": "Male erectile dysfunction, unspecified"
+    }
+  ],
+  "euthyrox": [
+    {
+      "code": "E03.9",
+      "description": "Hypothyroidism, unspecified"
+    },
+    {
+      "code": "E01.8",
+      "description": "Other iodine-deficiency related thyroid disorders"
+    }
+  ],
+  "eltroxin": [
+    {
+      "code": "E03.9",
+      "description": "Hypothyroidism, unspecified"
+    }
+  ],
+  "versatis": [
+    {
+      "code": "G89.29",
+      "description": "Other chronic pain"
+    },
+    {
+      "code": "B02.29",
+      "description": "Postherpetic neuralgia"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "G50.9",
+      "description": "Disorder of trigeminal nerve, unspecified"
+    },
+    {
+      "code": "G89.3",
+      "description": "Neoplastic related pain (acute) (chronic)"
+    }
+  ],
+  "paracetamol": [
+    {
+      "code": "R50.9",
+      "description": "Fever"
+    },
+    {
+      "code": "R51",
+      "description": "Headache"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "R52",
+      "description": "Pain"
+    },
+    {
+      "code": "G43.909",
+      "description": "Migraine"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    }
+  ],
+  "acetaminophen": [
+    {
+      "code": "R50.9",
+      "description": "Fever"
+    },
+    {
+      "code": "R51",
+      "description": "Headache"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "R52",
+      "description": "Pain"
+    },
+    {
+      "code": "G43.909",
+      "description": "Migraine"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    }
+  ],
+  "ibuprofen": [
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "R50.9",
+      "description": "Fever"
+    },
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "R52",
+      "description": "Pain"
+    },
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    }
+  ],
+  "diclofenac": [
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    },
+    {
+      "code": "R52",
+      "description": "Pain"
+    },
+    {
+      "code": "M89.9",
+      "description": "Disorder of bone"
+    }
+  ],
+  "naproxen": [
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    },
+    {
+      "code": "R50.9",
+      "description": "Fever"
+    },
+    {
+      "code": "R52",
+      "description": "Pain"
+    }
+  ],
+  "celecoxib": [
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    },
+    {
+      "code": "R52",
+      "description": "Pain"
+    }
+  ],
+  "indomethacin": [
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "R52",
+      "description": "Pain"
+    }
+  ],
+  "ketorolac": [
+    {
+      "code": "R52",
+      "description": "Pain"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "M89.9",
+      "description": "Disorder of bone"
+    },
+    {
+      "code": "R50.9",
+      "description": "Fever"
+    }
+  ],
+  "tramadol": [
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "R52",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    }
+  ],
+  "codeine": [
+    {
+      "code": "R52",
+      "description": "Pain"
+    },
+    {
+      "code": "R05",
+      "description": "Cough"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "R50.9",
+      "description": "Fever"
+    },
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    }
+  ],
+  "morphine": [
+    {
+      "code": "R52",
+      "description": "Severe pain"
+    },
+    {
+      "code": "C80.1",
+      "description": "Cancer pain"
+    },
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    },
+    {
+      "code": "R50.9",
+      "description": "Fever"
+    }
+  ],
+  "oxycodone": [
+    {
+      "code": "R52",
+      "description": "Severe pain"
+    },
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "C80.1",
+      "description": "Cancer pain"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    }
+  ],
+  "hydrocodone": [
+    {
+      "code": "R52",
+      "description": "Pain"
+    },
+    {
+      "code": "R05",
+      "description": "Cough"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "M25.5",
+      "description": "Joint pain"
+    },
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    }
+  ],
+  "fentanyl": [
+    {
+      "code": "R52",
+      "description": "Severe chronic pain"
+    },
+    {
+      "code": "C80.1",
+      "description": "Cancer pain"
+    },
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    }
+  ],
+  "amoxicillin": [
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    },
+    {
+      "code": "H66.9",
+      "description": "Otitis media"
+    },
+    {
+      "code": "J03.90",
+      "description": "Tonsillitis"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    }
+  ],
+  "amoxicillinclavulanate": [
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    },
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "H66.9",
+      "description": "Otitis media"
+    },
+    {
+      "code": "J03.90",
+      "description": "Tonsillitis"
+    },
+    {
+      "code": "K61.0",
+      "description": "Anal abscess"
+    },
+    {
+      "code": "K04.7",
+      "description": "Periapical abscess"
+    }
+  ],
+  "azithromycin": [
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "A54.9",
+      "description": "Gonorrhea"
+    },
+    {
+      "code": "A56.00",
+      "description": "Chlamydial infection"
+    },
+    {
+      "code": "J03.90",
+      "description": "Tonsillitis"
+    },
+    {
+      "code": "H66.9",
+      "description": "Otitis media"
+    }
+  ],
+  "erythromycin": [
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "L70.0",
+      "description": "Acne"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "A54.9",
+      "description": "Gonorrhea"
+    }
+  ],
+  "ciprofloxacin": [
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "K52.9",
+      "description": "Gastroenteritis"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "A54.9",
+      "description": "Gonorrhea"
+    },
+    {
+      "code": "K61.0",
+      "description": "Anal abscess"
+    },
+    {
+      "code": "N41.9",
+      "description": "Prostatitis"
+    }
+  ],
+  "levofloxacin": [
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    },
+    {
+      "code": "N41.9",
+      "description": "Prostatitis"
+    }
+  ],
+  "moxifloxacin": [
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    },
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    }
+  ],
+  "cephalexin": [
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "H66.9",
+      "description": "Otitis media"
+    },
+    {
+      "code": "J03.90",
+      "description": "Tonsillitis"
+    }
+  ],
+  "cefuroxime": [
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "H66.9",
+      "description": "Otitis media"
+    }
+  ],
+  "ceftriaxone": [
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "A54.9",
+      "description": "Gonorrhea"
+    },
+    {
+      "code": "A41.9",
+      "description": "Sepsis"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "M00.9",
+      "description": "Arthritis"
+    }
+  ],
+  "doxycycline": [
+    {
+      "code": "L70.0",
+      "description": "Acne"
+    },
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "A69.20",
+      "description": "Lyme disease"
+    },
+    {
+      "code": "A56.00",
+      "description": "Chlamydial infection"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "J01.90",
+      "description": "Sinusitis"
+    },
+    {
+      "code": "A54.9",
+      "description": "Gonorrhea"
+    }
+  ],
+  "minocycline": [
+    {
+      "code": "L70.0",
+      "description": "Acne"
+    },
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "A69.20",
+      "description": "Lyme disease"
+    }
+  ],
+  "tetracycline": [
+    {
+      "code": "L70.0",
+      "description": "Acne"
+    },
+    {
+      "code": "A69.20",
+      "description": "Lyme disease"
+    },
+    {
+      "code": "J02.9",
+      "description": "Pharyngitis"
+    },
+    {
+      "code": "A56.00",
+      "description": "Chlamydial infection"
+    },
+    {
+      "code": "A54.9",
+      "description": "Gonorrhea"
+    }
+  ],
+  "trimethoprimsulfamethoxazole": [
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "L03.90",
+      "description": "Cellulitis"
+    },
+    {
+      "code": "A41.9",
+      "description": "Sepsis"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    }
+  ],
+  "nitrofurantoin": [
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "N30.90",
+      "description": "Cystitis"
+    },
+    {
+      "code": "N10",
+      "description": "Acute pyelonephritis"
+    }
+  ],
+  "metformin": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E11.21",
+      "description": "Type 2 diabetes with diabetic nephropathy"
+    },
+    {
+      "code": "E11.40",
+      "description": "Type 2 diabetes with diabetic neuropathy"
+    },
+    {
+      "code": "E11.22",
+      "description": "Type 2 diabetes with diabetic chronic kidney disease"
+    }
+  ],
+  "glimepiride": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    }
+  ],
+  "glyburide": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    }
+  ],
+  "glipizide": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    }
+  ],
+  "sitagliptin": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E11.21",
+      "description": "Type 2 diabetes with diabetic nephropathy"
+    }
+  ],
+  "linagliptin": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    }
+  ],
+  "saxagliptin": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    }
+  ],
+  "empagliflozin": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E11.22",
+      "description": "Type 2 diabetes with diabetic chronic kidney disease"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "dapagliflozin": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E11.22",
+      "description": "Type 2 diabetes with diabetic chronic kidney disease"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "canagliflozin": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E11.22",
+      "description": "Type 2 diabetes with diabetic chronic kidney disease"
+    }
+  ],
+  "insulin": [
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes"
+    },
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E10.65",
+      "description": "Type 1 diabetes with hyperglycemia"
+    }
+  ],
+  "insulinglargine": [
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes"
+    },
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E10.65",
+      "description": "Type 1 diabetes with hyperglycemia"
+    }
+  ],
+  "insulinlispro": [
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes"
+    },
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E10.65",
+      "description": "Type 1 diabetes with hyperglycemia"
+    }
+  ],
+  "insulinaspart": [
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes"
+    },
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes"
+    },
+    {
+      "code": "E11.65",
+      "description": "Type 2 diabetes with hyperglycemia"
+    },
+    {
+      "code": "E10.65",
+      "description": "Type 1 diabetes with hyperglycemia"
+    }
+  ],
+  "amlodipine": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "nifedipine": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "diltiazem": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "verapamil": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "lisinopril": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    },
+    {
+      "code": "E11.22",
+      "description": "Type 2 diabetes with diabetic chronic kidney disease"
+    }
+  ],
+  "ramipril": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    }
+  ],
+  "perindopril": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "losartan": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    },
+    {
+      "code": "E11.22",
+      "description": "Type 2 diabetes with diabetic chronic kidney disease"
+    }
+  ],
+  "valsartan": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    }
+  ],
+  "irbesartan": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    }
+  ],
+  "telmisartan": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    }
+  ],
+  "candesartan": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    }
+  ],
+  "atenolol": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I20.9",
+      "description": "Angina"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    }
+  ],
+  "metoprolol": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    },
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    }
+  ],
+  "bisoprolol": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    }
+  ],
+  "carvedilol": [
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    }
+  ],
+  "atorvastatin": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    },
+    {
+      "code": "I63.9",
+      "description": "Cerebral infarction"
+    }
+  ],
+  "simvastatin": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    }
+  ],
+  "rosuvastatin": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    }
+  ],
+  "pravastatin": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "lovastatin": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "fluvastatin": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "ezetimibe": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "fenofibrate": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "E78.2",
+      "description": "Mixed hyperlipidemia"
+    }
+  ],
+  "gemfibrozil": [
+    {
+      "code": "E78.5",
+      "description": "Hyperlipidemia"
+    },
+    {
+      "code": "E78.2",
+      "description": "Mixed hyperlipidemia"
+    }
+  ],
+  "clopidogrel": [
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    },
+    {
+      "code": "I63.9",
+      "description": "Cerebral infarction"
+    },
+    {
+      "code": "I74.9",
+      "description": "Peripheral vascular disease"
+    }
+  ],
+  "warfarin": [
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I26.99",
+      "description": "Pulmonary embolism"
+    },
+    {
+      "code": "I82.90",
+      "description": "Deep vein thrombosis"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction"
+    }
+  ],
+  "rivaroxaban": [
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I26.99",
+      "description": "Pulmonary embolism"
+    },
+    {
+      "code": "I82.90",
+      "description": "Deep vein thrombosis"
+    }
+  ],
+  "apixaban": [
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I26.99",
+      "description": "Pulmonary embolism"
+    },
+    {
+      "code": "I82.90",
+      "description": "Deep vein thrombosis"
+    }
+  ],
+  "dabigatran": [
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I26.99",
+      "description": "Pulmonary embolism"
+    },
+    {
+      "code": "I82.90",
+      "description": "Deep vein thrombosis"
+    }
+  ],
+  "edoxaban": [
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I26.99",
+      "description": "Pulmonary embolism"
+    },
+    {
+      "code": "I82.90",
+      "description": "Deep vein thrombosis"
+    }
+  ],
+  "hydrochlorothiazide": [
+    {
+      "code": "I10",
+      "description": "Hypertension"
+    },
+    {
+      "code": "R60.9",
+      "description": "Edema"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    }
+  ],
+  "amiodarone": [
+    {
+      "code": "I48.91",
+      "description": "Atrial fibrillation"
+    },
+    {
+      "code": "I49.9",
+      "description": "Cardiac arrhythmia"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "terbutaline": [
+    {
+      "code": "J45.909",
+      "description": "Asthma"
+    },
+    {
+      "code": "J44.9",
+      "description": "COPD"
+    },
+    {
+      "code": "J20.9",
+      "description": "Bronchitis"
+    }
+  ],
+  "salmeterol": [
+    {
+      "code": "J45.909",
+      "description": "Asthma"
+    },
+    {
+      "code": "J44.9",
+      "description": "COPD"
+    }
+  ],
+  "formoterol": [
+    {
+      "code": "J45.909",
+      "description": "Asthma"
+    },
+    {
+      "code": "J44.9",
+      "description": "COPD"
+    }
+  ],
+  "beclomethasone": [
+    {
+      "code": "J45.909",
+      "description": "Asthma"
+    },
+    {
+      "code": "J30.9",
+      "description": "Allergic rhinitis"
+    },
+    {
+      "code": "J44.9",
+      "description": "COPD"
+    }
+  ],
+  "tiotropium": [
+    {
+      "code": "J44.9",
+      "description": "COPD"
+    },
+    {
+      "code": "J45.909",
+      "description": "Asthma"
+    }
+  ],
+  "pantoprazole": [
+    {
+      "code": "K21.9",
+      "description": "GERD"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis"
+    },
+    {
+      "code": "K27.9",
+      "description": "Peptic ulcer"
+    }
+  ],
+  "esomeprazole": [
+    {
+      "code": "K21.9",
+      "description": "GERD"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis"
+    },
+    {
+      "code": "K27.9",
+      "description": "Peptic ulcer"
+    }
+  ],
+  "lansoprazole": [
+    {
+      "code": "K21.9",
+      "description": "GERD"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer"
+    },
+    {
+      "code": "K29.70",
+      "description": "Gastritis"
+    },
+    {
+      "code": "K27.9",
+      "description": "Peptic ulcer"
+    }
+  ],
+  "metoclopramide": [
+    {
+      "code": "R11.2",
+      "description": "Nausea and vomiting"
+    },
+    {
+      "code": "K31.84",
+      "description": "Gastroparesis"
+    },
+    {
+      "code": "R11.0",
+      "description": "Nausea"
+    }
+  ],
+  "loperamide": [
+    {
+      "code": "K59.1",
+      "description": "Diarrhea"
+    },
+    {
+      "code": "K52.9",
+      "description": "Gastroenteritis"
+    },
+    {
+      "code": "A09",
+      "description": "Infectious gastroenteritis"
+    }
+  ],
+  "bisacodyl": [
+    {
+      "code": "K59.00",
+      "description": "Constipation"
+    },
+    {
+      "code": "K59.09",
+      "description": "Other functional intestinal disorders"
+    }
+  ],
+  "lactulose": [
+    {
+      "code": "K59.00",
+      "description": "Constipation"
+    },
+    {
+      "code": "K72.90",
+      "description": "Hepatic encephalopathy"
+    },
+    {
+      "code": "K59.09",
+      "description": "Other functional intestinal disorders"
+    }
+  ],
+  "prednisone": [
+    {
+      "code": "J45.909",
+      "description": "Asthma"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "L40.0",
+      "description": "Psoriasis"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    },
+    {
+      "code": "D69.3",
+      "description": "Immune thrombocytopenia"
+    }
+  ],
+  "dexamethasone": [
+    {
+      "code": "R11.2",
+      "description": "Nausea and vomiting"
+    },
+    {
+      "code": "G93.1",
+      "description": "Cerebral edema"
+    },
+    {
+      "code": "C80.1",
+      "description": "Cancer pain"
+    },
+    {
+      "code": "J45.909",
+      "description": "Asthma"
+    }
+  ],
+  "hydrocortisone": [
+    {
+      "code": "L20.9",
+      "description": "Atopic dermatitis"
+    },
+    {
+      "code": "L40.0",
+      "description": "Psoriasis"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria"
+    },
+    {
+      "code": "E27.2",
+      "description": "Addison disease"
+    }
+  ],
+  "betamethasone": [
+    {
+      "code": "L40.0",
+      "description": "Psoriasis"
+    },
+    {
+      "code": "L20.9",
+      "description": "Atopic dermatitis"
+    },
+    {
+      "code": "L50.9",
+      "description": "Urticaria"
+    }
+  ],
+  "levothyroxine": [
+    {
+      "code": "E03.9",
+      "description": "Hypothyroidism"
+    },
+    {
+      "code": "E89.0",
+      "description": "Postprocedural hypothyroidism"
+    },
+    {
+      "code": "E03.1",
+      "description": "Congenital hypothyroidism"
+    }
+  ],
+  "sertraline": [
+    {
+      "code": "F32.9",
+      "description": "Major depression"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "code": "F42",
+      "description": "Obsessive-compulsive disorder"
+    }
+  ],
+  "escitalopram": [
+    {
+      "code": "F32.9",
+      "description": "Major depression"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    }
+  ],
+  "citalopram": [
+    {
+      "code": "F32.9",
+      "description": "Major depression"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    }
+  ],
+  "paroxetine": [
+    {
+      "code": "F32.9",
+      "description": "Major depression"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "F42",
+      "description": "Obsessive-compulsive disorder"
+    }
+  ],
+  "venlafaxine": [
+    {
+      "code": "F32.9",
+      "description": "Major depression"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    }
+  ],
+  "duloxetine": [
+    {
+      "code": "F32.9",
+      "description": "Major depression"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    }
+  ],
+  "alprazolam": [
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "code": "F41.0",
+      "description": "Panic disorder"
+    }
+  ],
+  "diazepam": [
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "code": "G40.909",
+      "description": "Epilepsy"
+    },
+    {
+      "code": "M62.81",
+      "description": "Muscle spasm"
+    }
+  ],
+  "lorazepam": [
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    },
+    {
+      "code": "F41.0",
+      "description": "Panic disorder"
+    }
+  ],
+  "clonazepam": [
+    {
+      "code": "F41.0",
+      "description": "Panic disorder"
+    },
+    {
+      "code": "G40.909",
+      "description": "Epilepsy"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    }
+  ],
+  "zolpidem": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia"
+    },
+    {
+      "code": "G47.01",
+      "description": "Insomnia with sleep apnea"
+    }
+  ],
+  "melatonin": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "G47.09",
+      "description": "Other insomnia"
+    },
+    {
+      "code": "F51.01",
+      "description": "Primary insomnia"
+    },
+    {
+      "code": "G47.9",
+      "description": "Sleep disorder, unspecified"
+    },
+    {
+      "code": "G47.10",
+      "description": "Hypersomnia, unspecified"
+    }
+  ],
+  "gabapentin": [
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "G40.909",
+      "description": "Epilepsy"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "G50.1",
+      "description": "Trigeminal neuralgia"
+    }
+  ],
+  "pregabalin": [
+    {
+      "code": "G89.29",
+      "description": "Chronic pain"
+    },
+    {
+      "code": "G40.909",
+      "description": "Epilepsy"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    },
+    {
+      "code": "G50.1",
+      "description": "Trigeminal neuralgia"
+    },
+    {
+      "code": "F41.9",
+      "description": "Anxiety disorder"
+    }
+  ],
+  "allopurinol": [
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    },
+    {
+      "code": "M10.00",
+      "description": "Idiopathic gout"
+    },
+    {
+      "code": "N18.9",
+      "description": "Chronic kidney disease"
+    }
+  ],
+  "colchicine": [
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    },
+    {
+      "code": "M10.00",
+      "description": "Idiopathic gout"
+    },
+    {
+      "code": "M79.3",
+      "description": "Myalgia"
+    }
+  ],
+  "methotrexate": [
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "L40.0",
+      "description": "Psoriasis"
+    },
+    {
+      "code": "M45",
+      "description": "Ankylosing spondylitis"
+    }
+  ],
+  "hydroxychloroquine": [
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "M32.9",
+      "description": "Systemic lupus erythematosus"
+    },
+    {
+      "code": "L40.0",
+      "description": "Psoriasis"
+    }
+  ],
+  "chlorhexidine": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "K05.10",
+      "description": "Chronic gingivitis, plaque induced"
+    },
+    {
+      "code": "K12.1",
+      "description": "Other forms of stomatitis"
+    }
+  ],
+  "finasteride": [
+    {
+      "code": "N40.0",
+      "description": "Benign prostatic hyperplasia"
+    },
+    {
+      "code": "N40.1",
+      "description": "Benign prostatic hyperplasia with lower urinary tract symptoms"
+    }
+  ],
+  "tamsulosin": [
+    {
+      "code": "N40.0",
+      "description": "Benign prostatic hyperplasia"
+    },
+    {
+      "code": "N40.1",
+      "description": "Benign prostatic hyperplasia with lower urinary tract symptoms"
+    }
+  ],
+  "sildenafil": [
+    {
+      "code": "N52.9",
+      "description": "Erectile dysfunction"
+    },
+    {
+      "code": "I27.0",
+      "description": "Pulmonary hypertension"
+    }
+  ],
+  "tadalafil": [
+    {
+      "code": "N52.9",
+      "description": "Erectile dysfunction"
+    },
+    {
+      "code": "I27.0",
+      "description": "Pulmonary hypertension"
+    },
+    {
+      "code": "N40.0",
+      "description": "Benign prostatic hyperplasia"
+    }
+  ],
+  "isotretinoin": [
+    {
+      "code": "L70.0",
+      "description": "Acne vulgaris"
+    },
+    {
+      "code": "L70.1",
+      "description": "Acne conglobata"
+    }
+  ],
+  "tretinoin": [
+    {
+      "code": "L70.0",
+      "description": "Acne vulgaris"
+    },
+    {
+      "code": "L57.0",
+      "description": "Actinic keratosis"
+    }
+  ],
+  "fluconazole": [
+    {
+      "code": "B37.9",
+      "description": "Candidiasis"
+    },
+    {
+      "code": "B37.2",
+      "description": "Candidiasis of skin and nail"
+    },
+    {
+      "code": "B37.3",
+      "description": "Candidiasis of vulva and vagina"
+    }
+  ],
+  "ketoconazole": [
+    {
+      "code": "B37.9",
+      "description": "Candidiasis"
+    },
+    {
+      "code": "B35.1",
+      "description": "Tinea unguium"
+    },
+    {
+      "code": "B35.0",
+      "description": "Tinea barbae and tinea capitis"
+    }
+  ],
+  "terbinafine": [
+    {
+      "code": "B35.1",
+      "description": "Tinea unguium"
+    },
+    {
+      "code": "B35.3",
+      "description": "Tinea pedis"
+    },
+    {
+      "code": "B35.4",
+      "description": "Tinea corporis"
+    }
+  ],
+  "vitamind": [
+    {
+      "code": "E55.9",
+      "description": "Vitamin D deficiency"
+    },
+    {
+      "code": "M81.0",
+      "description": "Age-related osteoporosis"
+    },
+    {
+      "code": "E55.0",
+      "description": "Rickets"
+    }
+  ],
+  "vitaminb12": [
+    {
+      "code": "E53.8",
+      "description": "Vitamin B12 deficiency"
+    },
+    {
+      "code": "D51.9",
+      "description": "Vitamin B12 deficiency anemia"
+    },
+    {
+      "code": "E53.8",
+      "description": "Deficiency of other B group vitamins"
+    }
+  ],
+  "folicacid": [
+    {
+      "code": "D52.9",
+      "description": "Folate deficiency anemia"
+    },
+    {
+      "code": "O35.3XX0",
+      "description": "Maternal care for (suspected) chromosomal abnormality in fetus"
+    }
+  ],
+  "iron": [
+    {
+      "code": "D50.9",
+      "description": "Iron deficiency anemia"
+    },
+    {
+      "code": "D50.0",
+      "description": "Iron deficiency anemia secondary to blood loss"
+    }
+  ],
+  "calcium": [
+    {
+      "code": "E58",
+      "description": "Calcium deficiency"
+    },
+    {
+      "code": "M81.0",
+      "description": "Age-related osteoporosis"
+    },
+    {
+      "code": "E83.52",
+      "description": "Hypocalcemia"
+    }
+  ],
+  "magnesium": [
+    {
+      "code": "E61.2",
+      "description": "Magnesium deficiency"
+    },
+    {
+      "code": "E83.42",
+      "description": "Hypomagnesemia"
+    }
+  ],
+  "zinc": [
+    {
+      "code": "E60",
+      "description": "Zinc deficiency"
+    },
+    {
+      "code": "E50.9",
+      "description": "Vitamin A deficiency"
+    }
+  ],
+  "claritin": [
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    }
+  ],
+  "clarityn": [
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    }
+  ],
+  "xyzal": [
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "L50.0",
+      "description": "Allergic urticaria"
+    }
+  ],
+  "concorcor": [
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    },
+    {
+      "code": "I25.10",
+      "description": "Coronary artery disease"
+    }
+  ],
+  "atacand": [
+    {
+      "code": "I10",
+      "description": "Essential hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "diovan": [
+    {
+      "code": "I10",
+      "description": "Essential hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "coversyl": [
+    {
+      "code": "I10",
+      "description": "Essential hypertension"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "losecmups": [
+    {
+      "code": "K21.0",
+      "description": "GERD with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer"
+    }
+  ],
+  "pariet": [
+    {
+      "code": "K21.0",
+      "description": "GERD with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer"
+    }
+  ],
+  "controloc": [
+    {
+      "code": "K21.0",
+      "description": "GERD with esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "description": "Gastric ulcer"
+    }
+  ],
+  "glucophagexr": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus"
+    }
+  ],
+  "jardiance": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus"
+    },
+    {
+      "code": "I50.9",
+      "description": "Heart failure"
+    }
+  ],
+  "levemir": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus"
+    },
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes mellitus"
+    }
+  ],
+  "humalog": [
+    {
+      "code": "E11.9",
+      "description": "Type 2 diabetes mellitus"
+    },
+    {
+      "code": "E10.9",
+      "description": "Type 1 diabetes mellitus"
+    }
+  ],
+  "symbicortturbuhaler": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma"
+    },
+    {
+      "code": "J44.9",
+      "description": "COPD"
+    }
+  ],
+  "symbicortrapihaler": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma"
+    },
+    {
+      "code": "J44.9",
+      "description": "COPD"
+    }
+  ],
+  "singulair": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma"
+    },
+    {
+      "code": "J30.1",
+      "description": "Allergic rhinitis"
+    }
+  ],
+  "flixotide": [
+    {
+      "code": "J45.909",
+      "description": "Unspecified asthma"
+    }
+  ],
+  "celebrex": [
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "M54.5",
+      "description": "Low back pain"
+    }
+  ],
+  "arcoxia": [
+    {
+      "code": "M15.9",
+      "description": "Osteoarthritis"
+    },
+    {
+      "code": "M05.9",
+      "description": "Rheumatoid arthritis"
+    },
+    {
+      "code": "M10.9",
+      "description": "Gout"
+    }
+  ],
+  "augmentines": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis"
+    },
+    {
+      "code": "H66.90",
+      "description": "Otitis media"
+    }
+  ],
+  "amoxil": [
+    {
+      "code": "J02.9",
+      "description": "Acute pharyngitis"
+    },
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "H66.90",
+      "description": "Otitis media"
+    }
+  ],
+  "tavanic": [
+    {
+      "code": "J18.9",
+      "description": "Pneumonia"
+    },
+    {
+      "code": "N39.0",
+      "description": "UTI"
+    },
+    {
+      "code": "J01.90",
+      "description": "Acute sinusitis"
+    }
+  ],
+  "effexor": [
+    {
+      "code": "F32.9",
+      "description": "Major depressive disorder"
+    },
+    {
+      "code": "F41.1",
+      "description": "Generalized anxiety disorder"
+    }
+  ],
+  "neomercazole": [
+    {
+      "code": "E05.90",
+      "description": "Hyperthyroidism"
+    },
+    {
+      "code": "E05.00",
+      "description": "Graves disease"
+    }
+  ],
+  "inhixa": [
+    {
+      "code": "I82.90",
+      "description": "Acute embolism and thrombosis of unspecified vein"
+    },
+    {
+      "code": "I26.99",
+      "description": "Other pulmonary embolism without acute cor pulmonale"
+    },
+    {
+      "code": "I48.91",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "Z79.01",
+      "description": "Long term (current) use of anticoagulants"
+    }
+  ],
+  "enoxaparin": [
+    {
+      "code": "I82.90",
+      "description": "Acute embolism and thrombosis of unspecified vein"
+    },
+    {
+      "code": "I26.99",
+      "description": "Other pulmonary embolism without acute cor pulmonale"
+    },
+    {
+      "code": "I48.91",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "Z79.01",
+      "description": "Long term (current) use of anticoagulants"
+    }
+  ],
+  "enoxaparinsodium": [
+    {
+      "code": "I82.90",
+      "description": "Acute embolism and thrombosis of unspecified vein"
+    },
+    {
+      "code": "I26.99",
+      "description": "Other pulmonary embolism without acute cor pulmonale"
+    },
+    {
+      "code": "I48.91",
+      "description": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "I21.9",
+      "description": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "Z79.01",
+      "description": "Long term (current) use of anticoagulants"
+    }
+  ],
+  "kidnaps": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "G47.09",
+      "description": "Other insomnia"
+    },
+    {
+      "code": "F51.01",
+      "description": "Primary insomnia"
+    },
+    {
+      "code": "G47.9",
+      "description": "Sleep disorder, unspecified"
+    },
+    {
+      "code": "G47.10",
+      "description": "Hypersomnia, unspecified"
+    }
+  ],
+  "kalmeton": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "G47.09",
+      "description": "Other insomnia"
+    },
+    {
+      "code": "F51.01",
+      "description": "Primary insomnia"
+    },
+    {
+      "code": "G47.9",
+      "description": "Sleep disorder, unspecified"
+    },
+    {
+      "code": "G47.10",
+      "description": "Hypersomnia, unspecified"
+    }
+  ],
+  "slonix": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "G47.09",
+      "description": "Other insomnia"
+    },
+    {
+      "code": "F51.01",
+      "description": "Primary insomnia"
+    },
+    {
+      "code": "G47.9",
+      "description": "Sleep disorder, unspecified"
+    },
+    {
+      "code": "G47.10",
+      "description": "Hypersomnia, unspecified"
+    }
+  ],
+  "circadin": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "G47.09",
+      "description": "Other insomnia"
+    },
+    {
+      "code": "F51.01",
+      "description": "Primary insomnia"
+    },
+    {
+      "code": "G47.9",
+      "description": "Sleep disorder, unspecified"
+    },
+    {
+      "code": "G47.10",
+      "description": "Hypersomnia, unspecified"
+    }
+  ],
+  "melaton": [
+    {
+      "code": "G47.00",
+      "description": "Insomnia, unspecified"
+    },
+    {
+      "code": "G47.09",
+      "description": "Other insomnia"
+    },
+    {
+      "code": "F51.01",
+      "description": "Primary insomnia"
+    },
+    {
+      "code": "G47.9",
+      "description": "Sleep disorder, unspecified"
+    },
+    {
+      "code": "G47.10",
+      "description": "Hypersomnia, unspecified"
+    }
+  ]
+}

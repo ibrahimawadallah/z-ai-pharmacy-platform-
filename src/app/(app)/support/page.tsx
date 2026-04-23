@@ -1,79 +1,138 @@
 'use client'
 
-import React from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Mail, Phone, FileText, MessageCircle } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MessageCircle, Mail, Phone, FileText, ChevronRight } from 'lucide-react'
 
-const supportOptions = [
-  { 
-    icon: Mail, 
-    title: 'Email Support', 
-    desc: 'Get answers within 24 hours for non-urgent inquiries',
-    action: 'Send Email',
-    color: 'bg-primary/10 text-primary'
+const faqs = [
+  {
+    question: 'How do I search for a medication?',
+    answer: 'Use the search bar on the dashboard or navigate to /search to browse and filter medications by name, category, or ICD-10 code.'
   },
-  { 
-    icon: Phone, 
-    title: 'Phone Support', 
-    desc: '24/7 emergency hotline for urgent clinical questions',
-    action: 'Call Now',
-    color: 'bg-success/10 text-success'
+  {
+    question: 'How does drug interaction checking work?',
+    answer: 'Add multiple drugs to your comparison list and click "Check Interactions" to see potential interactions categorized by severity.'
   },
-  { 
-    icon: FileText, 
-    title: 'Documentation', 
-    desc: 'Browse guides, tutorials, and API documentation',
-    action: 'View Docs',
-    color: 'bg-amber-500/10 text-amber-500'
+  {
+    question: 'Is this platform approved by UAE health authorities?',
+    answer: 'Yes, DrugEye is UAE Ministry of Health approved and complies with all local regulations.'
   },
-  { 
-    icon: MessageCircle, 
-    title: 'Live Chat', 
-    desc: 'Chat with our clinical support team in real-time',
-    action: 'Start Chat',
-    color: 'bg-violet-500/10 text-violet-500'
+  {
+    question: 'How do I report a drug safety concern?',
+    answer: 'Navigate to /alerts to view recent safety alerts. You can also contact our support team directly.'
   }
 ]
 
 export default function SupportPage() {
-  return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
-      {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="px-6 py-5 max-w-7xl mx-auto">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Badge variant="outline" className="text-xs">Help Center</Badge>
-            </div>
-            <h1 className="text-xl font-semibold">Clinical Support</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Need assistance? Our support team is here to help
-            </p>
-          </div>
-        </div>
-      </div>
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [submitted, setSubmitted] = useState(false)
 
-      <div className="px-6 py-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {supportOptions.map((option, i) => (
-            <div key={option.title} className="bg-card border border-border rounded-lg p-6 hover:border-primary/50 transition-colors">
-              <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-lg ${option.color}`}>
-                  <option.icon className="w-6 h-6" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-medium mb-2">{option.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{option.desc}</p>
-                  <Button variant="outline" size="sm">
-                    {option.action}
-                  </Button>
-                </div>
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmitted(true)
+  }
+
+  return (
+    <div className="container mx-auto py-10 px-4 max-w-4xl">
+      <h1 className="text-3xl font-bold mb-2">Support</h1>
+      <p className="text-muted-foreground mb-8">Get help with DrugEye</p>
+
+      <div className="grid md:grid-cols-3 gap-6 mb-10">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <div className="font-medium">Live Chat</div>
+                <div className="text-sm text-muted-foreground">Available 24/7</div>
               </div>
             </div>
-          ))}
-        </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <div className="font-medium">Email</div>
+                <div className="text-sm text-muted-foreground">support@drugeye.com</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Phone className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <div className="font-medium">UAE Helpline</div>
+                <div className="text-sm text-muted-foreground">800 DRUGEYE</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      <Card className="mb-10">
+        <CardHeader>
+          <CardTitle>Frequently Asked Questions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="border-b pb-4 last:border-0 last:pb-0">
+                <div className="font-medium mb-1">{faq.question}</div>
+                <div className="text-sm text-muted-foreground">{faq.answer}</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Contact Us</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {submitted ? (
+            <div className="text-center py-8">
+              <div className="text-lg font-medium text-primary">Thank you!</div>
+              <div className="text-muted-foreground">We'll respond within 24 hours.</div>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Input
+                  placeholder="Your email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <textarea
+                  placeholder="How can we help?"
+                  className="w-full min-h-[120px] p-3 rounded-md border border-input bg-background text-sm"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">Send Message</Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
