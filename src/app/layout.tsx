@@ -43,6 +43,11 @@ export const metadata: Metadata = {
   creator: "Z-AI Pharmacy Platform",
   publisher: "Z-AI Pharmacy Platform",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/drugeye-logo.png",
+    apple: "/drugeye-logo.png",
+    shortcut: "/drugeye-logo.png",
+  },
   robots: {
     index: true,
     follow: true,
@@ -66,10 +71,10 @@ export const metadata: Metadata = {
     description: "Advanced AI-powered pharmaceutical intelligence platform for UAE healthcare professionals. 21,885+ drugs, disease databases, interaction checking, and AI clinical assistant.",
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Z-AI Pharmacy Platform - AI Clinical Assistant",
+        url: "/drugeye-logo.png",
+        width: 1152,
+        height: 896,
+        alt: "DrugEye Intelligence - AI Clinical Decision Support",
         type: "image/png",
       },
     ],
@@ -78,7 +83,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Z-AI Pharmacy Platform | AI Clinical Assistant",
     description: "AI-powered pharmaceutical intelligence for UAE clinicians. 21,885+ drugs, disease databases, interaction checking, and clinical decision support.",
-    images: ["/og-image.png"],
+    images: ["/drugeye-logo.png"],
     creator: "@zaiplatform",
     site: "@zaiplatform",
   },

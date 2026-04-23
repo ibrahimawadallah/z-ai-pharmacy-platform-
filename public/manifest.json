@@ -8,20 +8,10 @@
   "theme_color": "#0f766e",
   "icons": [
     {
-      "src": "/logo.svg",
+      "src": "/drugeye-logo.png",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/icon",
-      "sizes": "64x64",
-      "type": "image/png"
-    },
-    {
-      "src": "/apple-icon",
-      "sizes": "180x180",
-      "type": "image/png"
     }
   ]
 }
