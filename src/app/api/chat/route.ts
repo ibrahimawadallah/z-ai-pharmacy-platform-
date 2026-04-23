@@ -1,5 +1,5 @@
 import { groq } from '@ai-sdk/groq';
-import { streamText, tool } from 'ai';
+import { streamText, tool, convertToModelMessages, stepCountIs, type UIMessage } from 'ai';
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { getAuthSession } from '@/lib/auth';
@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
 // Tool 1: Drug Database Lookup
 const drugLookupTool = tool({
   description: 'Look up drug information from the UAE MOH database including dosage, interactions, side effects, pregnancy category, and warnings',
-  parameters: z.object({
+  inputSchema: z.object({
     drugName: z.string().describe('Name of the drug to look up (generic or brand name)')
   }),
   execute: async ({ drugName }) => {
@@ -68,7 +68,7 @@ const drugLookupTool = tool({
 // Tool 2: Drug Interaction Checker
 const interactionCheckerTool = tool({
   description: 'Check for interactions between two drugs',
-  parameters: z.object({
+  inputSchema: z.object({
     drug1: z.string().describe('First drug name'),
     drug2: z.string().describe('Second drug name')
   }),
@@ -145,7 +145,7 @@ const interactionCheckerTool = tool({
 // Tool 3: Side Effects Lookup
 const sideEffectsTool = tool({
   description: 'Get side effects for a specific drug',
-  parameters: z.object({
+  inputSchema: z.object({
     drugName: z.string().describe('Drug name to get side effects for')
   }),
   execute: async ({ drugName }) => {
@@ -184,7 +184,7 @@ const sideEffectsTool = tool({
 // Tool 4: Pregnancy Safety Check
 const pregnancyCheckTool = tool({
   description: 'Check pregnancy safety category and warnings for a drug',
-  parameters: z.object({
+  inputSchema: z.object({
     drugName: z.string().describe('Drug name to check pregnancy safety for')
   }),
   execute: async ({ drugName }) => {
@@ -226,7 +226,7 @@ const pregnancyCheckTool = tool({
 // Tool 5: Disease Information Lookup
 const diseaseLookupTool = tool({
   description: 'Look up disease information including symptoms, diagnostic criteria, investigations, complications, and treatment guidelines',
-  parameters: z.object({
+  inputSchema: z.object({
     diseaseName: z.string().describe('Disease name or ICD-10 code to look up')
   }),
   execute: async ({ diseaseName }) => {
@@ -291,7 +291,7 @@ const diseaseLookupTool = tool({
 // Tool 6: Treatment Recommendations for Disease
 const treatmentRecommendationTool = tool({
   description: 'Get treatment recommendations for a specific disease with drug details',
-  parameters: z.object({
+  inputSchema: z.object({
     diseaseName: z.string().describe('Disease name to get treatment recommendations for'),
     lineOfTherapy: z.string().optional().describe('Filter by line of therapy: first_line, second_line, alternative, adjunct')
   }),
@@ -402,17 +402,24 @@ export async function POST(req: Request) {
   try {
     const session = await getAuthSession();
 
-    const { messages, patientContext } = await req.json();
+    const { messages, patientContext }: { messages: UIMessage[]; patientContext?: { id: string } } = await req.json();
 
-    // Get the latest user message for NLP analysis
-    const lastUserMessage = messages.filter((m: any) => m.role === 'user').pop()
-    let nlpAnalysis = null
+    // Get the latest user message for NLP analysis. v6 UIMessages carry `parts` (not `content`),
+    // so flatten text parts into a single string.
+    const lastUserMessage = messages.filter((m) => m.role === 'user').pop()
+    const lastUserText = lastUserMessage
+      ? lastUserMessage.parts
+          .filter((p): p is { type: 'text'; text: string } => p.type === 'text' && typeof (p as { text?: unknown }).text === 'string')
+          .map((p) => p.text)
+          .join(' ')
+      : ''
+    let nlpAnalysis: { intent: ReturnType<typeof classifyIntent>; drugs: ReturnType<typeof extractDrugEntities>; validation: ReturnType<typeof validateClinicalQuery> } | null = null
 
-    if (lastUserMessage) {
+    if (lastUserText) {
       // Perform NLP analysis on user query
-      const intent = classifyIntent(lastUserMessage.content)
-      const drugs = extractDrugEntities(lastUserMessage.content)
-      const validation = validateClinicalQuery(lastUserMessage.content)
+      const intent = classifyIntent(lastUserText)
+      const drugs = extractDrugEntities(lastUserText)
+      const validation = validateClinicalQuery(lastUserText)
 
       nlpAnalysis = { intent, drugs, validation }
 
@@ -443,10 +450,10 @@ Please use this context to provide a more targeted response.`;
     }
 
     // Stream response with tools enabled
-    const result = await streamText({
+    const result = streamText({
       model: groq(process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'),
       system: systemPrompt,
-      messages,
+      messages: await convertToModelMessages(messages),
       tools: {
         drugLookup: drugLookupTool,
         checkInteraction: interactionCheckerTool,
@@ -455,12 +462,12 @@ Please use this context to provide a more targeted response.`;
         lookupDisease: diseaseLookupTool,
         getTreatmentRecommendations: treatmentRecommendationTool
       },
-      maxSteps: 5, // Allow multi-step tool usage
+      // Allow multi-step tool usage: model -> tool call -> tool result -> model text
+      stopWhen: stepCountIs(5),
       temperature: 0.2,
-      maxTokens: 2000
     });
 
-    return result.toTextStreamResponse();
+    return result.toUIMessageStreamResponse();
   } catch (error: any) {
     console.error("[CHAT_ERROR]", error);
     return new Response(JSON.stringify({ error: 'Internal Server Error', details: error.message }), {
