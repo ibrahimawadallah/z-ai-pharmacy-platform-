@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
 
     // Create user
     const insertResult = await sql`
-      INSERT INTO "User" (id, email, password, name, role, "isVerified", "licenseNumber", "createdAt")
-      VALUES (gen_random_uuid(), ${normalizedEmail}, ${hashedPassword}, ${name}, 'user', false, ${body.licenseNumber || null}, NOW())
+      INSERT INTO "User" (id, email, password, name, role, "isVerified", "licenseNumber", "createdAt", "updatedAt")
+      VALUES (gen_random_uuid(), ${normalizedEmail}, ${hashedPassword}, ${name}, 'user', false, ${body.licenseNumber || null}, NOW(), NOW())
       RETURNING id, email, name, role, "isVerified", "createdAt"
     `
 
