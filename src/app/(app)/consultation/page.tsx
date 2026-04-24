@@ -15,17 +15,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { classifyIntent, extractDrugEntities, getIntentDescription } from '@/lib/nlp'
+import { useApp } from '@/providers/AppProvider'
 
-const suggestedQueries = [
-  'What are the contraindications for Metformin in renal impairment?',
-  'Check interactions between Warfarin and Aspirin',
-  'What is the pediatric dosing for Amoxicillin?',
-  'Compare efficacy of Atorvastatin vs Rosuvastatin',
-  'What are the side effects of SSRIs?',
-  'Drugs to avoid in pregnancy',
-]
-
-const INITIAL_GREETING = {
+const INITIAL_GREETING_EN = {
   id: 'greeting',
   role: 'assistant' as const,
   parts: [
@@ -39,6 +31,24 @@ const INITIAL_GREETING = {
         '• **Side Effects** - Review adverse reactions\n' +
         '• **Therapeutic Alternatives** - Compare treatment options\n\n' +
         'Attach a patient using the **Attach patient** button above to get personalized, allergy- and interaction-aware recommendations.',
+    },
+  ],
+}
+
+const INITIAL_GREETING_AR = {
+  id: 'greeting',
+  role: 'assistant' as const,
+  parts: [
+    {
+      type: 'text' as const,
+      text:
+        'مرحباً! أنا مساعدك السريري بالذكاء الاصطناعي من DrugEye Intelligence. يمكنني مساعدتك في:\n\n' +
+        '• **التداخلات الدوائية** - كشف التراكيب الضارة\n' +
+        '• **إرشادات الجرعة** - حساب الجرعات المناسبة\n' +
+        '• **موانع الاستخدام** - المخاوف الأمانية\n' +
+        '• **الآثار الجانبية** - التفاعلات غير المرغوبة\n' +
+        '• **البدائل العلاجية** - مقارنة خيارات العلاج\n\n' +
+        'اضغط على **إرفاق مريض** بالأعلى للحصول على توصيات مخصصة تأخذ بالاعتبار الحساسية والتداخلات الدوائية.',
     },
   ],
 }
@@ -80,22 +90,33 @@ function ageYears(dob: string): number {
 }
 
 export default function ConsultationPage() {
+  const { language, t } = useApp()
+  const initialGreeting = language === 'ar' ? INITIAL_GREETING_AR : INITIAL_GREETING_EN
+
   // Patient-context state. The ref is what the transport body reads per-request,
   // so the active patient follows the user without having to rebuild the transport.
   const [activePatient, setActivePatient] = useState<PatientSummary | null>(null)
   const activePatientIdRef = useRef<string | null>(null)
+  const languageRef = useRef<'en' | 'ar'>(language)
   useEffect(() => {
     activePatientIdRef.current = activePatient?.id ?? null
   }, [activePatient])
+  useEffect(() => {
+    languageRef.current = language
+  }, [language])
 
   // Build the transport once and let its `body` callback read the latest patient id
-  // out of the ref at request time. The ref indirection is intentional — it keeps the
-  // transport stable across patient switches so useChat's internal stream isn't torn down.
+  // and locale out of refs at request time. The ref indirection is intentional — it
+  // keeps the transport stable across patient and language switches so useChat's
+  // internal stream isn't torn down mid-conversation.
   /* eslint-disable react-hooks/refs */
   const transport = useMemo(() => {
     const getBody = () => {
       const id = activePatientIdRef.current
-      return id ? { patientContext: { id } } : {}
+      const lang = languageRef.current
+      const body: Record<string, unknown> = { language: lang }
+      if (id) body.patientContext = { id }
+      return body
     }
     return new DefaultChatTransport({ api: '/api/chat', body: getBody })
   }, [])
@@ -103,7 +124,7 @@ export default function ConsultationPage() {
 
   const { messages, sendMessage, status, setMessages, error } = useChat({
     transport,
-    messages: [INITIAL_GREETING as unknown as UIMessage],
+    messages: [initialGreeting as unknown as UIMessage],
   })
 
   const [input, setInput] = useState('')
@@ -164,7 +185,7 @@ export default function ConsultationPage() {
   }
 
   const handleNewChat = () => {
-    setMessages([INITIAL_GREETING as unknown as UIMessage])
+    setMessages([initialGreeting as unknown as UIMessage])
   }
 
   const handleSelectPatient = (p: PatientSummary) => {
@@ -188,8 +209,8 @@ export default function ConsultationPage() {
                 <Brain className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">AI Clinical Consultation</h1>
-                <p className="text-sm text-gray-500">Powered by DrugEye Intelligence</p>
+                <h1 className="text-xl font-bold text-gray-900">{t.consultationTitle}</h1>
+                <p className="text-sm text-gray-500">{t.consultationSubtitle}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -203,12 +224,12 @@ export default function ConsultationPage() {
                   className="gap-2"
                 >
                   <UserPlus className="w-4 h-4" />
-                  Attach patient
+                  {t.attachPatient}
                 </Button>
               )}
               <Button variant="outline" onClick={handleNewChat} className="gap-2">
                 <RefreshCw className="w-4 h-4" />
-                New Chat
+                {t.newChat}
               </Button>
             </div>
           </div>
@@ -234,20 +255,20 @@ export default function ConsultationPage() {
                   <div className="text-xs text-emerald-800 flex flex-wrap gap-x-3 gap-y-1">
                     <span>{ageYears(activePatient.dateOfBirth)}y · {activePatient.gender}</span>
                     {activePatient.isPregnant && (
-                      <span className="text-rose-700 font-medium">Pregnant</span>
+                      <span className="text-rose-700 font-medium">{t.pregnantLabel}</span>
                     )}
                     {activePatient.allergies && (
-                      <span>Allergies: {activePatient.allergies}</span>
+                      <span>{t.allergiesLabel}: {activePatient.allergies}</span>
                     )}
                     {typeof activePatient.medicationCount === 'number' && (
-                      <span>{activePatient.medicationCount} active med{activePatient.medicationCount === 1 ? '' : 's'}</span>
+                      <span>{activePatient.medicationCount} {activePatient.medicationCount === 1 ? t.activeMedsSuffix : t.activeMedsSuffixPlural}</span>
                     )}
                   </div>
                 </div>
               </div>
               <Button variant="ghost" size="sm" onClick={handleClearPatient} className="gap-1 text-emerald-800 hover:text-emerald-900">
                 <X className="w-3.5 h-3.5" />
-                Detach
+                {t.detachPatient}
               </Button>
             </CardContent>
           </Card>
@@ -394,9 +415,9 @@ export default function ConsultationPage() {
           {/* Suggested Queries */}
           {messages.length <= 1 && (
             <div className="px-6 pb-4">
-              <p className="text-sm text-gray-500 mb-3">Try asking:</p>
+              <p className="text-sm text-gray-500 mb-3">{language === 'ar' ? 'جرّب أن تسأل:' : 'Try asking:'}</p>
               <div className="flex flex-wrap gap-2">
-                {suggestedQueries.map((query, idx) => (
+                {(t.suggestedQueries as string[]).map((query, idx) => (
                   <Button
                     key={idx}
                     variant="outline"
@@ -417,8 +438,8 @@ export default function ConsultationPage() {
               <Input
                 placeholder={
                   activePatient
-                    ? `Ask about ${activePatient.firstName}'s drugs, interactions, dosages…`
-                    : 'Ask about drug interactions, dosages, contraindications...'
+                    ? (t.askAboutPatientPlaceholder as string).replace('{name}', activePatient.firstName)
+                    : (t.askPlaceholder as string)
                 }
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

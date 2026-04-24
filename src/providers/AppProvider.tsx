@@ -53,6 +53,7 @@ export interface UAEDrug {
 
 interface AppContextType {
   language: 'en' | 'ar'
+  dir: 'ltr' | 'rtl'
   setLanguage: (lang: 'en' | 'ar') => void
   stats: { active: number; thiqa: number; basic: number; interactions: number; sideEffects: number; icd10Mappings: number }
   categories: { name: string; count: number }[]
@@ -86,6 +87,41 @@ const translations = {
     disclaimer: 'MEDICAL DISCLAIMER',
     disclaimerText: 'This platform is for educational purposes only. All drug information should be verified with official UAE Ministry of Health sources. Clinical decisions should be made by qualified healthcare professionals. The content has been reviewed by a licensed pharmacist but should not replace professional medical judgment.',
     verifiedByPharmacist: 'Content reviewed and approved by licensed pharmacist',
+    iUnderstand: 'I Understand',
+    help: 'Help',
+    drugsLabel: 'Drugs',
+    interactionsLabel: 'Interactions',
+    settings: 'Settings',
+    support: 'Support',
+    about: 'About',
+    // Consultation page
+    consultationTitle: 'AI Clinical Consultation',
+    consultationSubtitle: 'Powered by DrugEye Intelligence',
+    attachPatient: 'Attach patient',
+    detachPatient: 'Detach',
+    newChat: 'New Chat',
+    askPlaceholder: 'Ask about a drug, interaction, dose, or disease...',
+    askAboutPatientPlaceholder: "Ask about {name}'s drugs, interactions, or dose...",
+    sendMessage: 'Send',
+    pregnantLabel: 'Pregnant',
+    allergiesLabel: 'Allergies',
+    activeMedsSuffix: 'active med',
+    activeMedsSuffixPlural: 'active meds',
+    suggestedQueries: [
+      'What are the contraindications for Metformin in renal impairment?',
+      'Check interactions between Warfarin and Aspirin',
+      'What is the pediatric dosing for Amoxicillin?',
+      'Compare efficacy of Atorvastatin vs Rosuvastatin',
+      'What are the side effects of SSRIs?',
+      'Drugs to avoid in pregnancy',
+    ],
+    // Data source page / badge
+    dataSourceTitle: 'Data Sources & Freshness',
+    poweredByMoh: 'Powered by UAE MOH registry',
+    drugsWord: 'drugs',
+    lastSynced: 'last synced',
+    sourcesLink: 'sources',
+    neverSynced: 'never',
     difficulty: { Beginner: 'Beginner', Intermediate: 'Intermediate', Advanced: 'Advanced' },
     severity: { severe: 'Severe', moderate: 'Moderate', minor: 'Minor' },
     fdaCategories: {
@@ -117,6 +153,41 @@ const translations = {
     disclaimer: 'إخلاء المسؤولية الطبية',
     disclaimerText: 'هذه المنصة للأغراض التعليمية فقط. يجب التحقق من جميع معلومات الأدوية من المصادر الرسمية لوزارة الصحة الإماراتية. القرارات السريرية يجب أن تتخذ من قبل متخصصين صحيين مؤهلين.',
     verifiedByPharmacist: 'تمت مراجعة المحتوى والموافقة عليه من قبل صيدلي مرخص',
+    iUnderstand: 'فهمت',
+    help: 'مساعدة',
+    drugsLabel: 'دواء',
+    interactionsLabel: 'تداخلات',
+    settings: 'الإعدادات',
+    support: 'الدعم',
+    about: 'حول',
+    // Consultation page
+    consultationTitle: 'الاستشارة السريرية بالذكاء الاصطناعي',
+    consultationSubtitle: 'مدعوم من DrugEye Intelligence',
+    attachPatient: 'إرفاق مريض',
+    detachPatient: 'إلغاء الإرفاق',
+    newChat: 'محادثة جديدة',
+    askPlaceholder: 'اسأل عن دواء، تداخل، جرعة أو مرض...',
+    askAboutPatientPlaceholder: 'اسأل عن أدوية {name} وتداخلاتها وجرعاتها...',
+    sendMessage: 'إرسال',
+    pregnantLabel: 'حامل',
+    allergiesLabel: 'حساسية',
+    activeMedsSuffix: 'دواء فعّال',
+    activeMedsSuffixPlural: 'أدوية فعّالة',
+    suggestedQueries: [
+      'ما موانع استخدام الميتفورمين في القصور الكلوي؟',
+      'افحص التداخلات بين الوارفارين والأسبرين',
+      'ما جرعات الأموكسيسيلين للأطفال؟',
+      'قارن بين فعالية الأتورفاستاتين والروزوفاستاتين',
+      'ما الآثار الجانبية لمثبطات استرداد السيروتونين (SSRIs)؟',
+      'أدوية يجب تجنبها خلال الحمل',
+    ],
+    // Data source page / badge
+    dataSourceTitle: 'مصادر البيانات والتحديث',
+    poweredByMoh: 'مدعوم بسجل وزارة الصحة الإماراتية',
+    drugsWord: 'دواء',
+    lastSynced: 'آخر تحديث',
+    sourcesLink: 'المصادر',
+    neverSynced: 'لم تتم المزامنة',
     difficulty: { Beginner: 'مبتدئ', Intermediate: 'متوسط', Advanced: 'متقدم' },
     severity: { severe: 'شديد', moderate: 'متوسط', minor: 'بسيط' },
     fdaCategories: {
@@ -136,6 +207,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<{ drugCode: string; drugName: string; notes?: string }[]>([])
 
   const t = translations[language]
+  const dir: 'ltr' | 'rtl' = language === 'ar' ? 'rtl' : 'ltr'
+
+  // Keep <html lang> and <html dir> in sync with the selected locale.
+  // We write both so CSS logical properties (`rtl:` variants, `start`/`end`)
+  // resolve correctly on every authenticated route.
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    document.documentElement.lang = language
+    document.documentElement.dir = dir
+  }, [language, dir])
 
   // Load stats and categories
   useEffect(() => {
@@ -225,7 +306,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ language, setLanguage: handleSetLanguage, stats, categories, favorites, toggleFavorite, t }}>
+    <AppContext.Provider value={{ language, dir, setLanguage: handleSetLanguage, stats, categories, favorites, toggleFavorite, t }}>
       {children}
     </AppContext.Provider>
   )
