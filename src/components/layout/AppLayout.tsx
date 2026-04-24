@@ -20,6 +20,7 @@ import { AuthModal } from '@/components/auth/auth-modal'
 import { useApp } from '@/providers/AppProvider'
 import { ClinicalAIChat } from '@/components/ai/ClinicalAIChat'
 import { DrugEyeLogo } from '@/components/logo/DrugEyeLogo'
+import { DataSourceBadge } from '@/components/data-source/DataSourceBadge'
 
 const navItems = [
   { id: 'settings', label: 'Settings', labelAr: 'الإعدادات', icon: Settings, href: '/settings' },
@@ -266,10 +267,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           
-          <div className="mt-8 pt-8 border-t border-border text-center">
-            <p className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
-              © 2026 DrugEye Pharmacy Platform. All rights reserved.
-            </p>
+          <div className="mt-8 pt-8 border-t border-border">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+              <DataSourceBadge variant="footer" />
+              <p className="text-muted-foreground text-[10px] uppercase tracking-widest font-bold text-center">
+                © 2026 DrugEye Pharmacy Platform. All rights reserved.
+              </p>
+            </div>
           </div>
         </div>
       </footer>
