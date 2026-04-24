@@ -26,24 +26,30 @@ export default function DosagePage() {
   const drugParam = searchParams.get('name')
   const drugId = searchParams.get('drug')
 
-  const searchDrugs = React.useCallback(async (term?: string) => {
-    const query = (term ?? searchTerm).trim()
-    if (!query) return
+  // Pure fetcher — does not close over `searchTerm`, so its identity is
+  // stable. This lets the URL-param effect invoke it without cycling through
+  // React state.
+  const fetchDrugs = async (query: string) => {
+    const q = query.trim()
+    if (!q) return
     setIsLoading(true)
     try {
-      const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(query)}&limit=10`)
+      const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(q)}&limit=10`)
       const data = await res.json()
       setDrugs(data.data || [])
     } catch {}
     setIsLoading(false)
-  }, [searchTerm])
+  }
+
+  const searchDrugs = () => fetchDrugs(searchTerm)
 
   useEffect(() => {
     if (drugParam) {
       setSearchTerm(drugParam)
-      searchDrugs(drugParam)
+      fetchDrugs(drugParam)
     }
-  }, [drugParam, searchDrugs])
+     
+  }, [drugParam])
 
   const selectDrug = (drug: UAEDrug) => {
     setSelectedDrug(drug)
