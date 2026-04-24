@@ -6,10 +6,10 @@ import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 // framer-motion removed for SSR compatibility
-import { 
+import {
   Shield, Languages, Moon, Sun, User, LogIn, Info,
   Search, Settings, HelpCircle, FileText, Sparkles,
-  AlertTriangle
+  AlertTriangle, Activity
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -22,6 +22,7 @@ import { ClinicalAIChat } from '@/components/ai/ClinicalAIChat'
 import { DrugEyeLogo } from '@/components/logo/DrugEyeLogo'
 
 const navItems = [
+  { id: 'audit', label: 'Audit', labelAr: 'السجل', icon: Activity, href: '/audit', requiresAuth: true },
   { id: 'settings', label: 'Settings', labelAr: 'الإعدادات', icon: Settings, href: '/settings' },
   { id: 'support', label: 'Support', labelAr: 'الدعم', icon: HelpCircle, href: '/support' },
   { id: 'about', label: 'About', labelAr: 'حول', icon: FileText, href: '/about' },
@@ -119,20 +120,22 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             
             {/* Navigation Links */}
             <nav className="flex items-center gap-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    pathname === item.href 
-                      ? 'bg-primary/10 text-primary' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span className="hidden md:inline">{language === 'en' ? item.label : item.labelAr}</span>
-                </Link>
-              ))}
+              {navItems
+                .filter((item) => !item.requiresAuth || status === 'authenticated')
+                .map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      pathname === item.href
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span className="hidden md:inline">{language === 'en' ? item.label : item.labelAr}</span>
+                  </Link>
+                ))}
             </nav>
             
             <div className="flex items-center gap-3">

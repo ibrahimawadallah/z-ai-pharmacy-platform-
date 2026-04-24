@@ -4,6 +4,7 @@ import GithubProvider from "next-auth/providers/github"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
+import { createAuditLogDirect } from "@/lib/security"
 
 if (!process.env.NEXTAUTH_URL && process.env.VERCEL_URL) {
   process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`
@@ -194,11 +195,23 @@ export const authOptions: NextAuthOptions = {
   },
 
   events: {
-    async signIn({ user }) {
-      // User signed in successfully
+    async signIn({ user, account }) {
+      try {
+        await createAuditLogDirect(user.id, 'login', 'auth', {
+          email: user.email,
+          provider: account?.provider ?? 'credentials'
+        })
+      } catch (err) {
+        console.error('signIn audit log failed:', err)
+      }
     },
     async signOut({ token }) {
-      // User signed out successfully
+      try {
+        const userId = (token as { id?: string } | null)?.id ?? null
+        await createAuditLogDirect(userId, 'logout', 'auth', null)
+      } catch (err) {
+        console.error('signOut audit log failed:', err)
+      }
     },
   },
 

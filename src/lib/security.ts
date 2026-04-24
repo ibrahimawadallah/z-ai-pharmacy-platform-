@@ -420,7 +420,7 @@ export async function createAuditLog(
 ): Promise<void> {
   const ip = getClientIP(request)
   const userAgent = request.headers.get('user-agent')?.slice(0, 500)
-  
+
   try {
     await db.auditLog.create({
       data: {
@@ -430,6 +430,32 @@ export async function createAuditLog(
         details: details ? JSON.stringify(details) : null,
         ipAddress: hashIP(ip),
         userAgent
+      }
+    })
+  } catch (error) {
+    console.error('Failed to create audit log:', error)
+  }
+}
+
+/**
+ * Create an audit log entry without access to a Request (e.g. from
+ * NextAuth `events.signIn` / `events.signOut` callbacks).
+ */
+export async function createAuditLogDirect(
+  userId: string | null,
+  action: string,
+  resource: string | null = null,
+  details: Record<string, unknown> | null = null
+): Promise<void> {
+  try {
+    await db.auditLog.create({
+      data: {
+        userId,
+        action,
+        resource,
+        details: details ? JSON.stringify(details) : null,
+        ipAddress: null,
+        userAgent: null
       }
     })
   } catch (error) {
