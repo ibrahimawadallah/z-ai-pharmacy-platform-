@@ -124,8 +124,9 @@ export default function ConsultationPage() {
       })
       .catch((e: Error) => {
         if (cancelled) return
+        // Leave `patients` as null so closing and reopening the picker
+        // re-triggers the fetch; only record the error message for display.
         setPatientsError(e.message)
-        setPatients([])
       })
     return () => {
       cancelled = true
@@ -195,7 +196,10 @@ export default function ConsultationPage() {
               {!activePatient && (
                 <Button
                   variant="outline"
-                  onClick={() => setShowPicker(true)}
+                  onClick={() => {
+                    setPatientsError(null)
+                    setShowPicker(true)
+                  }}
                   className="gap-2"
                 >
                   <UserPlus className="w-4 h-4" />
