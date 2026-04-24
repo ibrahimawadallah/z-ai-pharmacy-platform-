@@ -246,10 +246,10 @@ export default function AuditLogPage() {
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      setPage(1)
-                      fetchLogs()
-                    }
+                    // setPage(1) changes queryString → useEffect re-fetches.
+                    // Don't call fetchLogs() here too, or a stale-page request
+                    // races the real one.
+                    if (e.key === 'Enter') setPage(1)
                   }}
                 />
               </div>
