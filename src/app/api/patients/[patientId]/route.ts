@@ -2,6 +2,24 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getAuthSession } from '@/lib/auth'
 
+function normalizeList(input: unknown): string | null | undefined {
+  if (input === undefined) return undefined
+  if (input === null) return null
+  if (Array.isArray(input)) {
+    const cleaned = input.map((s) => String(s).trim()).filter(Boolean)
+    return cleaned.length ? cleaned.join(', ') : null
+  }
+  const s = String(input).trim()
+  return s.length ? s : null
+}
+
+function parseNumber(input: unknown): number | null | undefined {
+  if (input === undefined) return undefined
+  if (input === null || input === '') return null
+  const n = typeof input === 'number' ? input : parseFloat(String(input))
+  return Number.isFinite(n) ? n : null
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ patientId: string }> }
@@ -69,11 +87,13 @@ export async function PATCH(
         lastName: body.lastName,
         mrn: body.mrn,
         gender: body.gender,
-        weightKg: body.weightKg !== undefined ? parseFloat(body.weightKg) : undefined,
-        heightCm: body.heightCm !== undefined ? parseFloat(body.heightCm) : undefined,
-        creatinineClearance: body.creatinineClearance !== undefined ? parseFloat(body.creatinineClearance) : undefined,
-        allergies: body.allergies,
-        conditions: body.conditions,
+        weightKg: parseNumber(body.weightKg),
+        heightCm: parseNumber(body.heightCm),
+        creatinineClearance: parseNumber(body.creatinineClearance),
+        allergies: normalizeList(body.allergies),
+        conditions: normalizeList(body.conditions),
+        hepaticImpairment: body.hepaticImpairment !== undefined ? Boolean(body.hepaticImpairment) : undefined,
+        isPregnant: body.isPregnant !== undefined ? Boolean(body.isPregnant) : undefined,
       },
       include: {
         medications: {

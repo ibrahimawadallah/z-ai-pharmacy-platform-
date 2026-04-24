@@ -24,6 +24,7 @@ interface DrugClinicalData {
   breastfeedingSafety: string | null
   g6pdSafety: string | null
   baseDoseMgPerKg: number | null
+  baseDoseIndication: string | null
   hasWarnings: boolean
   dataSource: string
 }

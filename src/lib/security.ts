@@ -7,6 +7,12 @@
 import { db } from './db'
 import { randomBytes, createHash } from 'crypto'
 
+// Ephemeral per-process salt used only when IP_HASH_SALT is not configured.
+// This keeps IP hashes from being trivially reversible via the published
+// default string while still warning the operator to set a real secret.
+const runtimeFallbackSalt = randomBytes(32).toString('hex')
+let warnedAboutSalt = false
+
 // ============================================
 // CSRF TOKEN MANAGEMENT
 // ============================================
@@ -342,7 +348,17 @@ export function isValidPublicIP(ip: string): boolean {
  * Hash an IP address for privacy-safe storage
  */
 export function hashIP(ip: string): string {
-  const salt = process.env.IP_HASH_SALT || 'uae-drug-db-default-salt'
+  // If IP_HASH_SALT is not set we fall back to a per-process random salt so
+  // that hashes are at least not reversible with a public default. We warn
+  // loudly in non-production so the operator notices and sets a real value.
+  const salt = process.env.IP_HASH_SALT || runtimeFallbackSalt
+  if (!process.env.IP_HASH_SALT && !warnedAboutSalt) {
+    console.warn(
+      '[security] IP_HASH_SALT is not set; falling back to an ephemeral per-process salt. ' +
+        'Audit-log IP hashes will not be stable across restarts. Set IP_HASH_SALT to a secret value in production.'
+    )
+    warnedAboutSalt = true
+  }
   return createHash('sha256')
     .update(ip + salt)
     .digest('hex')
