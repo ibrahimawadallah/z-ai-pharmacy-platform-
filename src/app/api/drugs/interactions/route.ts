@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getAuthSession } from '@/lib/auth'
+import { createAuditLog } from '@/lib/security'
 
 function normalizeDrugName(value: string | null | undefined): string | null {
   if (!value) return null
@@ -88,6 +90,21 @@ export async function GET(request: Request) {
       seen.add(dedupeKey)
 
       results.push({ drug1, drug2, severity, description })
+    }
+
+    try {
+      const session = await getAuthSession()
+      if (session?.user?.id) {
+        void createAuditLog(
+          session.user.id,
+          'interaction_check',
+          ids.join(','),
+          { drugIds: ids, interactionCount: results.length },
+          request
+        )
+      }
+    } catch (err) {
+      console.error('interaction_check audit log failed:', err)
     }
 
     return NextResponse.json({

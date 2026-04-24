@@ -248,21 +248,32 @@ export type GetSearchHistoryInput = z.infer<typeof getSearchHistorySchema>
 // AUDIT LOG VALIDATION
 // ============================================
 
+export const AUDIT_ACTIONS = [
+  'drug_search',
+  'interaction_check',
+  'dosage_calculate',
+  'icd10_search',
+  'favorite_add',
+  'favorite_remove',
+  'course_start',
+  'course_complete',
+  'quiz_attempt',
+  'login',
+  'logout',
+  'signup',
+  'ai_consultation',
+  'patient_create',
+  'patient_view',
+  'patient_update',
+  'patient_delete',
+  'patient_attach_to_chat',
+  'audit_export'
+] as const
+
+export type AuditAction = (typeof AUDIT_ACTIONS)[number]
+
 export const auditLogSchema = z.object({
-  action: z.enum([
-    'drug_search',
-    'interaction_check',
-    'dosage_calculate',
-    'icd10_search',
-    'favorite_add',
-    'favorite_remove',
-    'course_start',
-    'course_complete',
-    'quiz_attempt',
-    'login',
-    'logout',
-    'signup'
-  ]),
+  action: z.enum(AUDIT_ACTIONS),
   resource: z.string().max(200).optional(),
   details: z.record(z.string(), z.unknown()).optional()
 })

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getAuthSession } from '@/lib/auth'
+import { createAuditLog } from '@/lib/security'
 
 export async function GET(
   req: Request,
@@ -29,6 +30,8 @@ export async function GET(
     if (!patient) {
       return new NextResponse('Patient not found', { status: 404 })
     }
+
+    void createAuditLog(session.user.id, 'patient_view', `patient:${patient.id}`, null, req)
 
     return NextResponse.json(patient)
   } catch (error) {
@@ -82,6 +85,8 @@ export async function PATCH(
       }
     })
 
+    void createAuditLog(session.user.id, 'patient_update', `patient:${updatedPatient.id}`, null, req)
+
     return NextResponse.json(updatedPatient)
   } catch (error) {
     console.error('[PATIENT_PATCH]', error)
@@ -116,6 +121,8 @@ export async function DELETE(
     await db.patient.delete({
       where: { id: patientId }
     })
+
+    void createAuditLog(session.user.id, 'patient_delete', `patient:${patientId}`, null, req)
 
     return new NextResponse(null, { status: 204 })
   } catch (error) {

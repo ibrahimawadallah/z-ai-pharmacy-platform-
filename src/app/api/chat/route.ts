@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { getAuthSession } from '@/lib/auth';
 import { classifyIntent, extractDrugEntities, validateClinicalQuery } from '@/lib/nlp';
+import { createAuditLog } from '@/lib/security';
 
 export const maxDuration = 60;
 
@@ -439,6 +440,20 @@ export async function POST(req: Request) {
 Patient ID: ${patientContext.id}
 Please tailor all recommendations to this patient's profile. Consider age, gender, comorbidities, allergies, and current medications when providing clinical guidance.`;
     }
+
+    // Audit log: fire-and-forget, never block the response if logging fails.
+    void createAuditLog(
+      session?.user?.id ?? null,
+      'ai_consultation',
+      patientContext?.id ? `patient:${patientContext.id}` : 'chat',
+      {
+        patientId: patientContext?.id ?? null,
+        queryPreview: lastUserText ? lastUserText.slice(0, 200) : null,
+        detectedIntent: nlpAnalysis?.intent?.intent ?? null,
+        detectedDrugs: nlpAnalysis?.drugs?.map((d) => d.name) ?? []
+      },
+      req
+    );
 
     // Add NLP context if available
     if (nlpAnalysis) {

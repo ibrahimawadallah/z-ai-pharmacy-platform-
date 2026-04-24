@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getAuthSession } from '@/lib/auth'
+import { createAuditLog } from '@/lib/security'
 
 export async function GET(req: Request) {
   try {
@@ -55,6 +56,14 @@ export async function POST(req: Request) {
         creatinineClearance: body.creatinineClearance ? parseFloat(body.creatinineClearance) : null,
       }
     })
+
+    void createAuditLog(
+      session.user.id,
+      'patient_create',
+      `patient:${patient.id}`,
+      { mrn: patient.mrn ?? null },
+      req
+    )
 
     return NextResponse.json({ patient }, { status: 201 })
   } catch (error) {

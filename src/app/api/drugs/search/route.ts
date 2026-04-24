@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getAuthSession } from '@/lib/auth'
+import { createAuditLog } from '@/lib/security'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -88,17 +90,36 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Fire-and-forget audit log for authenticated searches only. We skip anonymous
+    // traffic to avoid flooding the log with health-checks / scrapers.
+    if (query) {
+      try {
+        const session = await getAuthSession()
+        if (session?.user?.id) {
+          void createAuditLog(
+            session.user.id,
+            'drug_search',
+            query.slice(0, 100),
+            { query, page, limit, resultCount: drugs.length, total },
+            request
+          )
+        }
+      } catch (err) {
+        console.error('drug_search audit log failed:', err)
+      }
+    }
+
     return NextResponse.json({
       success: true,
       source: 'Neon PostgreSQL Database',
       usingFallback: false,
       data: drugs,
-      pagination: { 
-        page, 
-        limit, 
-        total, 
-        totalPages: Math.ceil(total / limit), 
-        hasMore: skip + limit < total 
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasMore: skip + limit < total
       }
     })
 

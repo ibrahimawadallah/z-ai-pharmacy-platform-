@@ -128,6 +128,14 @@ Identify any compliance gaps.`
       }
     } catch (ollamaErr) {
       console.error('Ollama not available:', ollamaErr)
+      const failedCount = logs.filter((l) => {
+        try {
+          const d = l.details ? JSON.parse(l.details) : null
+          return d && (d.error || d.failed === true)
+        } catch {
+          return false
+        }
+      }).length
       analysis = `AI analysis unavailable. Found ${logs.length} logs with ${failedCount} failed actions. Please review manually or ensure Ollama is running.`
     }
 
@@ -155,11 +163,21 @@ Identify any compliance gaps.`
   }
 }
 
-// GET /api/audit - Get audit logs (admin only)
+/**
+ * GET /api/audit - Browse audit logs.
+ *
+ * Admins see every log. Authenticated non-admin users see only their own logs
+ * (so clinicians can answer "what did I do last Tuesday?" for compliance) and
+ * cannot spoof `userId` to read someone else's activity.
+ *
+ * Optional query params: page, limit, action, userId (admin only), startDate,
+ * endDate, resource, search (matches resource/action/details substring),
+ * format=csv (download a CSV of up to 5000 matching rows).
+ */
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -167,76 +185,145 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Check if user is admin
-    if (session.user.role !== 'admin') {
-      return NextResponse.json(
-        { success: false, error: 'Forbidden - Admin access required' },
-        { status: 403 }
-      )
-    }
-
+    const isAdmin = session.user.role === 'admin'
     const searchParams = request.nextUrl.searchParams
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const action = searchParams.get('action')
-    const userId = searchParams.get('userId')
+    // Guard against non-numeric input (e.g. `?page=abc`) so parseInt → NaN does
+    // not propagate into Prisma's `skip` / `take` and 500 the request.
+    const parsedPage = parseInt(searchParams.get('page') || '1', 10)
+    const parsedLimit = parseInt(searchParams.get('limit') || '25', 10)
+    const page = Math.max(1, Number.isFinite(parsedPage) ? parsedPage : 1)
+    const limit = Math.min(
+      100,
+      Math.max(1, Number.isFinite(parsedLimit) ? parsedLimit : 25)
+    )
+    const action = searchParams.get('action')?.trim()
+    const requestedUserId = searchParams.get('userId')?.trim()
+    const resource = searchParams.get('resource')?.trim()
+    const search = searchParams.get('search')?.trim()
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
+    const format = (searchParams.get('format') || 'json').toLowerCase()
     const skip = (page - 1) * limit
 
-    // Build where clause
-    const where: any = {}
+    // Non-admins are always scoped to their own logs regardless of the requested userId
+    const effectiveUserId = isAdmin ? (requestedUserId || undefined) : session.user.id
 
-    if (action) {
-      where.action = action
+    type AuditWhere = {
+      action?: string
+      userId?: string
+      resource?: { contains: string; mode: 'insensitive' }
+      createdAt?: { gte?: Date; lte?: Date }
+      OR?: Array<Record<string, unknown>>
     }
+    const where: AuditWhere = {}
 
-    if (userId) {
-      where.userId = userId
-    }
+    if (action) where.action = action
+    if (effectiveUserId) where.userId = effectiveUserId
+    if (resource) where.resource = { contains: resource, mode: 'insensitive' }
 
     if (startDate || endDate) {
       where.createdAt = {}
-      if (startDate) {
-        where.createdAt.gte = new Date(startDate)
-      }
-      if (endDate) {
-        where.createdAt.lte = new Date(endDate)
-      }
+      if (startDate) where.createdAt.gte = new Date(startDate)
+      if (endDate) where.createdAt.lte = new Date(endDate)
     }
 
-    // Get total count
-    const total = await db.auditLog.count({ where })
+    if (search) {
+      where.OR = [
+        { action: { contains: search, mode: 'insensitive' } },
+        { resource: { contains: search, mode: 'insensitive' } },
+        { details: { contains: search, mode: 'insensitive' } }
+      ]
+    }
 
-    // Get audit logs with user info
-    const logs = await db.auditLog.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            role: true
+    if (format === 'csv') {
+      const logs = await db.auditLog.findMany({
+        where,
+        take: 5000,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: { id: true, email: true, name: true, role: true }
           }
         }
+      })
+
+      const header = 'timestamp,action,resource,user_email,user_name,user_role,ip_hash,user_agent,details\n'
+      const escape = (v: unknown) => {
+        if (v === null || v === undefined) return ''
+        const s = typeof v === 'string' ? v : JSON.stringify(v)
+        return '"' + s.replace(/"/g, '""') + '"'
       }
-    })
+      const rows = logs.map((l) => {
+        const details = l.details ? (() => {
+          try { return JSON.parse(l.details) } catch { return l.details }
+        })() : null
+        return [
+          l.createdAt.toISOString(),
+          l.action,
+          l.resource ?? '',
+          l.user?.email ?? '',
+          l.user?.name ?? '',
+          l.user?.role ?? '',
+          l.ipAddress ?? '',
+          l.userAgent ?? '',
+          details
+        ].map(escape).join(',')
+      }).join('\n')
+
+      // Self-report the export action (admins downloading compliance data is
+      // itself an auditable event).
+      try {
+        await db.auditLog.create({
+          data: {
+            userId: session.user.id,
+            action: 'audit_export',
+            resource: 'audit-csv',
+            details: JSON.stringify({ rowCount: logs.length, filters: { action, userId: effectiveUserId, resource, search, startDate, endDate } })
+          }
+        })
+      } catch (err) {
+        console.error('audit_export self-log failed:', err)
+      }
+
+      return new NextResponse(header + rows, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="drugeye-audit-${new Date().toISOString().slice(0, 10)}.csv"`,
+          'Cache-Control': 'no-store'
+        }
+      })
+    }
+
+    const [total, logs] = await Promise.all([
+      db.auditLog.count({ where }),
+      db.auditLog.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: { id: true, email: true, name: true, role: true }
+          }
+        }
+      })
+    ])
 
     return NextResponse.json({
       success: true,
-      data: logs.map(log => ({
+      scope: isAdmin ? 'admin' : 'self',
+      data: logs.map((log) => ({
         ...log,
-        details: log.details ? JSON.parse(log.details) : null
+        details: log.details ? (() => {
+          try { return JSON.parse(log.details) } catch { return log.details }
+        })() : null
       })),
       pagination: {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.max(1, Math.ceil(total / limit)),
         hasMore: skip + limit < total
       }
     })
