@@ -402,7 +402,8 @@ export async function POST(req: Request) {
   try {
     const session = await getAuthSession();
 
-    const { messages, patientContext }: { messages: UIMessage[]; patientContext?: { id: string } } = await req.json();
+    const { messages, patientContext, language }: { messages: UIMessage[]; patientContext?: { id: string }; language?: 'en' | 'ar' } = await req.json();
+    const locale: 'en' | 'ar' = language === 'ar' ? 'ar' : 'en';
 
     // Get the latest user message for NLP analysis. v6 UIMessages carry `parts` (not `content`),
     // so flatten text parts into a single string.
@@ -433,6 +434,11 @@ export async function POST(req: Request) {
 
     // Build enhanced system prompt with patient context and NLP analysis
     let systemPrompt = NLP_SYSTEM_PROMPT;
+
+    if (locale === 'ar') {
+      systemPrompt += `\n\nLANGUAGE INSTRUCTION:
+The clinician has selected Arabic (العربية) as their interface language. Respond ENTIRELY in Modern Standard Arabic. Keep the following terms in their original script when they appear: drug brand names, generic names (INN), ICD-10 codes, FDA pregnancy categories (A/B/C/D/X), lab value units (mg/dL, mL/min, etc.), and acronyms (SSRI, ACE, NSAID, etc.). Translate clinical guidance, warnings, dosing instructions and patient-facing explanations into natural Arabic. Use right-to-left punctuation where appropriate.`;
+    }
 
     if (patientContext?.id && session?.user?.id) {
       // Load patient (scoped to the authenticated clinician) + active medications

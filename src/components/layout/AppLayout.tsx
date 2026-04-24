@@ -22,10 +22,10 @@ import { ClinicalAIChat } from '@/components/ai/ClinicalAIChat'
 import { DrugEyeLogo } from '@/components/logo/DrugEyeLogo'
 
 const navItems = [
-  { id: 'settings', label: 'Settings', labelAr: 'الإعدادات', icon: Settings, href: '/settings' },
-  { id: 'support', label: 'Support', labelAr: 'الدعم', icon: HelpCircle, href: '/support' },
-  { id: 'about', label: 'About', labelAr: 'حول', icon: FileText, href: '/about' },
-]
+  { id: 'settings', labelKey: 'settings', icon: Settings, href: '/settings' },
+  { id: 'support', labelKey: 'support', icon: HelpCircle, href: '/support' },
+  { id: 'about', labelKey: 'about', icon: FileText, href: '/about' },
+] as const
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -82,7 +82,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         onClick={dismissDisclaimer}
                         className="rounded-xl bg-white/10 hover:bg-white/20 text-white border-0"
                       >
-                        {language === 'en' ? 'I Understand' : 'فهمت'}
+                        {t.iUnderstand}
                       </Button>
                     </div>
                   </AlertDescription>
@@ -130,7 +130,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
-                  <span className="hidden md:inline">{language === 'en' ? item.label : item.labelAr}</span>
+                  <span className="hidden md:inline">{t[item.labelKey]}</span>
                 </Link>
               ))}
             </nav>
@@ -186,10 +186,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8">
               {[
-                { label: language === 'en' ? 'Drugs' : 'دواء', value: stats.active.toLocaleString() },
+                { label: t.drugsLabel, value: stats.active.toLocaleString() },
                 { label: 'Thiqa', value: stats.thiqa.toLocaleString() },
                 { label: 'Basic', value: stats.basic.toLocaleString() },
-                { label: language === 'en' ? 'Interactions' : 'تداخلات', value: stats.interactions.toLocaleString() },
+                { label: t.interactionsLabel, value: stats.interactions.toLocaleString() },
                 { label: 'ICD-10', value: stats.icd10Mappings > 0 ? stats.icd10Mappings.toLocaleString() : '...' },
               ].map((stat, i) => (
                 <div key={stat.label} className="text-center">
@@ -205,7 +205,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 className="rounded-xl bg-muted/50 border-border hover:bg-muted text-foreground"
               >
                 <Info className="w-4 h-4 mr-2" />
-                <span className="font-bold text-[10px] uppercase">{language === 'en' ? 'Help' : 'مساعدة'}</span>
+                <span className="font-bold text-[10px] uppercase">{t.help}</span>
               </Button>
             </Link>
           </div>
