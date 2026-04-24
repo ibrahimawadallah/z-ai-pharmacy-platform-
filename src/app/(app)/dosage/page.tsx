@@ -26,23 +26,24 @@ export default function DosagePage() {
   const drugParam = searchParams.get('name')
   const drugId = searchParams.get('drug')
 
-  useEffect(() => {
-    if (drugParam) {
-      setSearchTerm(drugParam)
-      setTimeout(searchDrugs, 100)
-    }
-  }, [drugParam])
-
-  const searchDrugs = async () => {
-    if (!searchTerm.trim()) return
+  const searchDrugs = React.useCallback(async (term?: string) => {
+    const query = (term ?? searchTerm).trim()
+    if (!query) return
     setIsLoading(true)
     try {
-      const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(searchTerm)}&limit=10`)
+      const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(query)}&limit=10`)
       const data = await res.json()
       setDrugs(data.data || [])
     } catch {}
     setIsLoading(false)
-  }
+  }, [searchTerm])
+
+  useEffect(() => {
+    if (drugParam) {
+      setSearchTerm(drugParam)
+      searchDrugs(drugParam)
+    }
+  }, [drugParam, searchDrugs])
 
   const selectDrug = (drug: UAEDrug) => {
     setSelectedDrug(drug)
@@ -158,7 +159,7 @@ export default function DosagePage() {
                     className="pl-10"
                   />
                 </div>
-                <Button onClick={searchDrugs} disabled={isLoading} className="h-10">
+                <Button onClick={() => searchDrugs()} disabled={isLoading} className="h-10">
                   Search
                 </Button>
               </div>

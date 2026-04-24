@@ -1,13 +1,13 @@
 import { groq } from '@ai-sdk/groq';
 import { streamText, tool, convertToModelMessages, stepCountIs, type UIMessage } from 'ai';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import { db as prisma } from '@/lib/db';
 import { getAuthSession } from '@/lib/auth';
 import { classifyIntent, extractDrugEntities, validateClinicalQuery } from '@/lib/nlp';
 
 export const maxDuration = 60;
 
-const prisma = new PrismaClient();
+
 
 // ==================== NLP TOOLS ====================
 

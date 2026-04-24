@@ -79,7 +79,6 @@ const COMPREHENSIVE_CLINICAL_DATA: Record<string, any> = {
   'carvedilol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'nebivolol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'propranolol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Hypertension' },
-  'atenolol': { pregnancyCategory: 'D', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
   'furosemide': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed - fetal hydration', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Edema' },
   'lasix': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'hydrochlorothiazide': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 1, baseDoseIndication: 'Edema/Hypertension' },
@@ -215,7 +214,6 @@ const COMPREHENSIVE_CLINICAL_DATA: Record<string, any> = {
   'cyclobenzaprine': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
   'baclofen': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
   'tizanidine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
-  'diazepam': { pregnancyCategory: 'D', pregnancyPrecautions: 'Avoid', breastfeedingSafety: 'Excreted in milk', g6pdSafety: 'Safe' },
 
   // Gout
   'allopurinol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 8, baseDoseIndication: 'Gout' },
@@ -236,22 +234,19 @@ const COMPREHENSIVE_CLINICAL_DATA: Record<string, any> = {
 
   // Antiemetics
   'granisetron': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for chemotherapy nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
-  'ondansetron': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe for nausea', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
-  'metoclopramide': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'promethazine': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'phenergan': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
 
   // Corticosteroids
   'methylprednisolone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use lowest effective dose', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe', baseDoseMgPerKg: 0.5, baseDoseIndication: 'Inflammation' },
+  // duplicate 'dexamethasone' / 'acyclovir' removed — see earlier definitions
   'solu-medrol': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'betamethasone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for fetal lung maturity', breastfeedingSafety: 'Minimal', g6pdSafety: 'Safe' },
-  'dexamethasone': { pregnancyCategory: 'C', pregnancyPrecautions: 'Use for fetal maturity', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
 
   // Others
   'sildenafil': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if benefits outweigh risks', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
   'viagra': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
   'tadalafil': { pregnancyCategory: 'B', pregnancyPrecautions: 'Use only if needed', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
-  'acyclovir': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'valtrex': { pregnancyCategory: 'B', pregnancyPrecautions: 'Safe', breastfeedingSafety: 'Compatible', g6pdSafety: 'Safe' },
   'albendazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'CONTRAINDICATED in 1st trimester', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
   'mebendazole': { pregnancyCategory: 'C', pregnancyPrecautions: 'Avoid in 1st trimester', breastfeedingSafety: 'Not recommended', g6pdSafety: 'Safe' },
@@ -279,10 +274,10 @@ export async function POST(request: NextRequest) {
     for (const drug of drugs) {
       const name = (drug.genericName || drug.packageName || '').toLowerCase().trim()
       
-      let data = null
+      let data: Record<string, unknown> | null = null
       for (const [key, value] of Object.entries(COMPREHENSIVE_CLINICAL_DATA)) {
         if (name.includes(key) || key.includes(name) || name.split(' ').some(w => w === key)) {
-          data = value
+          data = value as Record<string, unknown>
           break
         }
       }
@@ -291,13 +286,13 @@ export async function POST(request: NextRequest) {
         await db.drug.update({
           where: { id: drug.id },
           data: {
-            pregnancyCategory: data.pregnancyCategory,
-            pregnancyPrecautions: data.pregnancyPrecautions,
-            breastfeedingSafety: data.breastfeedingSafety,
-            g6pdSafety: data.g6pdSafety,
-            g6pdWarning: data.g6pdWarning,
-            baseDoseMgPerKg: data.baseDoseMgPerKg,
-            baseDoseIndication: data.baseDoseIndication
+            pregnancyCategory: data.pregnancyCategory as string | null | undefined,
+            pregnancyPrecautions: data.pregnancyPrecautions as string | null | undefined,
+            breastfeedingSafety: data.breastfeedingSafety as string | null | undefined,
+            g6pdSafety: data.g6pdSafety as string | null | undefined,
+            g6pdWarning: data.g6pdWarning as string | null | undefined,
+            baseDoseMgPerKg: data.baseDoseMgPerKg as number | null | undefined,
+            baseDoseIndication: data.baseDoseIndication as string | null | undefined
           }
         })
         updated++

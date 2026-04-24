@@ -42,20 +42,21 @@ async function importDrugInteractions() {
         })
         
         if (drugs2.length > 0) {
+          const typedDetails = details as { severity: string; description: string; recommendation: string }
           await db.drugInteraction.upsert({
-            where: { drugId_several: { drugId: drug1Id, secondaryDrugId: drugs2[0].id } } },
+            where: { drugId_several: { drugId: drug1Id, secondaryDrugId: drugs2[0].id } },
             create: {
               drugId: drug1Id,
               secondaryDrugId: drugs2[0].id,
               secondaryDrugName: drug2,
-              severity: details.severity,
-              description: details.description,
-              management: details.recommendation
+              severity: typedDetails.severity,
+              description: typedDetails.description,
+              management: typedDetails.recommendation
             },
             update: {
-              severity: details.severity,
-              description: details.description,
-              management: details.recommendation
+              severity: typedDetails.severity,
+              description: typedDetails.description,
+              management: typedDetails.recommendation
             }
           })
           imported++

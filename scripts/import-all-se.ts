@@ -7,7 +7,7 @@ async function importAll() {
   console.log('Importing SIDER side effects & drug interactions...\n')
   
   try {
-    const seRecords = parse(createReadStream(resolve('./public/data/sider-side-effects.tsv') as any, {
+    const seRecords = parse(createReadStream(resolve('./public/data/sider-side-effects.tsv')), {
       columns: true,
       delimiter: '\t',
       from: 2
@@ -35,7 +35,7 @@ async function importAll() {
       await db.drugSideEffect.createMany({ data: batch.slice(i, i + 1000) })
     }
     
-    const drugsWithSE = await db.drug.count({ where: { sideEffects: { some: {} } })
+    const drugsWithSE = await db.drug.count({ where: { sideEffects: { some: {} } } })
     console.log('Done! Drugs with side effects:', drugsWithSE)
     
   } catch (e) { console.error(e) }

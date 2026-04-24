@@ -31,7 +31,7 @@ async function main() {
     await db.drugSideEffect.createMany({ data: batch.slice(i, i + 1000) })
   }
   
-  const total = await db.drug.count({ where: { sideEffects: { some: {} } })
+  const total = await db.drug.count({ where: { sideEffects: { some: {} } } })
   console.log('Total drugs with SE:', total)
 }
 
