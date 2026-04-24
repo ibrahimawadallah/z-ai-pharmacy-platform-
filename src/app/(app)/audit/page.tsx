@@ -96,7 +96,11 @@ export default function AuditLogPage() {
   const isAdmin = role === 'admin'
 
   const [action, setAction] = useState<string>('all')
+  // `searchText` drives the input; `committedSearch` is what actually hits the
+  // API. Decoupling them keeps keystrokes local (no per-letter fetch) and lets
+  // the user commit the query with Enter.
   const [searchText, setSearchText] = useState('')
+  const [committedSearch, setCommittedSearch] = useState('')
   const [startDate, setStartDate] = useState<string>('')
   const [endDate, setEndDate] = useState<string>('')
   const [page, setPage] = useState(1)
@@ -112,7 +116,7 @@ export default function AuditLogPage() {
     params.set('page', String(page))
     params.set('limit', String(limit))
     if (action && action !== 'all') params.set('action', action)
-    if (searchText.trim()) params.set('search', searchText.trim())
+    if (committedSearch.trim()) params.set('search', committedSearch.trim())
     if (startDate) params.set('startDate', new Date(startDate).toISOString())
     if (endDate) {
       // End of day for inclusive range
@@ -121,7 +125,7 @@ export default function AuditLogPage() {
       params.set('endDate', end.toISOString())
     }
     return params.toString()
-  }, [action, searchText, startDate, endDate, page, limit])
+  }, [action, committedSearch, startDate, endDate, page, limit])
 
   const fetchLogs = useCallback(async () => {
     if (status !== 'authenticated') return
@@ -246,10 +250,13 @@ export default function AuditLogPage() {
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onKeyDown={(e) => {
-                    // setPage(1) changes queryString → useEffect re-fetches.
-                    // Don't call fetchLogs() here too, or a stale-page request
-                    // races the real one.
-                    if (e.key === 'Enter') setPage(1)
+                    // Enter commits the typed search and resets to page 1.
+                    // Changing `committedSearch` alone updates queryString,
+                    // which the useEffect picks up for a single fetch.
+                    if (e.key === 'Enter') {
+                      setPage(1)
+                      setCommittedSearch(searchText)
+                    }
                   }}
                 />
               </div>
