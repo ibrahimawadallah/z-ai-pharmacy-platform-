@@ -1,14 +1,15 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Brain, Send, Sparkles, User, Copy,
   RefreshCw, ThumbsUp, ThumbsDown, AlertTriangle,
-  Pill, Activity, FileText, MessageSquare, Wrench
+  Pill, Activity, FileText, MessageSquare, Wrench,
+  UserPlus, X,
 } from 'lucide-react'
 import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { DefaultChatTransport, type UIMessage } from 'ai'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -37,7 +38,7 @@ const INITIAL_GREETING = {
         '• **Contraindications** - Identify safety concerns\n' +
         '• **Side Effects** - Review adverse reactions\n' +
         '• **Therapeutic Alternatives** - Compare treatment options\n\n' +
-        'How can I assist you today?',
+        'Attach a patient using the **Attach patient** button above to get personalized, allergy- and interaction-aware recommendations.',
     },
   ],
 }
@@ -46,6 +47,19 @@ type ChatMessage = {
   id: string
   role: 'system' | 'user' | 'assistant'
   parts: Array<Record<string, unknown> & { type: string }>
+}
+
+type PatientSummary = {
+  id: string
+  firstName: string
+  lastName: string
+  gender: string
+  dateOfBirth: string
+  mrn?: string | null
+  isPregnant?: boolean
+  allergies?: string | null
+  conditions?: string | null
+  medicationCount?: number
 }
 
 function getMessageText(message: ChatMessage): string {
@@ -61,14 +75,73 @@ function getToolCalls(message: ChatMessage): string[] {
     .map((p) => p.type.replace(/^tool-/, ''))
 }
 
+function ageYears(dob: string): number {
+  return Math.floor((Date.now() - new Date(dob).getTime()) / (365.25 * 24 * 3600 * 1000))
+}
+
 export default function ConsultationPage() {
-  const transport = useMemo(() => new DefaultChatTransport({ api: '/api/chat' }), [])
+  // Patient-context state. The ref is what the transport body reads per-request,
+  // so the active patient follows the user without having to rebuild the transport.
+  const [activePatient, setActivePatient] = useState<PatientSummary | null>(null)
+  const activePatientIdRef = useRef<string | null>(null)
+  useEffect(() => {
+    activePatientIdRef.current = activePatient?.id ?? null
+  }, [activePatient])
+
+  // Build the transport once and let its `body` callback read the latest patient id
+  // out of the ref at request time. The ref indirection is intentional — it keeps the
+  // transport stable across patient switches so useChat's internal stream isn't torn down.
+  /* eslint-disable react-hooks/refs */
+  const transport = useMemo(() => {
+    const getBody = () => {
+      const id = activePatientIdRef.current
+      return id ? { patientContext: { id } } : {}
+    }
+    return new DefaultChatTransport({ api: '/api/chat', body: getBody })
+  }, [])
+  /* eslint-enable react-hooks/refs */
+
   const { messages, sendMessage, status, setMessages, error } = useChat({
     transport,
-    messages: [INITIAL_GREETING as any],
+    messages: [INITIAL_GREETING as unknown as UIMessage],
   })
 
   const [input, setInput] = useState('')
+  const [showPicker, setShowPicker] = useState(false)
+  const [patients, setPatients] = useState<PatientSummary[] | null>(null)
+  const [patientsError, setPatientsError] = useState<string | null>(null)
+  const [patientFilter, setPatientFilter] = useState('')
+
+  // Lazy-load the patient list the first time the picker opens.
+  useEffect(() => {
+    if (!showPicker || patients !== null) return
+    let cancelled = false
+    fetch('/api/patients')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((data) => {
+        if (cancelled) return
+        setPatients(Array.isArray(data.patients) ? data.patients : [])
+      })
+      .catch((e: Error) => {
+        if (cancelled) return
+        setPatientsError(e.message)
+        setPatients([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [showPicker, patients])
+
+  const filteredPatients = useMemo(() => {
+    if (!patients) return []
+    const q = patientFilter.trim().toLowerCase()
+    if (!q) return patients
+    return patients.filter(
+      (p) =>
+        `${p.firstName} ${p.lastName}`.toLowerCase().includes(q) ||
+        (p.mrn ?? '').toLowerCase().includes(q)
+    )
+  }, [patients, patientFilter])
 
   const nlp = useMemo(() => {
     if (!input.trim()) return { intent: '', drugs: [] as string[] }
@@ -90,7 +163,17 @@ export default function ConsultationPage() {
   }
 
   const handleNewChat = () => {
-    setMessages([INITIAL_GREETING as any])
+    setMessages([INITIAL_GREETING as unknown as UIMessage])
+  }
+
+  const handleSelectPatient = (p: PatientSummary) => {
+    setActivePatient(p)
+    setShowPicker(false)
+    setPatientFilter('')
+  }
+
+  const handleClearPatient = () => {
+    setActivePatient(null)
   }
 
   return (
@@ -108,15 +191,64 @@ export default function ConsultationPage() {
                 <p className="text-sm text-gray-500">Powered by DrugEye Intelligence</p>
               </div>
             </div>
-            <Button variant="outline" onClick={handleNewChat} className="gap-2">
-              <RefreshCw className="w-4 h-4" />
-              New Chat
-            </Button>
+            <div className="flex items-center gap-2">
+              {!activePatient && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPicker(true)}
+                  className="gap-2"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Attach patient
+                </Button>
+              )}
+              <Button variant="outline" onClick={handleNewChat} className="gap-2">
+                <RefreshCw className="w-4 h-4" />
+                New Chat
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Active Patient Banner */}
+        {activePatient && (
+          <Card className="bg-emerald-50 border-emerald-200 mb-6">
+            <CardContent className="py-3 px-4 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                  <User className="w-4 h-4" />
+                </div>
+                <div className="text-sm">
+                  <div className="font-semibold text-emerald-900">
+                    {activePatient.firstName} {activePatient.lastName}
+                    {activePatient.mrn ? (
+                      <span className="font-normal text-emerald-700 ml-2">MRN {activePatient.mrn}</span>
+                    ) : null}
+                  </div>
+                  <div className="text-xs text-emerald-800 flex flex-wrap gap-x-3 gap-y-1">
+                    <span>{ageYears(activePatient.dateOfBirth)}y · {activePatient.gender}</span>
+                    {activePatient.isPregnant && (
+                      <span className="text-rose-700 font-medium">Pregnant</span>
+                    )}
+                    {activePatient.allergies && (
+                      <span>Allergies: {activePatient.allergies}</span>
+                    )}
+                    {typeof activePatient.medicationCount === 'number' && (
+                      <span>{activePatient.medicationCount} active med{activePatient.medicationCount === 1 ? '' : 's'}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" onClick={handleClearPatient} className="gap-1 text-emerald-800 hover:text-emerald-900">
+                <X className="w-3.5 h-3.5" />
+                Detach
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Info Banner */}
         <Card className="bg-cyan-50 border-cyan-200 mb-6">
           <CardContent className="py-4 flex items-center gap-3">
@@ -279,7 +411,11 @@ export default function ConsultationPage() {
           <div className="border-t border-gray-200 p-4">
             <div className="flex gap-3">
               <Input
-                placeholder="Ask about drug interactions, dosages, contraindications..."
+                placeholder={
+                  activePatient
+                    ? `Ask about ${activePatient.firstName}'s drugs, interactions, dosages…`
+                    : 'Ask about drug interactions, dosages, contraindications...'
+                }
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -346,6 +482,74 @@ export default function ConsultationPage() {
           </Link>
         </div>
       </div>
+
+      {/* Patient Picker Modal */}
+      {showPicker && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={() => setShowPicker(false)}
+        >
+          <Card
+            className="bg-white shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Attach patient</h2>
+                <p className="text-xs text-gray-500">Personalize every answer to this patient's chart.</p>
+              </div>
+              <button onClick={() => setShowPicker(false)} className="p-1 rounded hover:bg-gray-100" aria-label="Close">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="px-5 py-3 border-b border-gray-200">
+              <Input
+                placeholder="Search name or MRN…"
+                value={patientFilter}
+                onChange={(e) => setPatientFilter(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {patients === null && !patientsError && (
+                <div className="p-6 text-sm text-gray-500">Loading patients…</div>
+              )}
+              {patientsError && (
+                <div className="p-6 text-sm text-red-700">Could not load patients: {patientsError}</div>
+              )}
+              {patients && patients.length === 0 && !patientsError && (
+                <div className="p-6 text-sm text-gray-500">
+                  No patients yet. Create one from the Patients page, then come back here.
+                </div>
+              )}
+              {filteredPatients.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => handleSelectPatient(p)}
+                  className="w-full text-left px-5 py-3 border-b border-gray-100 hover:bg-cyan-50 focus:bg-cyan-50 focus:outline-none"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium text-gray-900">
+                      {p.firstName} {p.lastName}
+                      {p.mrn ? <span className="text-gray-500 font-normal ml-2">MRN {p.mrn}</span> : null}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {ageYears(p.dateOfBirth)}y · {p.gender}
+                    </div>
+                  </div>
+                  {(p.allergies || p.conditions) && (
+                    <div className="mt-1 text-xs text-gray-600 line-clamp-1">
+                      {p.allergies ? `Allergies: ${p.allergies}` : null}
+                      {p.allergies && p.conditions ? ' · ' : ''}
+                      {p.conditions ? `Hx: ${p.conditions}` : null}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

@@ -434,10 +434,51 @@ export async function POST(req: Request) {
     // Build enhanced system prompt with patient context and NLP analysis
     let systemPrompt = NLP_SYSTEM_PROMPT;
 
-    if (patientContext) {
-      systemPrompt += `\n\nACTIVE PATIENT CONTEXT:
-Patient ID: ${patientContext.id}
-Please tailor all recommendations to this patient's profile. Consider age, gender, comorbidities, allergies, and current medications when providing clinical guidance.`;
+    if (patientContext?.id && session?.user?.id) {
+      // Load patient (scoped to the authenticated clinician) + active medications
+      // so the model can reason over age, renal function, allergies, comorbidities,
+      // pregnancy status and current regimen rather than a bare patient id.
+      const patient = await prisma.patient.findFirst({
+        where: { id: patientContext.id, clinicianId: session.user.id },
+        include: {
+          medications: {
+            where: { OR: [{ endDate: null }, { endDate: { gte: new Date() } }] },
+            orderBy: { startDate: 'desc' },
+          },
+        },
+      });
+
+      if (patient) {
+        const ageYears = Math.floor(
+          (Date.now() - new Date(patient.dateOfBirth).getTime()) / (365.25 * 24 * 3600 * 1000)
+        );
+        const allergies = patient.allergies?.trim() || 'None recorded';
+        const conditions = patient.conditions?.trim() || 'None recorded';
+        const meds = patient.medications.length
+          ? patient.medications
+              .map((m) => `  - ${m.drugName}${m.genericName ? ` (${m.genericName})` : ''} ${m.dosage} ${m.route} ${m.frequency}${m.isPRN ? ' PRN' : ''}`)
+              .join('\n')
+          : '  - None active';
+
+        systemPrompt += `\n\nACTIVE PATIENT CONTEXT:
+Name: ${patient.firstName} ${patient.lastName}${patient.mrn ? ` (MRN ${patient.mrn})` : ''}
+Age: ${ageYears} years
+Gender: ${patient.gender}
+Weight: ${patient.weightKg ? `${patient.weightKg} kg` : 'Not recorded'}
+Height: ${patient.heightCm ? `${patient.heightCm} cm` : 'Not recorded'}
+Creatinine clearance: ${patient.creatinineClearance ? `${patient.creatinineClearance} mL/min` : 'Not recorded'}
+Hepatic impairment: ${patient.hepaticImpairment ? 'Yes' : 'No'}
+Pregnancy: ${patient.isPregnant ? 'PREGNANT — avoid Category D/X drugs' : 'Not pregnant'}
+Known allergies: ${allergies}
+Active conditions: ${conditions}
+Current medications:
+${meds}
+
+When recommending drugs or checking interactions, you MUST cross-reference this patient's current medications, allergies, renal/hepatic status and pregnancy status. Flag any contraindication or interaction with the listed regimen explicitly before giving a recommendation.`;
+      } else {
+        systemPrompt += `\n\nACTIVE PATIENT CONTEXT:
+Patient ID ${patientContext.id} was requested but could not be loaded. Answer generically and remind the clinician to re-attach the patient.`;
+      }
     }
 
     // Add NLP context if available
