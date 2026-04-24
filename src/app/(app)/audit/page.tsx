@@ -307,13 +307,14 @@ export default function AuditLogPage() {
               <p className="text-sm text-muted-foreground">
                 No audit events match these filters.
               </p>
-              {(action !== 'all' || searchText || startDate || endDate) && (
+              {(action !== 'all' || searchText || committedSearch || startDate || endDate) && (
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => {
                     setAction('all')
                     setSearchText('')
+                    setCommittedSearch('')
                     setStartDate('')
                     setEndDate('')
                     setPage(1)
