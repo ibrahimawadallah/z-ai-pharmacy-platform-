@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useApp, UAEDrug } from '@/providers/AppProvider'
+import { toast } from 'sonner'
 
 const GlassCard = ({ children, className = "", delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => (
   <div 
@@ -59,7 +60,10 @@ export default function PregnancyPage() {
       const data = await res.json()
       setDrugs(data.data || [])
       if (data.counts) setCategoryCounts(data.counts)
-    } catch {}
+    } catch (error) {
+      console.error('Search error:', error)
+      toast.error('Failed to search drugs. Please try again.')
+    }
     setIsLoading(false)
   }
 

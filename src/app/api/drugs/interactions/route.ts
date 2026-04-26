@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
+import { getClientIP } from '@/lib/rate-limit'
 
 function normalizeDrugName(value: string | null | undefined): string | null {
   if (!value) return null
@@ -15,6 +17,9 @@ function normalizeDrugName(value: string | null | undefined): string | null {
 
 // GET /api/drugs/interactions?drugIds=<id1,id2,...> or ?drugs=<id1,id2,...>
 export async function GET(request: Request) {
+  const session = await requireAuth();
+  const userId = session?.user?.id;
+  
   const { searchParams } = new URL(request.url)
   const drugsParam = searchParams.get('drugIds') || searchParams.get('drugs') || ''
   const ids = drugsParam
@@ -73,8 +78,8 @@ export async function GET(request: Request) {
       if (!secondaryId) continue
       if (secondaryId === interaction.drugId) continue
 
-      const drug1 = idToNames.get(interaction.drugId)?.display || interaction.drugId
-      const drug2 = idToNames.get(secondaryId)?.display || interaction.secondaryDrugName || secondaryId
+      const drug1Name = idToNames.get(interaction.drugId)?.display || interaction.drugId
+      const drug2Name = idToNames.get(secondaryId)?.display || interaction.secondaryDrugName || secondaryId
       const severity = (interaction.severity || 'moderate').toLowerCase()
       const description =
         interaction.description ||
@@ -87,7 +92,20 @@ export async function GET(request: Request) {
       if (seen.has(dedupeKey)) continue
       seen.add(dedupeKey)
 
-      results.push({ drug1, drug2, severity, description })
+      results.push({ drug1: drug1Name, drug2: drug2Name, severity, description })
+    }
+
+    // Write to AuditLog
+    if (userId) {
+      await db.auditLog.create({
+        data: {
+          userId,
+          action: "INTERACTION_CHECK",
+          resource: "drug_interaction",
+          details: `Checked ${ids.length} drugs for interactions`,
+          ipAddress: getClientIP(request),
+        }
+      }).catch(console.error)
     }
 
     return NextResponse.json({
@@ -95,8 +113,21 @@ export async function GET(request: Request) {
       source: 'Internal Drug Interaction Database',
       interactions: results
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Interaction lookup error:', error)
+    
+    // Write error to AuditLog
+    if (userId) {
+      await db.auditLog.create({
+        data: {
+          userId,
+          action: "INTERACTION_CHECK_ERROR",
+          resource: "drug_interaction",
+          details: error.message,
+        }
+      }).catch(console.error)
+    }
+    
     return NextResponse.json({ success: false, error: 'Failed to check interactions' }, { status: 500 })
   }
 }

@@ -1,7 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { requireAuth } from '@/lib/auth'
+import { checkRateLimit, getClientIP, getRateLimitHeaders } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  // Require authentication for this route
+  const session = await requireAuth()
+  const userId = session?.user?.id
+  
+  // Apply rate limiting (60 requests/minute for search)
+  const clientIP = getClientIP(request)
+  const rateLimitResult = await checkRateLimit(userId || clientIP, '/api/drugs/search')
+  
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Too Many Requests', message: `Rate limit exceeded. Try again in ${rateLimitResult.retryAfter} seconds.` },
+      { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
+    )
+  }
+  
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('q') || ''
   const page = parseInt(searchParams.get('page') || '1')

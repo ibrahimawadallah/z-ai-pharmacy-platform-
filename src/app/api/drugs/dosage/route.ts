@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getExternalDrugData } from '@/lib/external-data-service'
+import { requireAuth } from '@/lib/auth'
+import { getClientIP } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  const session = await requireAuth()
+  const userId = session?.user?.id
+  
   try {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('q') || ''
@@ -44,13 +49,39 @@ export async function GET(request: NextRequest) {
 
     const filterEmpty = enriched.filter(d => d.baseDoseMgPerKg !== null)
 
+    // Write to AuditLog
+    if (userId) {
+      await db.auditLog.create({
+        data: {
+          userId,
+          action: "DOSAGE_CALC",
+          resource: "drug_dosage",
+          details: `Searched dosage for: ${search || 'all drugs'}`,
+          ipAddress: getClientIP(request),
+        }
+      }).catch(console.error)
+    }
+
     return NextResponse.json({
       success: true,
       data: filterEmpty,
       count: filterEmpty.length
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Dosage API error:', error)
+    
+    // Write error to AuditLog
+    if (userId) {
+      await db.auditLog.create({
+        data: {
+          userId,
+          action: "DOSAGE_CALC_ERROR",
+          resource: "drug_dosage",
+          details: error.message,
+        }
+      }).catch(console.error)
+    }
+    
     return NextResponse.json({ error: 'Failed to fetch dosage data' }, { status: 500 })
   }
 }

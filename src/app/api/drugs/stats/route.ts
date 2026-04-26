@@ -1,9 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getAuthSession } from '@/lib/auth'
 
 // GET /api/drugs/stats - Get UAE drug database statistics
 export async function GET() {
   try {
+    const session = await getAuthSession()
+    const userId = session?.user?.id
+    
+    // Get today's start and end
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+    const endOfToday = new Date(startOfToday)
+    endOfToday.setDate(endOfToday.getDate() + 1)
+    
+    // Get last 7 days start
+    const startOfLast7Days = new Date()
+    startOfLast7Days.setDate(startOfLast7Days.getDate() - 7)
+    startOfLast7Days.setHours(0, 0, 0, 0)
+
     // Get total counts by status
     const statusCounts = await db.drug.groupBy({
       by: ['status'],
@@ -50,6 +65,27 @@ export async function GET() {
     // Get unique drug pairs with interactions
     const interactionsCount = await db.drugInteraction.count()
 
+    // Get active interactions today (for dashboard)
+    const activeInteractions = await db.drugInteraction.count({
+      where: {
+        createdAt: {
+          gte: startOfToday,
+          lt: endOfToday
+        }
+      }
+    })
+
+    // Get recent searches (for dashboard)
+    const recentSearches = userId ? 
+      await db.userSearchHistory.count({
+        where: {
+          userId,
+          createdAt: {
+            gte: startOfLast7Days
+          }
+        }
+      }) : 0
+
     return NextResponse.json({
       success: true,
       source: 'UAE Ministry of Health Drug Database',
@@ -67,6 +103,10 @@ export async function GET() {
           basic: drugsInBasic
         },
         interactions: interactionsCount
+      },
+      dashboard: {
+        activeInteractions,
+        recentSearches
       },
       dosageForms: dosageForms.map(d => ({
         form: d.dosageForm,

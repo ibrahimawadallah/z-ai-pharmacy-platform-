@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import bcryptjs from 'bcryptjs';
 import postgres from 'postgres';
+import { checkRateLimit, getClientIP, getRateLimitHeaders } from '@/lib/rate-limit';
 
 // Validation schema for signup
 const signupSchema = z.object({
@@ -33,6 +34,17 @@ interface ApiResponse<T = unknown> {
 }
 
 export async function POST(request: NextRequest) {
+  // Apply rate limiting (5 requests/15 min for signup)
+  const clientIP = getClientIP(request)
+  const rateLimitResult = await checkRateLimit(clientIP, '/api/auth/signup')
+  
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Too Many Requests', message: `Rate limit exceeded. Try again in ${rateLimitResult.retryAfter} seconds.` },
+      { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
+    )
+  }
+  
   const sql = getSql()
   
   try {

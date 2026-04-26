@@ -60,9 +60,9 @@ export default function DashboardPage() {
         
         setStats({
           totalDrugs: statsData.statistics?.total || 0,
-          activeInteractions: Math.floor(Math.random() * 50) + 10,
+          activeInteractions: statsData.dashboard?.activeInteractions || 0,
           totalPatients: 0,
-          recentSearches: Math.floor(Math.random() * 100) + 20
+          recentSearches: statsData.dashboard?.recentSearches || 0
         })
         
         setRecentDrugs(drugsData.data?.slice(0, 5) || [])

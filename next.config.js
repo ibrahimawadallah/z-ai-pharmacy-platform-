@@ -1,4 +1,4 @@
-  /** @type {import('next').NextConfig} */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
   allowedDevOrigins: ['localhost', '127.0.0.1'],
@@ -27,9 +27,6 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
       }
     ],
-  },
-  typescript: {
-    ignoreBuildErrors: true,
   },
   modularizeImports: {
     '@mui/material': {

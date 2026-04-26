@@ -46,6 +46,8 @@ export interface UAEDrug {
   renalAdjustment: string | null
   hepaticAdjustment: string | null
   warnings: string | null
+  pediatricDosing?: string | null
+  adultDosing?: string | null
   icd10Codes?: ICD10Code[]
   interactions?: DrugInteraction[]
   sideEffects?: SideEffect[]

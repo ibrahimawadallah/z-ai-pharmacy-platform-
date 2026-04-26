@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getAuthSession } from '@/lib/auth'
 
 // GET /api/reports/analytics - Get analytics data for reports page
 export async function GET(request: NextRequest) {
   try {
+    const session = await getAuthSession()
+    const userId = session?.user?.id
+    
     const { searchParams } = new URL(request.url)
     const days = parseInt(searchParams.get('days') || '30')
 
@@ -38,9 +42,64 @@ export async function GET(request: NextRequest) {
       where: { status: 'Active', includedInBasic: 'Yes' } 
     })
 
-    // Calculate trends (mock comparison)
-    const previousPeriodDrugs = Math.floor(totalDrugs * 0.95)
-    const drugTrend = ((totalDrugs - previousPeriodDrugs) / previousPeriodDrugs * 100).toFixed(1)
+    // Calculate trends (real comparison based on actual data)
+    // For drug trend, we'll compare current period with previous period
+    const previousStartDate = new Date(startDate)
+    previousStartDate.setDate(previousStartDate.getDate() - days)
+    
+    const currentPeriodDrugs = await db.drug.count({
+      where: {
+        createdAt: {
+          gte: startDate
+        }
+      }
+    })
+    
+    const previousPeriodDrugs = await db.drug.count({
+      where: {
+        createdAt: {
+          gte: previousStartDate,
+          lt: startDate
+        }
+      }
+    })
+    
+    const drugTrend = previousPeriodDrugs > 0 
+      ? ((currentPeriodDrugs - previousPeriodDrugs) / previousPeriodDrugs * 100).toFixed(1)
+      : '0'
+
+    // Get real audit log counts
+    const interactionsChecked = await db.auditLog.count({
+      where: {
+        action: "INTERACTION_CHECK",
+        createdAt: {
+          gte: startDate
+        }
+      }
+    })
+    
+    const dosageCalculations = await db.auditLog.count({
+      where: {
+        action: "DOSAGE_CALC",
+        createdAt: {
+          gte: startDate
+        }
+      }
+    })
+    
+    const activeUsers = await db.auditLog.aggregate({
+      where: {
+        action: "AI_CHAT",
+        createdAt: {
+          gte: startDate
+        }
+      },
+      _count: {
+        userId: true
+      }
+    }) || { _count: { userId: 0 } }
+
+    const activeUserCount = activeUsers._count.userId || 0
 
     return NextResponse.json({
       success: true,
@@ -49,15 +108,16 @@ export async function GET(request: NextRequest) {
         totalDrugs,
         activeDrugs,
         drugTrend: parseFloat(drugTrend),
-        interactionsChecked: Math.floor(Math.random() * 500) + 100,
-        dosageCalculations: Math.floor(Math.random() * 200) + 50,
-        activeUsers: Math.floor(Math.random() * 50) + 10
+        interactionsChecked,
+        dosageCalculations,
+        activeUsers: activeUserCount
       },
       topDrugs: topDrugs.slice(0, 5).map(d => ({
         name: d.packageName,
         generic: d.genericName,
         category: d.dosageForm || 'General',
-        searches: Math.floor(Math.random() * 500) + 100
+        // Get real search counts from user search history
+        searches: 0 // We'll implement this properly later
       })),
       dosageForms: dosageForms.map(d => ({
         category: d.dosageForm || 'Other',

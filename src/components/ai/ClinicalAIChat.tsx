@@ -140,25 +140,25 @@ export function ClinicalAIChat() {
             className="fixed bottom-24 right-2 sm:right-4 lg:right-6 w-[calc(100vw-16px)] sm:w-[380px] md:w-[400px] h-[500px] sm:h-[550px] md:h-[600px] max-h-[80vh] z-[60] bg-white dark:bg-slate-900 rounded-2xl sm:rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md">
-                  <Shield className="w-5 h-5" />
+            <div className="p-4 sm:p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div className="p-1.5 sm:p-2 bg-white/20 rounded-xl backdrop-blur-md shrink-0">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <h3 className="font-black text-sm uppercase tracking-widest">Clinical AI</h3>
-                  <div className="flex items-center gap-1.5">
-                    <div className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                    <span className="text-[10px] font-bold text-blue-100 uppercase tracking-tighter">Database Connected</span>
+                <div className="min-w-0">
+                  <h3 className="font-black text-xs sm:text-sm uppercase tracking-widest truncate">Clinical AI</h3>
+                  <div className="flex items-center gap-1">
+                    <div className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
+                    <span className="text-[9px] sm:text-[10px] font-bold text-blue-100 uppercase tracking-tighter truncate">DB Connected</span>
                   </div>
                 </div>
               </div>
-              <Sparkles className="w-5 h-5 text-blue-200" />
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-200 shrink-0 ml-2" />
             </div>
 
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-6" viewportRef={scrollRef}>
-              <div className="space-y-6">
+            <ScrollArea className="flex-1 min-h-0" viewportRef={scrollRef}>
+              <div className="space-y-6 p-6">
                 {messages.map((m, i) => (
                   <div 
                     key={i}

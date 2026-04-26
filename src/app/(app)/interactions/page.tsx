@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useApp, UAEDrug } from '@/providers/AppProvider'
+import { toast } from 'sonner'
 
 const SEVERITY_COLORS: Record<string, { badge: string, bg: string }> = {
   'severe': { 
@@ -53,7 +54,10 @@ export default function InteractionsPage() {
       const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(searchTerm)}&limit=10`)
       const data = await res.json()
       setDrugs(data.data || [])
-    } catch {}
+    } catch (error) {
+      console.error('Search error:', error)
+      toast.error('Failed to search drugs. Please try again.')
+    }
     setIsLoading(false)
   }
 
@@ -65,7 +69,10 @@ export default function InteractionsPage() {
       const res = await fetch(`/api/drugs/interactions?drugIds=${drugIds}`)
       const data = await res.json()
       setInteractionResults(data.interactions || [])
-    } catch {}
+    } catch (error) {
+      console.error('Search error:', error)
+      toast.error('Failed to search drugs. Please try again.')
+    }
     setIsLoading(false)
   }
 

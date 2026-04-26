@@ -13,6 +13,7 @@ import { Skeleton, SkeletonList, SkeletonInline } from '@/components/ui/skeleton
 import { LoadingSpinner } from '@/components/ui/progress-enhanced'
 import { useApp, UAEDrug } from '@/providers/AppProvider'
 import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import Link from 'next/link'
 
@@ -57,7 +58,10 @@ export default function SearchPage() {
       const data = await res.json()
       setDrugs(data.data || [])
       setShowSuggestions(false)
-    } catch {}
+    } catch (error) {
+      console.error('Search error:', error)
+      toast.error('Failed to search drugs. Please try again.')
+    }
     setIsLoading(false)
   }, [searchTerm])
 
@@ -70,7 +74,10 @@ export default function SearchPage() {
       const data = await res.json()
       setInteractionResults(data.interactions || [])
       setShowInteractions(true)
-    } catch {}
+    } catch (error) {
+      console.error('Search error:', error)
+      toast.error('Failed to search drugs. Please try again.')
+    }
     setIsLoading(false)
   }, [selectedDrugs])
 
@@ -91,7 +98,10 @@ export default function SearchPage() {
       const res = await fetch(`/api/drugs/icd10/search?code=${encodeURIComponent(icd10Search)}&limit=30`)
       const data = await res.json()
       setDrugs(data.data || [])
-    } catch {}
+    } catch (error) {
+      console.error('Search error:', error)
+      toast.error('Failed to search drugs. Please try again.')
+    }
     setIsLoading(false)
   }, [icd10Search])
 
@@ -102,7 +112,10 @@ export default function SearchPage() {
       const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(category)}&limit=30&category=${encodeURIComponent(category)}`)
       const data = await res.json()
       setDrugs(data.data || [])
-    } catch {}
+    } catch (error) {
+      console.error('Search error:', error)
+      toast.error('Failed to search drugs. Please try again.')
+    }
     setIsLoading(false)
   }, [])
 

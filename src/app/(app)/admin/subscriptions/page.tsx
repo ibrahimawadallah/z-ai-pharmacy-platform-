@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { 
   Users, CreditCard, TrendingUp, ShieldCheck, Search,
   Crown, Target, Zap, ArrowUpRight
@@ -16,7 +16,7 @@ import {
 
 const GlassCard = ({ children, className = "", delay = 0 }: { children: React.ReactNode, className?: string, delay?: number }) => (
   <div 
-    className={`relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-8 shadow-2xl ${className}`}
+    className={`relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.03] backdrop-blur-3xl p-8 shadow-2xl ${className}`} 
   >
     <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50" />
     <div className="relative z-10">{children}</div>
@@ -44,25 +44,50 @@ export default function AdminSubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    // Simulated data fetch
-    setTimeout(() => {
-      setSubscriptions([
-        { id: '1', user: { name: 'Dr. Ahmed Hassan', email: 'ahmed@hospital.ae' }, plan: 'Pro', status: 'active', revenue: 299 },
-        { id: '2', user: { name: 'Dr. Sarah Johnson', email: 'sarah@clinic.ae' }, plan: 'Enterprise', status: 'active', revenue: 999 },
-        { id: '3', user: { name: 'Pharma Corp', email: 'admin@pharma.ae' }, plan: 'Basic', status: 'active', revenue: 99 },
-      ])
+  // Fetch subscriptions from API
+  const fetchSubscriptions = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await fetch('/api/admin/subscriptions')
+      if (!response.ok) {
+        throw new Error('Failed to fetch subscriptions')
+      }
+      const data = await response.json()
+      setSubscriptions(data.subscriptions || [])
+    } catch (err) {
+      console.error('Error fetching subscriptions:', err)
+      setError('Failed to load subscriptions data')
+      setSubscriptions([])
+    } finally {
       setLoading(false)
-    }, 1000)
-  }, [])
-
-  if (status === 'loading') return null
-  if (!session?.user?.role || session.user.role !== 'admin') {
-    redirect('/')
+    }
   }
 
-  const totalRevenue = subscriptions.reduce((sum, s) => sum + s.revenue, 0)
+  // Initial fetch
+  React.useEffect(() => {
+    fetchSubscriptions()
+  }, [])
+
+  // Check authentication and authorization
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      redirect('/auth/login')
+    }
+  }, [status])
+
+  if (status === 'loading' || loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-[#000] text-white">Loading...</div>
+  }
+  
+// Check if user is admin
+  if (session?.user?.role !== 'admin') {
+    return <div className="min-h-screen flex items-center justify-center bg-[#000] text-white">Access Denied</div>
+  }
+
+  const totalRevenue = subscriptions.reduce((sum, s) => sum + (s.revenue || 0), 0)
   const activeUsers = subscriptions.filter(s => s.status === 'active').length
 
   return (
@@ -172,8 +197,8 @@ export default function AdminSubscriptionsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge2 color={sub.plan === 'Enterprise' ? 'purple' : sub.plan === 'Pro' ? 'cyan' : 'emerald'}>
-                      {sub.plan}
+                    <Badge2 color={sub.planId === 'enterprise' ? 'purple' : sub.planId === 'pro' ? 'cyan' : 'emerald'}>
+                      {sub.planId.charAt(0).toUpperCase() + sub.planId.slice(1)}
                     </Badge2>
                   </TableCell>
                   <TableCell>
@@ -181,7 +206,7 @@ export default function AdminSubscriptionsPage() {
                       {sub.status}
                     </Badge2>
                   </TableCell>
-                  <TableCell className="font-bold">${sub.revenue}/mo</TableCell>
+                  <TableCell className="font-bold">${sub.amount}/mo</TableCell>
                 </TableRow>
               ))}
             </TableBody>

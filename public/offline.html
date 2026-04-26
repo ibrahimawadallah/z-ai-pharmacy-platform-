@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Offline - DrugEye</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+    }
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #06b6d4;
+    }
+    p {
+      color: #9ca3af;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    .retry-btn {
+      background: #06b6d4;
+      color: #000;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .retry-btn:hover {
+      background: #22d3ee;
+    }
+    .drugs-count {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>You're Offline</h1>
+    <p>DrugEye requires an internet connection to access the UAE drug database.</p>
+    <button class="retry-btn" onclick="window.location.reload()">
+      Try Again
+    </button>
+    <div class="drugs-count">
+      <p style="margin-bottom: 0.5rem; font-size: 0.875rem;">While you wait:</p>
+      <p style="margin-bottom: 0;">Check your internet connection</p>
+      <p style="margin-bottom: 0;">Review saved patient records</p>
+    </div>
+  </div>
+</body>
+</html>

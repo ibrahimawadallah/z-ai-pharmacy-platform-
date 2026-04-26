@@ -126,8 +126,9 @@ Identify any compliance gaps.`
       } else {
         throw new Error('Ollama not available')
       }
-    } catch (ollamaErr) {
+} catch (ollamaErr) {
       console.error('Ollama not available:', ollamaErr)
+      const failedCount = logs.filter((l: any) => l.action?.includes('ERROR')).length
       analysis = `AI analysis unavailable. Found ${logs.length} logs with ${failedCount} failed actions. Please review manually or ensure Ollama is running.`
     }
 
