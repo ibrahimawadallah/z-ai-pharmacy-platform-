@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Calculator, Search, User, Weight, Clock } from 'lucide-react'
+import { Calculator, Search, User } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useApp, UAEDrug } from '@/providers/AppProvider'
 
 export default function DosagePage() {
-  const { language } = useApp()
+  useApp()
   const searchParams = useSearchParams()
   
   const [patientWeight, setPatientWeight] = useState('')
@@ -24,25 +24,31 @@ export default function DosagePage() {
   const [selectedDrug, setSelectedDrug] = useState<UAEDrug | null>(null)
 
   const drugParam = searchParams.get('name')
-  const drugId = searchParams.get('drug')
+  const searchDrugs = useCallback(async (termOverride?: string) => {
+    const query = (termOverride ?? searchTerm).trim()
+    if (!query) return
 
-  useEffect(() => {
-    if (drugParam) {
-      setSearchTerm(drugParam)
-      setTimeout(searchDrugs, 100)
-    }
-  }, [drugParam])
-
-  const searchDrugs = async () => {
-    if (!searchTerm.trim()) return
     setIsLoading(true)
     try {
-      const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(searchTerm)}&limit=10`)
+      const res = await fetch(`/api/drugs/search?q=${encodeURIComponent(query)}&limit=10`)
       const data = await res.json()
       setDrugs(data.data || [])
-    } catch {}
+    } catch {
+      // no-op
+    }
     setIsLoading(false)
-  }
+  }, [searchTerm])
+
+  useEffect(() => {
+    if (!drugParam) return
+
+    setSearchTerm(drugParam)
+    const timer = setTimeout(() => {
+      void searchDrugs(drugParam)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [drugParam, searchDrugs])
 
   const selectDrug = (drug: UAEDrug) => {
     setSelectedDrug(drug)
@@ -169,6 +175,7 @@ export default function DosagePage() {
                     <button
                       key={drug.id}
                       className="w-full px-4 py-3 text-left hover:bg-muted transition-colors"
+                      onClick={() => selectDrug(drug)}
                     >
                       <div className="text-sm font-medium">{drug.genericName}</div>
                       <div className="text-xs text-muted-foreground">{drug.strength} - {drug.dosageForm}</div>

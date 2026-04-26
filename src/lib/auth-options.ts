@@ -105,21 +105,35 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid email or password")
           }
 
-          // Verify password
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          )
+          // Verify password. Support legacy plaintext records from older seeds,
+          // then upgrade them to bcrypt on successful login.
+          const bcryptHashPattern = /^\$2[aby]\$\d{2}\$.{53}$/
+          const passwordFromInput = credentials.password
+          let isPasswordValid = false
+          let needsPasswordRehash = false
+
+          if (bcryptHashPattern.test(user.password)) {
+            isPasswordValid = await bcrypt.compare(passwordFromInput, user.password)
+          } else {
+            // Legacy fallback: older seed scripts stored plaintext passwords.
+            isPasswordValid = passwordFromInput === user.password
+            needsPasswordRehash = isPasswordValid
+          }
 
           if (!isPasswordValid) {
             console.error("Invalid password for user:", normalizedEmail)
             throw new Error("Invalid email or password")
           }
 
-          // Update last login time
+          // Update last login time and transparently rehash legacy plaintext passwords.
           await db.user.update({
             where: { id: user.id },
-            data: { lastLoginAt: new Date() }
+            data: {
+              lastLoginAt: new Date(),
+              ...(needsPasswordRehash
+                ? { password: await bcrypt.hash(passwordFromInput, 12) }
+                : {}),
+            }
           })
 
           // Return user object for session

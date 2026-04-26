@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -6,13 +7,15 @@ async function simpleSeed() {
   console.log('Starting simple seed...')
 
   try {
+    const hashedPassword = await bcrypt.hash('demo123456', 12)
+
     // Create a sample user
     const user = await prisma.user.upsert({
       where: { email: 'demo@z-ai-pharmacy.com' },
       update: {},
       create: {
         email: 'demo@z-ai-pharmacy.com',
-        password: 'demo123456',
+        password: hashedPassword,
         name: 'Demo User',
         role: 'user',
         isVerified: true
