@@ -27,3 +27,6 @@ next-env.d.ts
 *.db
 db/
 .vercel
+
+# Secrets
+client_secret*.json
