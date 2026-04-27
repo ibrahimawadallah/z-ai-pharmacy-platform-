@@ -4,6 +4,7 @@ import GithubProvider from "next-auth/providers/github"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
+import { ensureAdminUser } from "@/lib/admin-bootstrap"
 
 if (!process.env.NEXTAUTH_URL && process.env.VERCEL_URL) {
   process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`
@@ -49,14 +50,19 @@ declare module "next-auth/jwt" {
   }
 }
 
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db as any),
-  providers: [
+const providers: NextAuthOptions["providers"] = []
+
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  providers.push(
     GithubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
-    CredentialsProvider({
+  )
+}
+
+providers.push(
+  CredentialsProvider({
       name: "credentials",
       credentials: {
         email: {
@@ -72,14 +78,18 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          // Validate credentials exist
           if (!credentials?.email || !credentials?.password) {
-            throw new Error("Email and password are required")
+            return null
           }
 
           const normalizedEmail = credentials.email.toLowerCase().trim()
 
-          // Find user by email using prisma
+          // Bootstrap the configured admin account on first sign-in attempt so
+          // production deployments always have a working admin login.
+          await ensureAdminUser(normalizedEmail).catch((err) => {
+            console.error("Admin bootstrap failed:", err)
+          })
+
           const user = await db.user.findUnique({
             where: { email: normalizedEmail },
             select: {
@@ -91,38 +101,27 @@ export const authOptions: NextAuthOptions = {
               isVerified: true,
               licenseNumber: true,
               password: true,
-            }
+            },
           })
 
-          if (!user) {
-            console.error("User not found for email:", normalizedEmail)
-            throw new Error("Invalid email or password")
+          if (!user || !user.password) {
+            return null
           }
 
-          // Check if user has password
-          if (!user.password) {
-            console.error("User exists but has no password set:", normalizedEmail)
-            throw new Error("Invalid email or password")
-          }
-
-          // Verify password
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
-            user.password
+            user.password,
           )
 
           if (!isPasswordValid) {
-            console.error("Invalid password for user:", normalizedEmail)
-            throw new Error("Invalid email or password")
+            return null
           }
 
-          // Update last login time
           await db.user.update({
             where: { id: user.id },
-            data: { lastLoginAt: new Date() }
+            data: { lastLoginAt: new Date() },
           })
 
-          // Return user object for session
           return {
             id: user.id,
             email: user.email,
@@ -133,15 +132,16 @@ export const authOptions: NextAuthOptions = {
             licenseNumber: user.licenseNumber,
           }
         } catch (error) {
-          // Log error for debugging
           console.error("Authentication error:", error)
-          
-          // Return null to indicate failed authentication
-          throw error
+          return null
         }
       },
     }),
-  ],
+)
+
+export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(db as any),
+  providers,
 
   session: {
     strategy: "jwt",

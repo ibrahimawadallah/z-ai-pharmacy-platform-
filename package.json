@@ -16,6 +16,7 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:seed": "npx tsx prisma/seed.ts",
+    "db:seed:admin": "npx tsx prisma/seed-admin.ts",
     "db:seed:quick": "npx tsx prisma/seed-quick.ts",
     "db:seed:simple": "npx tsx prisma/seed-simple.ts",
     "db:seed:comprehensive": "npx tsx prisma/seed-comprehensive.ts",
