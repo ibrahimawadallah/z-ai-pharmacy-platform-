@@ -27,42 +27,42 @@ const features = [
     title: 'AI Consultation',
     desc: '24/7 AI-powered health guidance with real-time drug interaction checking and personalized recommendations.',
     href: '/consultation',
-    color: 'bg-cyan-100 text-cyan-600'
+    color: 'bg-primary/10 text-primary'
   },
   {
     icon: Search,
     title: 'Drug Search',
     desc: 'Search 19,000+ UAE-approved medications with detailed information on dosages, interactions, and side effects.',
     href: '/search',
-    color: 'bg-emerald-100 text-emerald-600'
+    color: 'bg-primary/10 text-primary'
   },
   {
     icon: Activity,
     title: 'Drug Interactions',
     desc: 'Check potential interactions between multiple medications instantly with AI-powered analysis.',
     href: '/interactions',
-    color: 'bg-violet-100 text-violet-600'
+    color: 'bg-primary/10 text-primary'
   },
   {
     icon: FileText,
     title: 'Health Reports',
     desc: 'Generate comprehensive health reports with drug analysis and personalized recommendations.',
     href: '/reports',
-    color: 'bg-amber-100 text-amber-600'
+    color: 'bg-primary/10 text-primary'
   },
   {
     icon: Heart,
     title: 'Favorites',
     desc: 'Save and organize your frequently used medications for quick access.',
     href: '/favorites',
-    color: 'bg-rose-100 text-rose-600'
+    color: 'bg-primary/10 text-primary'
   },
   {
     icon: Bell,
     title: 'Safety Alerts',
     desc: 'Stay updated with the latest drug safety warnings and recalls from UAE health authorities.',
     href: '/alerts',
-    color: 'bg-pink-100 text-pink-600'
+    color: 'bg-primary/10 text-primary'
   }
 ]
 
@@ -86,9 +86,9 @@ export default function LandingPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-teal-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -98,25 +98,25 @@ export default function LandingPage() {
             
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
-              <Link href="/consultation" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Consultation</Link>
-              <Link href="/search" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Drugs</Link>
-              <Link href="/interactions" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Interactions</Link>
-              <Link href="/reports" className="text-sm font-medium text-gray-600 hover:text-cyan-600 transition-colors">Reports</Link>
+              <Link href="/consultation" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Consultation</Link>
+              <Link href="/search" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Drugs</Link>
+              <Link href="/interactions" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Interactions</Link>
+              <Link href="/reports" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Reports</Link>
             </div>
 
             {/* Right Side */}
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="text-gray-500 hover:text-cyan-600">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
                 <Bell className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="md:hidden text-gray-500">
+              <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground">
                 <Menu className="w-5 h-5" />
               </Button>
               <Link href="/auth/login">
-                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-cyan-600">Sign In</Button>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">Sign In</Button>
               </Link>
               <Link href="/auth/register">
-                <Button size="sm" className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-md">
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white shadow-md">
                   Get Started
                 </Button>
               </Link>
@@ -130,20 +130,20 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-sm shadow-lg border border-cyan-100 mb-8">
-              <Sparkles className="w-4 h-4 text-cyan-500" />
-              <span className="text-sm font-semibold text-gray-700">UAE Ministry of Health Approved</span>
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/80 backdrop-blur-sm shadow-lg border border-primary/20 mb-8">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-foreground">UAE Ministry of Health Approved</span>
             </div>
             
             {/* Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
               Clinical Intelligence<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">
                 Powered by AI
               </span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
               Access 19,000+ UAE-approved medications, check drug interactions instantly, 
               and make safer clinical decisions with AI-powered precision.
             </p>
@@ -151,13 +151,13 @@ export default function LandingPage() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/auth/register">
-                <Button size="lg" className="bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-700 hover:to-cyan-800 text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all">
+                <Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 text-white px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all">
                   Start Free Trial
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
               <Link href="/search">
-                <Button size="lg" variant="outline" className="px-8 py-6 text-lg border-2 border-gray-200 hover:border-cyan-300 hover:bg-cyan-50 transition-all">
+                <Button size="lg" variant="outline" className="px-8 py-6 text-lg border-2 border-border hover:border-primary hover:bg-primary/5 transition-all">
                   Search Drugs
                 </Button>
               </Link>
@@ -174,8 +174,8 @@ export default function LandingPage() {
                   onClick={() => setCurrentSlide(idx)}
                   className={`w-3 h-3 rounded-full transition-all ${
                     currentSlide === idx 
-                      ? 'bg-cyan-600 w-8' 
-                      : 'bg-gray-300 hover:bg-gray-400'
+                      ? 'bg-primary w-8' 
+                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                   }`}
                 />
               ))}
@@ -192,8 +192,8 @@ export default function LandingPage() {
                           <feature.icon className="w-7 h-7" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-cyan-600 transition-colors">{feature.title}</h3>
-                          <p className="text-gray-500 leading-relaxed">{feature.desc}</p>
+                          <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{feature.title}</h3>
+                          <p className="text-muted-foreground leading-relaxed">{feature.desc}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -205,13 +205,13 @@ export default function LandingPage() {
             {/* Arrow Navigation */}
             <button 
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:text-cyan-600 hover:scale-110 transition-all"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:scale-110 transition-all"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button 
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-600 hover:text-cyan-600 hover:scale-110 transition-all"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:scale-110 transition-all"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -220,24 +220,24 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Bar */}
-      <section className="bg-white/80 backdrop-blur-sm border-y border-gray-100 py-12">
+      <section className="bg-white/80 backdrop-blur-sm border-y border-border py-12">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">19K+</div>
-              <div className="text-sm font-medium text-gray-500 mt-1">UAE Approved Drugs</div>
+              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">19K+</div>
+              <div className="text-sm font-medium text-muted-foreground mt-1">UAE Approved Drugs</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">24/7</div>
-              <div className="text-sm font-medium text-gray-500 mt-1">AI Support</div>
+              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">24/7</div>
+              <div className="text-sm font-medium text-muted-foreground mt-1">AI Support</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">500+</div>
-              <div className="text-sm font-medium text-gray-500 mt-1">Partner Pharmacies</div>
+              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">500+</div>
+              <div className="text-sm font-medium text-muted-foreground mt-1">Partner Pharmacies</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">99.9%</div>
-              <div className="text-sm font-medium text-gray-500 mt-1">Accuracy Rate</div>
+              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">99.9%</div>
+              <div className="text-sm font-medium text-muted-foreground mt-1">Accuracy Rate</div>
             </div>
           </div>
         </div>
@@ -247,40 +247,40 @@ export default function LandingPage() {
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-gray-100">
-              <Shield className="w-5 h-5 text-emerald-500" />
-              <span className="text-sm font-semibold text-gray-700">HIPAA Compliant</span>
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-border">
+              <Shield className="w-5 h-5 text-success" />
+              <span className="text-sm font-semibold text-foreground">HIPAA Compliant</span>
             </div>
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-gray-100">
-              <Stethoscope className="w-5 h-5 text-cyan-500" />
-              <span className="text-sm font-semibold text-gray-700">UAE MOH Approved</span>
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-border">
+              <Stethoscope className="w-5 h-5 text-primary" />
+              <span className="text-sm font-semibold text-foreground">UAE MOH Approved</span>
             </div>
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-gray-100">
-              <Shield className="w-5 h-5 text-violet-500" />
-              <span className="text-sm font-semibold text-gray-700">ISO 27001 Certified</span>
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-border">
+              <Shield className="w-5 h-5 text-primary" />
+              <span className="text-sm font-semibold text-foreground">ISO 27001 Certified</span>
             </div>
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-gray-100">
-              <Heart className="w-5 h-5 text-rose-500" />
-              <span className="text-sm font-semibold text-gray-700">GDPR Compliant</span>
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md border border-border">
+              <Heart className="w-5 h-5 text-primary" />
+              <span className="text-sm font-semibold text-foreground">GDPR Compliant</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-10 px-4">
+      <footer className="bg-white border-t border-border py-10 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
               <DrugEyeLogo size="sm" variant="default" />
             </div>
-            <div className="flex items-center gap-8 text-sm text-gray-500">
-              <Link href="/privacy" className="hover:text-cyan-600 transition-colors">Privacy Policy</Link>
-              <Link href="/safety" className="hover:text-cyan-600 transition-colors">Safety</Link>
-              <Link href="/support" className="hover:text-cyan-600 transition-colors">Support</Link>
-              <Link href="/terms" className="hover:text-cyan-600 transition-colors">Terms</Link>
+            <div className="flex items-center gap-8 text-sm text-muted-foreground">
+              <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link href="/safety" className="hover:text-primary transition-colors">Safety</Link>
+              <Link href="/support" className="hover:text-primary transition-colors">Support</Link>
+              <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-muted-foreground">
               © 2026 DrugEye Intelligence. All rights reserved.
             </div>
           </div>

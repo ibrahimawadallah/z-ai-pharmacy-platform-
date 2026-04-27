@@ -6,14 +6,13 @@ import Link from 'next/link'
 import { 
   Pill, ArrowLeft, Heart, Activity, AlertTriangle, 
   Package, DollarSign, Building2, FileText, Clock,
-  Star, Share2, Printer, Shield, CheckCircle
+  Star, Share2, Printer, Shield, CheckCircle, ExternalLink
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton, SkeletonCard, SkeletonText } from '@/components/ui/skeleton-enhanced'
-import { LoadingSpinner } from '@/components/ui/progress-enhanced'
 import { PregnancySafetyPanel } from '@/components/medical/PregnancySafetyPanel'
 import { G6PDSafetyAlert } from '@/components/medical/G6PDSafetyAlert'
 import { WeightBasedDoseCalculator } from '@/components/medical/WeightBasedDoseCalculator'
@@ -58,7 +57,6 @@ export default function DrugDetailsPage() {
   const [error, setError] = useState('')
   const [interactions, setInteractions] = useState<any[]>([])
   const [sideEffects, setSideEffects] = useState<any[]>([])
-  const [loadingExtra, setLoadingExtra] = useState(false)
 
   useEffect(() => {
     const fetchDrug = async () => {
@@ -67,8 +65,9 @@ export default function DrugDetailsPage() {
         const data = await res.json()
         if (data.success && data.data) {
           setDrug(data.data)
-          // Fetch interactions and side effects
-          fetchDrugDetails(data.data.id)
+          // Use data already included in the response
+          setInteractions(data.data.interactions || [])
+          setSideEffects(data.data.sideEffects || [])
         } else {
           setError('Drug not found')
         }
@@ -81,29 +80,10 @@ export default function DrugDetailsPage() {
     if (params.id) fetchDrug()
   }, [params.id])
 
-  const fetchDrugDetails = async (drugId: string) => {
-    setLoadingExtra(true)
-    try {
-      // Fetch interactions
-      const interactionsRes = await fetch(`/api/drugs/${drugId}/interactions`)
-      const interactionsData = await interactionsRes.json()
-      setInteractions(interactionsData.data || [])
-
-      // Fetch side effects
-      const sideEffectsRes = await fetch(`/api/drugs/${drugId}/side-effects`)
-      const sideEffectsData = await sideEffectsRes.json()
-      setSideEffects(sideEffectsData.data || [])
-    } catch (e) {
-      console.error('Failed to fetch extra details:', e)
-    } finally {
-      setLoadingExtra(false)
-    }
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-blue-50 p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="min-h-screen bg-slate-50 p-6">
+        <div className="max-w-6xl mx-auto space-y-6">
           <div className="flex items-center gap-4">
             <Skeleton className="h-10 w-10 rounded-lg" />
             <SkeletonText lines={2} />
@@ -120,10 +100,10 @@ export default function DrugDetailsPage() {
 
   if (error || !drug) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{error || 'Drug not found'}</h2>
+          <AlertTriangle className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-slate-900 mb-2">{error || 'Drug not found'}</h2>
           <Button onClick={() => router.back()} variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Go Back
@@ -136,19 +116,19 @@ export default function DrugDetailsPage() {
   const FormularyBadges = () => (
     <div className="flex flex-wrap gap-2">
       {drug.includedInBasic === 'Yes' && (
-        <Badge className="bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600 transition-colors">Daman Basic</Badge>
+        <Badge className="bg-primary text-white border-primary hover:bg-primary/90 transition-colors">Daman Basic</Badge>
       )}
       {drug.includedInABM1 === 'Yes' && (
-        <Badge className="bg-blue-500 text-white border-blue-600 hover:bg-blue-600 transition-colors">ABM 1</Badge>
+        <Badge className="bg-primary text-white border-primary hover:bg-primary/90 transition-colors">ABM 1</Badge>
       )}
       {drug.includedInABM7 === 'Yes' && (
-        <Badge className="bg-purple-500 text-white border-purple-600 hover:bg-purple-600 transition-colors">ABM 7</Badge>
+        <Badge className="bg-primary text-white border-primary hover:bg-primary/90 transition-colors">ABM 7</Badge>
       )}
       {drug.includedInThiqaABM === 'Yes' && (
-        <Badge className="bg-amber-500 text-white border-amber-600 hover:bg-amber-600 transition-colors">Thiqa/ABM</Badge>
+        <Badge className="bg-primary text-white border-primary hover:bg-primary/90 transition-colors">Thiqa/ABM</Badge>
       )}
       {drug.govtFundedCoverage === 'Yes' && (
-        <Badge className="bg-cyan-500 text-white border-cyan-600 hover:bg-cyan-600 transition-colors">Govt Funded</Badge>
+        <Badge className="bg-primary text-white border-primary hover:bg-primary/90 transition-colors">Govt Funded</Badge>
       )}
       {drug.includedInBasic === 'No' && drug.includedInABM1 === 'No' && drug.includedInABM7 === 'No' && drug.includedInThiqaABM === 'No' && (
         <Badge variant="secondary" className="bg-slate-200 text-slate-600 border-slate-300">Not Covered</Badge>
@@ -157,22 +137,22 @@ export default function DrugDetailsPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-blue-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => router.back()}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <Badge variant={drug.status === 'Active' ? 'default' : 'secondary'} className={drug.status === 'Active' ? 'bg-emerald-500' : ''}>
+                <Badge variant={drug.status === 'Active' ? 'default' : 'secondary'} className={drug.status === 'Active' ? 'bg-primary' : ''}>
                   {drug.status}
                 </Badge>
-                <span className="text-sm text-gray-500">Code: {drug.drugCode}</span>
+                <span className="text-sm text-slate-500">Code: {drug.drugCode}</span>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mt-1">{drug.packageName}</h1>
+              <h1 className="text-2xl font-bold text-slate-900 mt-1">{drug.packageName}</h1>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="icon">
@@ -189,42 +169,42 @@ export default function DrugDetailsPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+            <Card className="bg-white border border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Pill className="w-5 h-5 text-cyan-600" />
+                <CardTitle className="flex items-center gap-2 text-slate-800">
+                  <Pill className="w-5 h-5 text-blue-600" />
                   Drug Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Generic Name</p>
-                    <p className="font-semibold text-gray-900">{drug.genericName}</p>
+                    <p className="text-sm text-slate-500">Generic Name</p>
+                    <p className="font-semibold text-slate-900">{drug.genericName}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Strength</p>
-                    <p className="font-semibold text-gray-900">{drug.strength || 'N/A'}</p>
+                    <p className="text-sm text-slate-500">Strength</p>
+                    <p className="font-semibold text-slate-900">{drug.strength || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Dosage Form</p>
-                    <p className="font-semibold text-gray-900">{drug.dosageForm}</p>
+                    <p className="text-sm text-slate-500">Dosage Form</p>
+                    <p className="font-semibold text-slate-900">{drug.dosageForm}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Package Size</p>
-                    <p className="font-semibold text-gray-900">{drug.packageSize || 'N/A'}</p>
+                    <p className="text-sm text-slate-500">Package Size</p>
+                    <p className="font-semibold text-slate-900">{drug.packageSize || 'N/A'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Dispense Mode</p>
+                    <p className="text-sm text-slate-500">Dispense Mode</p>
                     <Badge variant="outline">{drug.dispenseMode || 'N/A'}</Badge>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">UPP Scope</p>
-                    <Badge variant={drug.uppScope === 'Yes' ? 'default' : 'secondary'} className={drug.uppScope === 'Yes' ? 'bg-cyan-500' : ''}>
+                    <p className="text-sm text-slate-500">UPP Scope</p>
+                    <Badge variant={drug.uppScope === 'Yes' ? 'default' : 'secondary'} className={drug.uppScope === 'Yes' ? 'bg-blue-600' : ''}>
                       {drug.uppScope || 'N/A'}
                     </Badge>
                   </div>
@@ -253,7 +233,7 @@ export default function DrugDetailsPage() {
             />
 
             <Tabs defaultValue="interactions" className="space-y-4">
-              <TabsList className="bg-white shadow-sm">
+              <TabsList className="bg-white border border-slate-200 shadow-sm">
                 <TabsTrigger value="interactions">Interactions</TabsTrigger>
                 <TabsTrigger value="sideeffects">Side Effects</TabsTrigger>
                 <TabsTrigger value="icd10">ICD-10</TabsTrigger>
@@ -262,46 +242,98 @@ export default function DrugDetailsPage() {
               </TabsList>
 
               <TabsContent value="interactions">
-                <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+                <Card className="bg-white border border-slate-200 shadow-sm">
+                  <CardHeader className="border-b border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold text-slate-800">Drug Interactions</CardTitle>
+                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
+                        {interactions.length} interactions
+                      </Badge>
+                    </div>
+                  </CardHeader>
                   <CardContent className="p-6">
-                    {loadingExtra ? (
-                      <div className="flex justify-center py-8"><LoadingSpinner /></div>
-                    ) : interactions.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">
-                        No known interactions for this drug.
-                      </p>
+                    {interactions.length === 0 ? (
+                      <div className="text-center py-12">
+                        <CheckCircle className="w-12 h-12 text-green-300 mx-auto mb-3" />
+                        <p className="text-slate-500">No known interactions for this drug.</p>
+                      </div>
                     ) : (
                       <div className="space-y-4">
-                        {interactions.map((interaction, i) => (
-                          <div key={i} className={`p-4 rounded-lg border ${
-                            interaction.severity === 'severe' 
-                              ? 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'
-                              : interaction.severity === 'moderate'
-                              ? 'bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800'
-                              : 'bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800'
-                          }`}>
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-semibold text-sm">{interaction.secondaryDrugName || 'Unknown Drug'}</h4>
-                              <Badge className={
-                                interaction.severity === 'severe'
-                                  ? 'bg-red-600 text-white'
-                                  : interaction.severity === 'moderate'
-                                  ? 'bg-amber-600 text-white'
-                                  : 'bg-blue-600 text-white'
-                              }>
-                                {interaction.severity || 'Unknown'}
-                              </Badge>
-                            </div>
-                            {interaction.description && (
-                              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{interaction.description}</p>
-                            )}
-                            {interaction.management && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                <span className="font-semibold">Management:</span> {interaction.management}
-                              </p>
-                            )}
-                          </div>
-                        ))}
+                        {/* Group by severity */}
+                        {(() => {
+                          const severityOrder = ['severe', 'moderate', 'mild', 'unknown']
+                          const grouped = interactions.reduce((acc, interaction) => {
+                            const severity = interaction.severity || 'unknown'
+                            if (!acc[severity]) acc[severity] = []
+                            acc[severity].push(interaction)
+                            return acc
+                          }, {} as Record<string, any[]>)
+                          
+                          return severityOrder
+                            .filter(severity => grouped[severity]?.length > 0)
+                            .map(severity => (
+                              <div key={severity} className="border border-slate-200 rounded-lg overflow-hidden">
+                                <div className={`px-4 py-2 border-b border-slate-200 ${
+                                  severity === 'severe' ? 'bg-red-50' :
+                                  severity === 'moderate' ? 'bg-amber-50' :
+                                  severity === 'mild' ? 'bg-blue-50' :
+                                  'bg-slate-50'
+                                }`}>
+                                  <div className="flex items-center justify-between">
+                                    <h5 className="text-sm font-medium text-slate-700 capitalize">{severity} ({grouped[severity].length})</h5>
+                                    {severity === 'severe' && <AlertTriangle className="w-4 h-4 text-red-600" />}
+                                  </div>
+                                </div>
+                                <div className="divide-y divide-slate-100">
+                                  {grouped[severity].map((interaction, i) => (
+                                    <div key={i} className="p-4 hover:bg-slate-50 transition-colors">
+                                      <div className="space-y-3">
+                                        <div className="flex items-start justify-between gap-4">
+                                          <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                              <h6 className="text-sm font-medium text-slate-800">
+                                                {interaction.secondaryDrugName || 'Unknown Drug'}
+                                              </h6>
+                                              {interaction.interactionType && (
+                                                <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600 border-slate-200">
+                                                  {interaction.interactionType}
+                                                </Badge>
+                                              )}
+                                            </div>
+                                            {interaction.description && (
+                                              <p className="text-sm text-slate-600 mt-1">{interaction.description}</p>
+                                            )}
+                                          </div>
+                                        </div>
+                                        
+                                        {interaction.mechanism && (
+                                          <div className="bg-slate-50 p-3 rounded-lg">
+                                            <p className="text-xs text-slate-600">
+                                              <span className="font-medium">Mechanism:</span> {interaction.mechanism}
+                                            </p>
+                                          </div>
+                                        )}
+                                        
+                                        {interaction.management && (
+                                          <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                            <p className="text-xs text-slate-700">
+                                              <span className="font-medium text-blue-800">Management:</span> {interaction.management}
+                                            </p>
+                                          </div>
+                                        )}
+                                        
+                                        {interaction.evidence && (
+                                          <p className="text-xs text-slate-500 italic">
+                                            Evidence: {interaction.evidence}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))
+                        })()}
                       </div>
                     )}
                   </CardContent>
@@ -309,41 +341,72 @@ export default function DrugDetailsPage() {
               </TabsContent>
 
               <TabsContent value="sideeffects">
-                <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+                <Card className="bg-white border border-slate-200 shadow-sm">
+                  <CardHeader className="border-b border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold text-slate-800">Side Effects & Adverse Reactions</CardTitle>
+                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
+                        {sideEffects.length} effects
+                      </Badge>
+                    </div>
+                  </CardHeader>
                   <CardContent className="p-6">
-                    {loadingExtra ? (
-                      <div className="flex justify-center py-8"><LoadingSpinner /></div>
-                    ) : sideEffects.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">
-                        No side effects data available for this drug.
-                      </p>
+                    {sideEffects.length === 0 ? (
+                      <div className="text-center py-12">
+                        <AlertTriangle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                        <p className="text-slate-500">No side effects data available for this drug.</p>
+                      </div>
                     ) : (
                       <div className="space-y-4">
-                        {sideEffects.map((se, i) => (
-                          <div key={i} className={`p-4 rounded-lg border ${
-                            se.severity === 'severe'
-                              ? 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'
-                              : se.severity === 'moderate'
-                              ? 'bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800'
-                              : 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
-                          }`}>
-                            <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-semibold text-sm">{se.name || 'Unknown Side Effect'}</h4>
-                              <Badge className={
-                                se.severity === 'severe'
-                                  ? 'bg-red-600 text-white'
-                                  : se.severity === 'moderate'
-                                  ? 'bg-amber-600 text-white'
-                                  : 'bg-green-600 text-white'
-                              }>
-                                {se.severity || 'Unknown'}
-                              </Badge>
-                            </div>
-                            {se.description && (
-                              <p className="text-sm text-gray-600 dark:text-gray-300">{se.description}</p>
-                            )}
-                          </div>
-                        ))}
+                        {/* Group by severity */}
+                        {(() => {
+                          const severityOrder = ['severe', 'moderate', 'mild', 'unknown']
+                          const grouped = sideEffects.reduce((acc, se) => {
+                            const severity = se.severity || 'unknown'
+                            if (!acc[severity]) acc[severity] = []
+                            acc[severity].push(se)
+                            return acc
+                          }, {} as Record<string, any[]>)
+                          
+                          return severityOrder
+                            .filter(severity => grouped[severity]?.length > 0)
+                            .map(severity => (
+                              <div key={severity} className="border border-slate-200 rounded-lg overflow-hidden">
+                                <div className={`px-4 py-2 border-b border-slate-200 ${
+                                  severity === 'severe' ? 'bg-red-50' :
+                                  severity === 'moderate' ? 'bg-amber-50' :
+                                  severity === 'mild' ? 'bg-green-50' :
+                                  'bg-slate-50'
+                                }`}>
+                                  <div className="flex items-center justify-between">
+                                    <h5 className="text-sm font-medium text-slate-700 capitalize">{severity} ({grouped[severity].length})</h5>
+                                    {severity === 'severe' && <AlertTriangle className="w-4 h-4 text-red-600" />}
+                                  </div>
+                                </div>
+                                <div className="divide-y divide-slate-100">
+                                  {grouped[severity].map((se, i) => (
+                                    <div key={i} className="p-4 hover:bg-slate-50 transition-colors">
+                                      <div className="flex items-start justify-between gap-4">
+                                        <div className="flex-1">
+                                          <div className="flex items-center gap-2 mb-1">
+                                            <h6 className="text-sm font-medium text-slate-800">{se.name || se.sideEffect}</h6>
+                                            {se.frequency && (
+                                              <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600 border-slate-200">
+                                                {se.frequency}
+                                              </Badge>
+                                            )}
+                                          </div>
+                                          {se.mechanism && (
+                                            <p className="text-xs text-slate-500 mt-1">{se.mechanism}</p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))
+                        })()}
                       </div>
                     )}
                   </CardContent>
@@ -351,51 +414,82 @@ export default function DrugDetailsPage() {
               </TabsContent>
 
               <TabsContent value="icd10">
-                <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+                <Card className="bg-white border border-slate-200 shadow-sm">
+                  <CardHeader className="border-b border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold text-slate-800">ICD-10 Disease Mappings</CardTitle>
+                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
+                        {drug.icd10Codes?.length || 0} codes
+                      </Badge>
+                    </div>
+                  </CardHeader>
                   <CardContent className="p-6">
                     {!drug.icd10Codes || drug.icd10Codes.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">
-                        No ICD-10 mappings available for this drug.
-                      </p>
+                      <div className="text-center py-12">
+                        <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                        <p className="text-slate-500">No ICD-10 mappings available for this drug.</p>
+                      </div>
                     ) : (
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between mb-4">
-                          <h4 className="font-semibold text-gray-900">Related Diagnoses (ICD-10)</h4>
-                          <Badge variant="outline">{drug.icd10Codes.length} codes</Badge>
-                        </div>
-                        <div className="grid gap-2">
-                          {drug.icd10Codes.map((icd10, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                              <div className="flex items-center gap-3">
-                                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 font-mono">
-                                  {icd10.icd10Code}
-                                </Badge>
-                                <div className="flex flex-col">
-                                  <span className="text-sm text-gray-700 dark:text-gray-300">{icd10.description}</span>
-                                  {icd10.badge && (
-                                    <Badge className={`text-xs mt-1 ${icd10.badge.color}`}>
-                                      {icd10.badge.icon} {icd10.badge.label}
-                                    </Badge>
-                                  )}
-                                </div>
+                      <div className="space-y-4">
+                        {/* Group by category */}
+                        {(() => {
+                          const grouped = drug.icd10Codes.reduce((acc, icd10) => {
+                            const category = 'ICD-10 Codes'
+                            if (!acc[category]) acc[category] = []
+                            acc[category].push(icd10)
+                            return acc
+                          }, {} as Record<string, any[]>)
+                          
+                          return Object.entries(grouped).map(([category, codes]) => (
+                            <div key={category} className="border border-slate-200 rounded-lg overflow-hidden">
+                              <div className="bg-slate-50 px-4 py-2 border-b border-slate-200">
+                                <h5 className="text-sm font-medium text-slate-700">{category}</h5>
                               </div>
-                              <div className="flex items-center gap-2">
-                                {icd10.source && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {icd10.source}
-                                  </Badge>
-                                )}
-                                <Link 
-                                  href={`https://icd.who.int/browse/Search:${encodeURIComponent(icd10.icd10Code)}`}
-                                  target="_blank"
-                                  className="text-xs text-cyan-600 hover:underline"
-                                >
-                                  WHO Ref →
-                                </Link>
+                              <div className="divide-y divide-slate-100">
+                                {codes.map((icd10, i) => (
+                                  <div key={i} className="p-4 hover:bg-slate-50 transition-colors">
+                                    <div className="flex items-start justify-between gap-4">
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-1">
+                                          <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-mono text-xs">
+                                            {icd10.icd10Code}
+                                          </Badge>
+                                          {icd10.badge && (
+                                            <Badge className={`text-xs ${icd10.badge.color}`}>
+                                              {icd10.badge.icon} {icd10.badge.label}
+                                            </Badge>
+                                          )}
+                                        </div>
+                                        <p className="text-sm text-slate-700">{icd10.description}</p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                          {icd10.source && (
+                                            <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                                              {icd10.source}
+                                            </span>
+                                          )}
+                                          {icd10.confidence && (
+                                            <span className="text-xs text-slate-500">
+                                              Confidence: {icd10.confidence}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <Link 
+                                        href={`https://icd.who.int/browse/Search:${encodeURIComponent(icd10.icd10Code)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 flex-shrink-0"
+                                      >
+                                        WHO Reference
+                                        <ExternalLink className="w-3 h-3" />
+                                      </Link>
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                          ))}
-                        </div>
+                          ))
+                        })()}
                       </div>
                     )}
                   </CardContent>
@@ -403,21 +497,32 @@ export default function DrugDetailsPage() {
               </TabsContent>
 
               <TabsContent value="contraindications">
-                <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+                <Card className="bg-white border border-slate-200 shadow-sm">
+                  <CardHeader className="border-b border-slate-100">
+                    <CardTitle className="text-lg font-semibold text-slate-800">Contraindications</CardTitle>
+                  </CardHeader>
                   <CardContent className="p-6">
-                    <p className="text-gray-500 text-center py-8">
-                      Contraindication data not available.
-                    </p>
+                    <div className="text-center py-12">
+                      <AlertTriangle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-500">Contraindication data not available.</p>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
 
               <TabsContent value="dosing">
-                <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+                <Card className="bg-white border border-slate-200 shadow-sm">
+                  <CardHeader className="border-b border-slate-100">
+                    <CardTitle className="text-lg font-semibold text-slate-800">Dosing Guidelines</CardTitle>
+                  </CardHeader>
                   <CardContent className="p-6">
-                    <p className="text-gray-500 text-center py-8">
-                      Dosing guidelines not available. <Link href="/dosage" className="text-cyan-600 hover:underline">Use dosage calculator →</Link>
-                    </p>
+                    <div className="text-center py-12">
+                      <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-500 mb-4">Dosing guidelines not available.</p>
+                      <Link href="/dosage" className="text-blue-600 hover:text-blue-800 font-medium">
+                        Use dosage calculator →
+                      </Link>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -427,53 +532,53 @@ export default function DrugDetailsPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Pricing */}
-            <Card className="bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-950/50 dark:to-cyan-950/50 border-emerald-200 dark:border-emerald-800">
+            <Card className="bg-white border border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
-                  <DollarSign className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-2 text-slate-800">
+                  <DollarSign className="w-5 h-5 text-primary" />
                   Pricing
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-700">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">Public Price</span>
-                  <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">AED {drug.packagePricePublic?.toFixed(2) || 'N/A'}</span>
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <span className="text-sm text-slate-600">Public Price</span>
+                  <span className="text-xl font-bold text-slate-900">AED {drug.packagePricePublic?.toFixed(2) || 'N/A'}</span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-white dark:bg-slate-800 rounded-lg border border-cyan-200 dark:border-cyan-700">
-                  <span className="text-sm text-gray-600 dark:text-gray-300">Pharmacy Price</span>
-                  <span className="text-lg font-semibold text-cyan-600 dark:text-cyan-400">AED {drug.packagePricePharmacy?.toFixed(2) || 'N/A'}</span>
+                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <span className="text-sm text-slate-600">Pharmacy Price</span>
+                  <span className="text-lg font-semibold text-slate-900">AED {drug.packagePricePharmacy?.toFixed(2) || 'N/A'}</span>
                 </div>
-                <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-slate-800/50 rounded-lg">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Unit Price (Public)</span>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">AED {drug.unitPricePublic?.toFixed(2) || 'N/A'}</span>
+                <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg">
+                  <span className="text-xs text-slate-500">Unit Price (Public)</span>
+                  <span className="text-sm text-slate-700">AED {drug.unitPricePublic?.toFixed(2) || 'N/A'}</span>
                 </div>
-                <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-slate-800/50 rounded-lg">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Unit Price (Pharmacy)</span>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">AED {drug.unitPricePharmacy?.toFixed(2) || 'N/A'}</span>
+                <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg">
+                  <span className="text-xs text-slate-500">Unit Price (Pharmacy)</span>
+                  <span className="text-sm text-slate-700">AED {drug.unitPricePharmacy?.toFixed(2) || 'N/A'}</span>
                 </div>
               </CardContent>
             </Card>
 
             {/* Formulary Status */}
-            <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-blue-200 dark:border-blue-800">
+            <Card className="bg-white border border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-                  <Shield className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-2 text-slate-800">
+                  <Shield className="w-5 h-5 text-blue-600" />
                   Daman Coverage
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <FormularyBadges />
-                <div className="mt-4 p-3 bg-white dark:bg-slate-800 rounded-lg border border-blue-200 dark:border-blue-700">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Coverage Summary</p>
+                <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <p className="text-xs text-slate-500 mb-2">Coverage Summary</p>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-gradient-to-r from-emerald-500 to-blue-500 transition-all"
+                        className="h-full bg-blue-600 transition-all"
                         style={{ width: `${((drug.includedInBasic === 'Yes' ? 1 : 0) + (drug.includedInABM1 === 'Yes' ? 1 : 0) + (drug.includedInABM7 === 'Yes' ? 1 : 0) + (drug.includedInThiqaABM === 'Yes' ? 1 : 0)) / 4 * 100}%` }}
                       />
                     </div>
-                    <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                    <span className="text-xs font-semibold text-slate-600">
                       {((drug.includedInBasic === 'Yes' ? 1 : 0) + (drug.includedInABM1 === 'Yes' ? 1 : 0) + (drug.includedInABM7 === 'Yes' ? 1 : 0) + (drug.includedInThiqaABM === 'Yes' ? 1 : 0))}/4
                     </span>
                   </div>
@@ -482,27 +587,27 @@ export default function DrugDetailsPage() {
             </Card>
 
             {/* Manufacturer */}
-            <Card className="bg-white/90 backdrop-blur-sm shadow-md">
+            <Card className="bg-white border border-slate-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-cyan-600" />
+                <CardTitle className="flex items-center gap-2 text-slate-800">
+                  <Building2 className="w-5 h-5 text-slate-600" />
                   Manufacturer & Agent
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <p className="text-sm text-gray-500">Manufacturer</p>
-                  <p className="font-medium text-gray-900">{drug.manufacturerName || 'N/A'}</p>
+                  <p className="text-sm text-slate-500">Manufacturer</p>
+                  <p className="font-medium text-slate-900">{drug.manufacturerName || 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Agent</p>
-                  <p className="font-medium text-gray-900">{drug.agentName || 'N/A'}</p>
+                  <p className="text-sm text-slate-500">Agent</p>
+                  <p className="font-medium text-slate-900">{drug.agentName || 'N/A'}</p>
                 </div>
               </CardContent>
             </Card>
 
             {/* Quick Actions */}
-            <Card className="bg-gradient-to-br from-cyan-600 to-blue-600 text-white">
+            <Card className="bg-gradient-to-br from-primary to-blue-600 text-white">
               <CardContent className="p-6 space-y-3">
                 <h3 className="font-semibold">Need more information?</h3>
                 <div className="space-y-2">

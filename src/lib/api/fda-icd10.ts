@@ -51,7 +51,6 @@ const INDICATION_TO_ICD10: Record<string, string[]> = {
   'hyperlipidemia': ['E78'],
   'osteoporosis': ['M80', 'M81'],
   'cancer': ['C00', 'C97', 'D00'],
-  'infection': ['A00', 'B99'],
   'bacterial infection': ['A00', 'A99'],
   'viral infection': ['B00', 'B99'],
   'fungal infection': ['B30', 'B49'],

@@ -12,7 +12,7 @@ interface ICD10Mapping {
   description: string
   category: string
   keywords: string[]
-  severity: 'mild' | 'moderate' | 'severe'
+  severity?: 'mild' | 'moderate' | 'severe'
 }
 
 /**

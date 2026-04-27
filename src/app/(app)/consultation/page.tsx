@@ -4,13 +4,15 @@ import React, { useState, useRef, useEffect } from 'react'
 import {
   Brain, Send, Sparkles, User, Bot, Copy,
   RefreshCw, ThumbsUp, ThumbsDown, AlertTriangle,
-  Pill, Activity, FileText, Heart, ChevronDown, MessageSquare
+  Pill, Activity, FileText, Heart, ChevronDown, MessageSquare,
+  Shield, Zap, Clock, CheckCircle, X, Keyboard
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { classifyIntent, extractDrugEntities, getIntentDescription } from '@/lib/nlp'
+import Link from 'next/link'
 
 interface Message {
   id: string
@@ -18,6 +20,7 @@ interface Message {
   content: string
   timestamp: Date
   sources?: string[]
+  severity?: 'info' | 'warning' | 'critical'
 }
 
 const suggestedQueries = [
@@ -28,6 +31,109 @@ const suggestedQueries = [
   "What are the side effects of SSRIs?",
   "Drugs to avoid in pregnancy"
 ]
+
+const clinicalTools = [
+  { icon: AlertTriangle, label: 'Interactions', href: '/interactions', color: 'bg-primary/10 text-primary' },
+  { icon: Pill, label: 'Dosage Calc', href: '/dosage', color: 'bg-primary/10 text-primary' },
+  { icon: Activity, label: 'Drug Search', href: '/search', color: 'bg-primary/10 text-primary' },
+  { icon: Heart, label: 'Side Effects', href: '/adr', color: 'bg-primary/10 text-primary' }
+]
+
+function formatClinicalContent(content: string): React.ReactNode {
+  const lines = content.split('\n')
+  const formatted: React.ReactNode[] = []
+  let currentSection: string | null = null
+  let currentList: string[] = []
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim()
+    
+    // Skip empty lines
+    if (!line) {
+      if (currentList.length > 0) {
+        formatted.push(
+          <ul key={`list-${i}`} className="ml-4 space-y-1">
+            {currentList.map((item, idx) => (
+              <li key={idx} className="text-sm flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>{item.replace(/^[\+\*]\s*/, '')}</span>
+              </li>
+            ))}
+          </ul>
+        )
+        currentList = []
+      }
+      continue
+    }
+    
+    // Check for section headers (bold text with colon)
+    if (line.match(/^\*\*.*?\*\*:/)) {
+      // Flush any existing list
+      if (currentList.length > 0) {
+        formatted.push(
+          <ul key={`list-${i}`} className="ml-4 space-y-1">
+            {currentList.map((item, idx) => (
+              <li key={idx} className="text-sm flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                <span>{item.replace(/^[\+\*]\s*/, '')}</span>
+              </li>
+            ))}
+          </ul>
+        )
+        currentList = []
+      }
+      
+      currentSection = line.replace(/\*\*/g, '').replace(/:$/, '')
+      formatted.push(
+        <div key={`section-${i}`} className="mt-4 mb-2">
+          <h4 className="text-sm font-bold text-primary uppercase tracking-wide">{currentSection}</h4>
+        </div>
+      )
+      continue
+    }
+    
+    // Check for list items
+    if (line.match(/^[\+\*]\s+/)) {
+      currentList.push(line)
+      continue
+    }
+    
+    // Regular text
+    if (currentList.length > 0) {
+      formatted.push(
+        <ul key={`list-${i}`} className="ml-4 space-y-1">
+          {currentList.map((item, idx) => (
+            <li key={idx} className="text-sm flex items-start gap-2">
+              <span className="text-primary mt-1">•</span>
+              <span>{item.replace(/^[\+\*]\s*/, '')}</span>
+            </li>
+          ))}
+        </ul>
+      )
+      currentList = []
+    }
+    
+    // Format bold text
+    const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-foreground">$1</strong>')
+    formatted.push(<p key={`text-${i}`} className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: formattedLine }} />)
+  }
+  
+  // Flush remaining list
+  if (currentList.length > 0) {
+    formatted.push(
+      <ul key="list-final" className="ml-4 space-y-1">
+        {currentList.map((item, idx) => (
+          <li key={idx} className="text-sm flex items-start gap-2">
+            <span className="text-primary mt-1">•</span>
+            <span>{item.replace(/^[\+\*]\s*/, '')}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  
+  return <div className="space-y-1">{formatted}</div>
+}
 
 export default function ConsultationPage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -42,7 +148,26 @@ export default function ConsultationPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [currentIntent, setCurrentIntent] = useState<string>('')
   const [detectedDrugs, setDetectedDrugs] = useState<string[]>([])
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        document.getElementById('consultation-input')?.focus()
+      }
+      if (e.key === 'Escape') {
+        setInput('')
+      }
+      if (e.key === '?' && !e.shiftKey) {
+        setShowKeyboardShortcuts(!showKeyboardShortcuts)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showKeyboardShortcuts])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -166,34 +291,57 @@ export default function ConsultationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-white to-blue-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="min-h-screen bg-background">
+      {/* Clinical Header */}
+      <div className="bg-card border-b border-border">
+        <div className="px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                <Brain className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Brain className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">AI Clinical Consultation</h1>
-                <p className="text-sm text-gray-500">Powered by DrugEye Intelligence</p>
+                <h1 className="text-xl font-bold text-foreground">AI Clinical Consultation</h1>
+                <p className="text-sm text-muted-foreground">Clinical Decision Support Assistant</p>
               </div>
             </div>
-            <Button variant="outline" onClick={handleNewChat} className="gap-2">
-              <RefreshCw className="w-4 h-4" />
-              New Chat
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowKeyboardShortcuts(!showKeyboardShortcuts)}
+              >
+                <Keyboard className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" onClick={handleNewChat} className="gap-2">
+                <RefreshCw className="w-4 h-4" />
+                New Chat
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Info Banner */}
-        <Card className="bg-cyan-50 border-cyan-200 mb-6">
+      {/* Keyboard Shortcuts */}
+      {showKeyboardShortcuts && (
+        <div className="bg-blue-50 border-b border-blue-200">
+          <div className="px-6 py-3 max-w-7xl mx-auto">
+            <div className="flex items-center gap-6 text-sm">
+              <span className="font-medium text-blue-800">Shortcuts:</span>
+              <span className="text-blue-700"><kbd className="px-2 py-1 bg-white rounded border border-blue-300">Ctrl+K</kbd> Focus input</span>
+              <span className="text-blue-700"><kbd className="px-2 py-1 bg-white rounded border border-blue-300">Enter</kbd> Send</span>
+              <span className="text-blue-700"><kbd className="px-2 py-1 bg-white rounded border border-blue-300">Esc</kbd> Clear</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="px-6 py-6 max-w-7xl mx-auto">
+        {/* Clinical Safety Banner */}
+        <Card className="bg-blue-50 border-blue-200 mb-6">
           <CardContent className="py-4 flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-cyan-600 shrink-0" />
-            <div className="text-sm text-cyan-800">
+            <Shield className="w-5 h-5 text-blue-600 shrink-0" />
+            <div className="text-sm text-blue-800">
               <strong>Clinical Decision Support:</strong> This AI assistant provides information for reference only.
               Always verify with official prescribing information and consult clinical guidelines.
             </div>
@@ -202,23 +350,23 @@ export default function ConsultationPage() {
 
         {/* NLP Status Bar */}
         {(currentIntent || detectedDrugs.length > 0) && (
-          <Card className="bg-blue-50 border-blue-200 mb-6">
+          <Card className="bg-card border-border shadow-sm mb-6">
             <CardContent className="py-3 px-4">
               <div className="flex items-center gap-4 text-sm">
                 {currentIntent && (
                   <div className="flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-blue-600" />
-                    <span className="text-blue-700 font-medium">Intent:</span>
-                    <Badge variant="default" className="bg-blue-600">{getIntentDescription(currentIntent)}</Badge>
+                    <MessageSquare className="w-4 h-4 text-primary" />
+                    <span className="text-muted-foreground font-medium">Intent:</span>
+                    <Badge variant="default" className="bg-primary">{getIntentDescription(currentIntent)}</Badge>
                   </div>
                 )}
                 {detectedDrugs.length > 0 && (
                   <div className="flex items-center gap-2">
-                    <Pill className="w-4 h-4 text-blue-600" />
-                    <span className="text-blue-700 font-medium">Drugs:</span>
+                    <Pill className="w-4 h-4 text-primary" />
+                    <span className="text-muted-foreground font-medium">Drugs:</span>
                     <div className="flex gap-1">
                       {detectedDrugs.map((drug, idx) => (
-                        <Badge key={idx} variant="outline" className="border-blue-600 text-blue-700">{drug}</Badge>
+                        <Badge key={idx} variant="outline" className="border-primary text-primary">{drug}</Badge>
                       ))}
                     </div>
                   </div>
@@ -229,27 +377,27 @@ export default function ConsultationPage() {
         )}
 
         {/* Chat Area */}
-        <Card className="bg-white/90 backdrop-blur-sm shadow-md min-h-[500px] flex flex-col">
+        <Card className="bg-card border-border shadow-sm min-h-[500px] flex flex-col">
           <CardContent className="flex-1 p-6 space-y-4 overflow-y-auto max-h-[600px]">
             {messages.map((message) => (
               <div 
                 key={message.id} 
                 className={`flex gap-4 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
                   message.role === 'user' 
-                    ? 'bg-cyan-100 text-cyan-600' 
-                    : 'bg-gradient-to-br from-cyan-500 to-blue-500 text-white'
+                    ? 'bg-primary/10 text-primary' 
+                    : 'bg-gradient-to-br from-primary to-blue-600 text-white'
                 }`}>
-                  {message.role === 'user' ? <User className="w-4 h-4" /> : <Brain className="w-4 h-4" />}
+                  {message.role === 'user' ? <User className="w-5 h-5" /> : <Brain className="w-5 h-5" />}
                 </div>
                 <div className={`flex-1 ${message.role === 'user' ? 'text-right' : ''}`}>
                   <div className={`inline-block max-w-[80%] p-4 rounded-2xl ${
                     message.role === 'user'
-                      ? 'bg-cyan-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
+                      ? 'bg-primary text-white'
+                      : 'bg-muted text-foreground'
                   }`}>
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    {message.role === 'assistant' ? formatClinicalContent(message.content) : <p className="text-sm whitespace-pre-wrap">{message.content}</p>}
                   </div>
                   {message.sources && message.sources.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -263,14 +411,14 @@ export default function ConsultationPage() {
                   )}
                   {message.role === 'assistant' && (
                     <div className="mt-2 flex items-center gap-2">
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <ThumbsUp className="w-4 h-4 text-gray-400" />
+                      <button className="p-1 hover:bg-muted rounded">
+                        <ThumbsUp className="w-4 h-4 text-muted-foreground" />
                       </button>
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <ThumbsDown className="w-4 h-4 text-gray-400" />
+                      <button className="p-1 hover:bg-muted rounded">
+                        <ThumbsDown className="w-4 h-4 text-muted-foreground" />
                       </button>
-                      <button className="p-1 hover:bg-gray-100 rounded">
-                        <Copy className="w-4 h-4 text-gray-400" />
+                      <button className="p-1 hover:bg-muted rounded">
+                        <Copy className="w-4 h-4 text-muted-foreground" />
                       </button>
                     </div>
                   )}
@@ -280,14 +428,14 @@ export default function ConsultationPage() {
             
             {isLoading && (
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 text-white flex items-center justify-center">
-                  <Brain className="w-4 h-4" />
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center">
+                  <Brain className="w-5 h-5" />
                 </div>
-                <div className="bg-gray-100 rounded-2xl p-4">
+                <div className="bg-muted rounded-2xl p-4">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></span>
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+                    <span className="w-2 h-2 bg-primary rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></span>
+                    <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
                   </div>
                 </div>
               </div>
@@ -298,7 +446,7 @@ export default function ConsultationPage() {
           {/* Suggested Queries */}
           {messages.length <= 2 && (
             <div className="px-6 pb-4">
-              <p className="text-sm text-gray-500 mb-3">Try asking:</p>
+              <p className="text-sm text-muted-foreground mb-3">Common clinical questions:</p>
               <div className="flex flex-wrap gap-2">
                 {suggestedQueries.map((query, idx) => (
                   <Button
@@ -316,75 +464,48 @@ export default function ConsultationPage() {
           )}
 
           {/* Input Area */}
-          <div className="border-t border-gray-200 p-4">
+          <div className="border-t border-border p-4">
             <div className="flex gap-3">
               <Input
-                placeholder="Ask about drug interactions, dosages, contraindications..."
+                id="consultation-input"
+                placeholder="Ask about drug interactions, dosages, contraindications... (Ctrl+K)"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className="flex-1"
+                className="flex-1 h-12 text-base"
                 disabled={isLoading}
               />
               <Button 
                 onClick={handleSend} 
                 disabled={!input.trim() || isLoading}
-                className="bg-cyan-600 hover:bg-cyan-700"
+                className="h-12 px-6 bg-blue-600 hover:bg-blue-700"
               >
-                <Send className="w-4 h-4" />
+                {isLoading ? (
+                  <><Clock className="w-4 h-4 mr-2 animate-spin" /></>
+                ) : (
+                  <><Send className="w-4 h-4 mr-2" />Send</>
+                )}
               </Button>
             </div>
           </div>
         </Card>
 
-        {/* Quick Tools */}
+        {/* Clinical Tools */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-          <Link href="/interactions">
-            <Card className="bg-white/80 hover:bg-white transition-colors cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-amber-600" />
-                </div>
-                <span className="text-sm font-medium">Interactions</span>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/dosage">
-            <Card className="bg-white/80 hover:bg-white transition-colors cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-                  <Pill className="w-5 h-5 text-violet-600" />
-                </div>
-                <span className="text-sm font-medium">Dosage Calc</span>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/search">
-            <Card className="bg-white/80 hover:bg-white transition-colors cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-cyan-100 flex items-center justify-center">
-                  <Activity className="w-5 h-5 text-cyan-600" />
-                </div>
-                <span className="text-sm font-medium">Drug Search</span>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/adr">
-            <Card className="bg-white/80 hover:bg-white transition-colors cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-rose-600" />
-                </div>
-                <span className="text-sm font-medium">Side Effects</span>
-              </CardContent>
-            </Card>
-          </Link>
+          {clinicalTools.map((tool) => (
+            <Link key={tool.href} href={tool.href}>
+              <Card className="bg-card border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg ${tool.color} flex items-center justify-center`}>
+                    <tool.icon className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground">{tool.label}</span>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
   )
-}
-
-function Link({ href, children }: { href: string; children: React.ReactNode }) {
-  return <a href={href}>{children}</a>
 }

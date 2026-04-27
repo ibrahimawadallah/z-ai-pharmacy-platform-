@@ -98,7 +98,7 @@ import { AppProvider } from "@/providers/AppProvider";
 import type { Viewport } from 'next'
 
 export const viewport: Viewport = {
-  themeColor: "#2563eb",
+  themeColor: "#0052cc",
   width: 'device-width',
   initialScale: 1,
 }

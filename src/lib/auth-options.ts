@@ -13,6 +13,7 @@ if (!process.env.NEXTAUTH_URL && process.env.VERCEL_URL) {
 export type UserRole = "user" | "pharmacist" | "admin"
 
 // Extend NextAuth types for session user
+// @ts-ignore - NextAuth type augmentation
 declare module "next-auth" {
   interface Session {
     user: {
@@ -37,6 +38,7 @@ declare module "next-auth" {
   }
 }
 
+// @ts-ignore - NextAuth type augmentation
 declare module "next-auth/jwt" {
   interface JWT {
     id: string

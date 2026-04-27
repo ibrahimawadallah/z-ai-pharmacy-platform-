@@ -175,8 +175,8 @@ model VerificationToken {
 }
 
 model Drug {
-  id                   String            @id @default(cuid())
-  drugCode             String            @unique
+  id                   String             @id @default(cuid())
+  drugCode             String             @unique
   packageName          String
   genericName          String
   strength             String
@@ -198,13 +198,7 @@ model Drug {
   includedInABM1       String?
   includedInABM7       String?
   pregnancyCategory    String?
-  pregnancyPrecautions String?
   breastfeedingSafety  String?
-  g6pdSafety           String?
-  g6pdWarning          String?
-  baseDoseMgPerKg      Float?
-  baseDoseIndication   String?
-  offLabelUses         String?
   renalAdjustment      String?
   hepaticAdjustment    String?
   warnings             String?
@@ -212,16 +206,22 @@ model Drug {
   uppEffectiveDate     DateTime?
   uppUpdatedDate       DateTime?
   uppExpiryDate        DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  g6pdSafety           String?
+  offLabelUses         String?
+  baseDoseIndication   String?
+  baseDoseMgPerKg      Float?
+  g6pdWarning          String?
+  pregnancyPrecautions String?
+  lastVerified         DateTime?
   source               String?
-  lastVerified          DateTime?
   verifiedBy           String?
-  ndcCode              String?   // NDC code for DailyMed matching
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  ndcCode              String?
+  diseaseTreatments    DiseaseTreatment[]
   interactions         DrugInteraction[]
   sideEffects          DrugSideEffect[]
   icd10Codes           ICD10Mapping[]
-  diseaseTreatments    DiseaseTreatment[]
 
   @@index([genericName])
   @@index([packageName])
@@ -237,26 +237,26 @@ model Drug {
 }
 
 model ICD10Mapping {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   drugId          String
   icd10Code       String
   description     String?
   category        String?
-  source          String?  @default("THERAPEUTIC_INFERENCE")
-  confidence      String?  @default("LOW")
-  evidenceLevel   String?  @default("THERAPEUTIC_INFERENCE")
+  createdAt       DateTime  @default(now())
+  confidence      String?   @default("LOW")
+  evidenceLevel   String?   @default("THERAPEUTIC_INFERENCE")
+  isValidated     Boolean?  @default(false)
   lastVerified    DateTime?
-  verifiedBy      String?
-  isValidated     Boolean? @default(false)
+  requiresReview  Boolean   @default(true)
+  source          String?   @default("THERAPEUTIC_INFERENCE")
+  updatedAt       DateTime?
   validatedBy     String?
   validationDate  DateTime?
   validationNotes String?
-  requiresReview  Boolean  @default(true)
-  ndcCode         String?  // NDC code from DailyMed
-  splSetId        String?  // DailyMed SPL set ID
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime?
-  drug            Drug     @relation(fields: [drugId], references: [id])
+  verifiedBy      String?
+  ndcCode         String?
+  splSetId        String?
+  drug            Drug      @relation(fields: [drugId], references: [id])
 
   @@index([drugId])
   @@index([icd10Code])
@@ -272,7 +272,7 @@ model ICD10Mapping {
 }
 
 model DrugInteraction {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   drugId            String
   secondaryDrugName String?
   secondaryDrugId   String?
@@ -280,12 +280,12 @@ model DrugInteraction {
   interactionType   String?
   description       String?
   management        String?
-  mechanism         String?
   evidence          String?
+  createdAt         DateTime  @default(now())
+  mechanism         String?
   source            String?
   lastVerified      DateTime?
-  createdAt         DateTime @default(now())
-  drug              Drug     @relation(fields: [drugId], references: [id])
+  drug              Drug      @relation(fields: [drugId], references: [id])
 
   @@index([drugId])
   @@index([severity])
@@ -295,16 +295,16 @@ model DrugInteraction {
 }
 
 model DrugSideEffect {
-  id         String   @id @default(cuid())
-  drugId     String
-  sideEffect String
-  frequency  String?
-  severity   String?
-  mechanism  String?
-  source     String?
+  id           String    @id @default(cuid())
+  drugId       String
+  sideEffect   String
+  frequency    String?
+  severity     String?
+  mechanism    String?
+  createdAt    DateTime  @default(now())
   lastVerified DateTime?
-  createdAt  DateTime @default(now())
-  drug       Drug     @relation(fields: [drugId], references: [id])
+  source       String?
+  drug         Drug      @relation(fields: [drugId], references: [id])
 
   @@index([drugId])
   @@index([severity])
@@ -516,7 +516,7 @@ model Course {
   learningObjectives String?
   targetAudience     String?
   prerequisites      String?
-  caseStudies        String?            // JSON for undergraduate/postgraduate case studies
+  caseStudies        String?
   isPublished        Boolean            @default(false)
   isAIGenerated      Boolean            @default(false)
   createdBy          String?
@@ -540,13 +540,13 @@ model CourseModule {
   titleAr          String?
   icon             String?
   color            String?
-  writtenContent   String?  // JSON for introduction, coreConcepts, clinicalPearls, warnings
-  undergraduate    String?  // JSON for focus, objectives, keyPoints, simplifiedExplanation, memoryAids
-  postgraduate     String?  // JSON for focus, objectives, keyPoints, advancedConcepts, evidenceBase
-  videos           String?  // JSON array of video resources
-  diagrams         String?  // JSON array of diagram resources
-  content          String?  // Legacy content field
-  contentAr        String?  // Legacy Arabic content field
+  writtenContent   String?
+  undergraduate    String?
+  postgraduate     String?
+  videos           String?
+  diagrams         String?
+  content          String?
+  contentAr        String?
   learningOutcomes String?
   keyPoints        String?
   drugReferences   String?
@@ -642,15 +642,15 @@ model Disease {
   name                String
   nameAr              String?
   icd10Code           String?
-  category            String?            // Cardiology, Endocrinology, etc.
+  category            String?
   description         String?
-  symptoms            String?            // JSON array
-  riskFactors         String?            // JSON array
-  diagnosticCriteria  String?            // JSON
-  investigations      String?            // JSON array of recommended tests
-  complications       String?            // JSON array
+  symptoms            String?
+  riskFactors         String?
+  diagnosticCriteria  String?
+  investigations      String?
+  complications       String?
   prevalence          String?
-  treatmentGuidelines String?            // JSON - first-line, second-line, alternatives
+  treatmentGuidelines String?
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
   treatments          DiseaseTreatment[]
@@ -661,19 +661,19 @@ model Disease {
 }
 
 model DiseaseTreatment {
-  id              String   @id @default(cuid())
-  diseaseId       String
-  drugId          String
-  lineOfTherapy   String   @default("first_line") // first_line, second_line, alternative, adjunct
-  indication      String?  // Specific indication for this drug in this disease
-  dose            String?  // Typical dose for this indication
-  duration        String?  // Typical duration
-  notes           String?  // Clinical pearls, monitoring requirements
-  evidenceLevel   String?  // A, B, C evidence level
-  recommendation  String?  // Strong, Moderate, Weak
-  createdAt       DateTime @default(now())
-  disease         Disease  @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
-  drug            Drug     @relation(fields: [drugId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  diseaseId      String
+  drugId         String
+  lineOfTherapy  String   @default("first_line")
+  indication     String?
+  dose           String?
+  duration       String?
+  notes          String?
+  evidenceLevel  String?
+  recommendation String?
+  createdAt      DateTime @default(now())
+  disease        Disease  @relation(fields: [diseaseId], references: [id], onDelete: Cascade)
+  drug           Drug     @relation(fields: [drugId], references: [id], onDelete: Cascade)
 
   @@unique([diseaseId, drugId])
   @@index([diseaseId])
