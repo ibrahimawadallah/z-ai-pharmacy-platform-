@@ -14,7 +14,12 @@ async function importAll() {
       delimiter: '\t',
       bom: true,
       skip_empty_lines: true,
+      trim: true,
     }) as Array<{ drugbank_id?: string; side_effect_name?: string }>
+
+    if (seRecords.length > 0 && (!('drugbank_id' in seRecords[0]) || !('side_effect_name' in seRecords[0]))) {
+      throw new Error('Unexpected SIDER TSV headers: expected drugbank_id and side_effect_name columns')
+    }
 
     console.log('SIDER records:', seRecords.length)
 
