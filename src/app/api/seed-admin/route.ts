@@ -1,57 +1,61 @@
-import { db } from "@/lib/db"
 import { NextResponse } from "next/server"
-import bcrypt from "bcryptjs"
+import {
+  getConfiguredAdminCredentials,
+  upsertAdminUser,
+} from "@/lib/admin-bootstrap"
 
+/**
+ * Idempotently create or update the admin account.
+ *
+ * Protected by `ADMIN_API_KEY`; the secret may be supplied via the
+ * `x-admin-api-key` header or in the JSON body as `secret`.
+ *
+ * If the body omits credentials, falls back to `ADMIN_EMAIL`/`ADMIN_PASSWORD`
+ * from the environment (or the default `admin@drugeye.com` / `Admin123456!`).
+ */
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const { email, password, name } = body
-
-    if (!email || !password) {
+    const adminApiKey = process.env.ADMIN_API_KEY
+    if (!adminApiKey) {
       return NextResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 }
+        {
+          error:
+            "Admin seeding is disabled. Set ADMIN_API_KEY in the environment to enable this endpoint.",
+        },
+        { status: 503 },
       )
     }
 
-    const existingUser = await db.user.findUnique({
-      where: { email }
-    })
+    const body = await req.json().catch(() => ({}))
+    const headerSecret = req.headers.get("x-admin-api-key")
+    const providedSecret = headerSecret || body.secret
 
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "User already exists" },
-        { status: 400 }
-      )
+    if (providedSecret !== adminApiKey) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12)
+    const fallback = getConfiguredAdminCredentials()
+    const email = (body.email || fallback.email).toLowerCase().trim()
+    const password = body.password || fallback.password
+    const name = body.name || fallback.name
+    const resetPassword = body.resetPassword !== false
 
-    const user = await db.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name: name || "Admin",
-        role: "admin",
-        isVerified: true,
-        verifiedAt: new Date()
-      }
-    })
+    const user = await upsertAdminUser(
+      { email, password, name },
+      { resetPassword },
+    )
 
     return NextResponse.json({
       success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      }
+      message: resetPassword
+        ? "Admin user created or updated with the provided password."
+        : "Admin user ensured (existing password preserved).",
+      user,
     })
   } catch (error) {
     console.error("Seed admin error:", error)
-    return NextResponse.json(
-      { error: "Failed to create admin user" },
-      { status: 500 }
-    )
+    const message =
+      error instanceof Error ? error.message : "Failed to seed admin user"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
