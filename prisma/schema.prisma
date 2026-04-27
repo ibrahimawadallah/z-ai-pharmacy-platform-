@@ -212,6 +212,10 @@ model Drug {
   uppEffectiveDate     DateTime?
   uppUpdatedDate       DateTime?
   uppExpiryDate        DateTime?
+  source               String?
+  lastVerified          DateTime?
+  verifiedBy           String?
+  ndcCode              String?   // NDC code for DailyMed matching
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
   interactions         DrugInteraction[]
@@ -229,21 +233,42 @@ model Drug {
   @@index([includedInABM7])
   @@index([renalAdjustment])
   @@index([hepaticAdjustment])
+  @@index([ndcCode])
 }
 
 model ICD10Mapping {
-  id          String   @id @default(cuid())
-  drugId      String
-  icd10Code   String
-  description String?
-  category    String?
-  createdAt   DateTime @default(now())
-  drug        Drug     @relation(fields: [drugId], references: [id])
+  id              String   @id @default(cuid())
+  drugId          String
+  icd10Code       String
+  description     String?
+  category        String?
+  source          String?  @default("THERAPEUTIC_INFERENCE")
+  confidence      String?  @default("LOW")
+  evidenceLevel   String?  @default("THERAPEUTIC_INFERENCE")
+  lastVerified    DateTime?
+  verifiedBy      String?
+  isValidated     Boolean? @default(false)
+  validatedBy     String?
+  validationDate  DateTime?
+  validationNotes String?
+  requiresReview  Boolean  @default(true)
+  ndcCode         String?  // NDC code from DailyMed
+  splSetId        String?  // DailyMed SPL set ID
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime?
+  drug            Drug     @relation(fields: [drugId], references: [id])
 
   @@index([drugId])
   @@index([icd10Code])
   @@index([category])
   @@index([icd10Code, category])
+  @@index([source])
+  @@index([confidence])
+  @@index([evidenceLevel])
+  @@index([isValidated])
+  @@index([requiresReview])
+  @@index([ndcCode])
+  @@index([splSetId])
 }
 
 model DrugInteraction {
@@ -258,6 +283,7 @@ model DrugInteraction {
   mechanism         String?
   evidence          String?
   source            String?
+  lastVerified      DateTime?
   createdAt         DateTime @default(now())
   drug              Drug     @relation(fields: [drugId], references: [id])
 
@@ -275,6 +301,8 @@ model DrugSideEffect {
   frequency  String?
   severity   String?
   mechanism  String?
+  source     String?
+  lastVerified DateTime?
   createdAt  DateTime @default(now())
   drug       Drug     @relation(fields: [drugId], references: [id])
 
@@ -352,7 +380,7 @@ model RateLimit {
   requests    Int      @default(1)
   windowStart DateTime @default(now())
 
-  @@unique([identifier, endpoint])
+  @@unique([identifier, endpoint], name: "RateLimit_identifier_endpoint_key")
   @@index([identifier])
   @@index([windowStart])
 }

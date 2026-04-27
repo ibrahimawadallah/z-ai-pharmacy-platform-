@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import bcryptjs from 'bcryptjs';
-import postgres from 'postgres';
+import { db } from '@/lib/db';
 import { checkRateLimit, getClientIP, getRateLimitHeaders } from '@/lib/rate-limit';
 
 // Validation schema for signup
@@ -14,18 +14,6 @@ const signupSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
   name: z.string().min(2, 'Name must be at least 2 characters'),
 });
-
-// Create postgres client
-const getSql = () => {
-  const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL
-  if (!connectionString) {
-    throw new Error('No database connection string configured')
-  }
-  return postgres(connectionString, {
-    ssl: 'require',
-    max: 1,
-  })
-}
 
 interface ApiResponse<T = unknown> {
   success: boolean;
@@ -44,8 +32,6 @@ export async function POST(request: NextRequest) {
       { status: 429, headers: getRateLimitHeaders(rateLimitResult) }
     )
   }
-  
-  const sql = getSql()
   
   try {
     const body = await request.json();
@@ -68,9 +54,11 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase();
 
     // Check if user already exists
-    const existingUser = await sql`SELECT id FROM "User" WHERE email = ${normalizedEmail}`
+    const existingUser = await db.user.findUnique({
+      where: { email: normalizedEmail }
+    })
 
-    if (existingUser.length > 0) {
+    if (existingUser) {
       return NextResponse.json<ApiResponse>(
         {
           success: false,
@@ -85,13 +73,24 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcryptjs.hash(password, saltRounds);
 
     // Create user
-    const insertResult = await sql`
-      INSERT INTO "User" (id, email, password, name, role, "isVerified", "licenseNumber", "createdAt")
-      VALUES (gen_random_uuid(), ${normalizedEmail}, ${hashedPassword}, ${name}, 'user', false, ${body.licenseNumber || null}, NOW())
-      RETURNING id, email, name, role, "isVerified", "createdAt"
-    `
-
-    const user = insertResult[0];
+    const user = await db.user.create({
+      data: {
+        email: normalizedEmail,
+        password: hashedPassword,
+        name,
+        role: 'user',
+        isVerified: false,
+        licenseNumber: body.licenseNumber || null,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isVerified: true,
+        createdAt: true,
+      }
+    });
 
     return NextResponse.json<ApiResponse>(
       {
@@ -110,7 +109,5 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-    await sql.end()
   }
 }

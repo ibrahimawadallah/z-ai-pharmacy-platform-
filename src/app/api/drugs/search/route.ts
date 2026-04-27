@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { requireAuth } from '@/lib/auth'
 import { checkRateLimit, getClientIP, getRateLimitHeaders } from '@/lib/rate-limit'
+import { calculateDrugDataQuality, getDataQualityBadge, calculateICD10MappingQuality, getICD10MappingQualityBadge } from '@/lib/data-quality'
 
 export async function GET(request: NextRequest) {
-  // Require authentication for this route
-  const session = await requireAuth()
-  const userId = session?.user?.id
-  
   // Apply rate limiting (60 requests/minute for search)
   const clientIP = getClientIP(request)
-  const rateLimitResult = await checkRateLimit(userId || clientIP, '/api/drugs/search')
+  const rateLimitResult = await checkRateLimit(clientIP, '/api/drugs/search')
   
   if (!rateLimitResult.success) {
     return NextResponse.json(
@@ -55,7 +51,9 @@ export async function GET(request: NextRequest) {
           dosageForm: dosageForm
         },
         include: {
-          icd10Codes: true
+          icd10Codes: true,
+          interactions: true,
+          sideEffects: true
         },
         orderBy: { packageName: 'asc' },
         take: limit,
@@ -82,7 +80,9 @@ export async function GET(request: NextRequest) {
           ]
         },
         include: {
-          icd10Codes: true
+          icd10Codes: true,
+          interactions: true,
+          sideEffects: true
         },
         orderBy: { packageName: 'asc' },
         take: limit,
@@ -97,7 +97,9 @@ export async function GET(request: NextRequest) {
       drugs = await db.drug.findMany({
         where: { status: status },
         include: {
-          icd10Codes: true
+          icd10Codes: true,
+          interactions: true,
+          sideEffects: true
         },
         orderBy: { packageName: 'asc' },
         take: limit,
@@ -105,17 +107,51 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // Add data quality information to each drug and ICD-10 codes
+    const drugsWithQuality = drugs.map(drug => ({
+      ...drug,
+      dataQuality: calculateDrugDataQuality(drug),
+      icd10Codes: drug.icd10Codes.map(icd10 => {
+        const quality = calculateICD10MappingQuality(icd10)
+        const badge = getICD10MappingQualityBadge(quality)
+        return {
+          ...icd10,
+          dataQuality: quality,
+          badge: badge
+        }
+      })
+    }))
+
+    // Calculate overall data quality statistics
+    const tier1Count = drugsWithQuality.filter(d => d.dataQuality.tier === 'TIER_1').length
+    const tier2Count = drugsWithQuality.filter(d => d.dataQuality.tier === 'TIER_2').length
+    const tier3Count = drugsWithQuality.filter(d => d.dataQuality.tier === 'TIER_3').length
+    const researchReadyCount = drugsWithQuality.filter(d => d.dataQuality.metadata.researchReady).length
+
     return NextResponse.json({
       success: true,
       source: 'Neon PostgreSQL Database',
       usingFallback: false,
-      data: drugs,
+      data: drugsWithQuality,
       pagination: { 
         page, 
         limit, 
         total, 
         totalPages: Math.ceil(total / limit), 
         hasMore: skip + limit < total 
+      },
+      dataQuality: {
+        totalDrugs: total,
+        tier1Count,
+        tier2Count,
+        tier3Count,
+        researchReadyCount,
+        averageCompleteness: Math.round(drugsWithQuality.reduce((sum, d) => sum + d.dataQuality.completeness, 0) / drugsWithQuality.length),
+        sources: {
+          UAE_MOH_OFFICIAL: drugsWithQuality.filter(d => d.dataQuality.source === 'UAE_MOH_OFFICIAL').length,
+          SMART_DEFAULT: drugsWithQuality.filter(d => d.dataQuality.source === 'SMART_DEFAULT').length,
+          OTHER: drugsWithQuality.filter(d => !['UAE_MOH_OFFICIAL', 'SMART_DEFAULT'].includes(d.dataQuality.source)).length
+        }
       }
     })
 

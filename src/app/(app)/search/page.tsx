@@ -303,7 +303,14 @@ export default function SearchPage() {
                           {drug.icd10Codes && drug.icd10Codes.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
                               {drug.icd10Codes.slice(0, 3).map((icd10: any, i: number) => (
-                                <Badge key={i} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">{icd10.code}</Badge>
+                                <div key={i} className="flex items-center gap-1">
+                                  <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">{icd10.icd10Code}</Badge>
+                                  {icd10.badge && (
+                                    <Badge className={`text-xs ${icd10.badge.color}`}>
+                                      {icd10.badge.icon}
+                                    </Badge>
+                                  )}
+                                </div>
                               ))}
                             </div>
                           ) : <span className="text-xs text-muted-foreground">-</span>}

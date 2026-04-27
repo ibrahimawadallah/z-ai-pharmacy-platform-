@@ -1,0 +1,98 @@
+name: Good First Issue (for maintainers)
+description: Template for creating beginner-friendly issues
+labels: ["good first issue", "help wanted"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🌱 Good First Issue Template
+        Use this template to create contributor-friendly issues.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this issue matters and background info
+      placeholder: |
+        The signup form currently doesn't validate...
+        This is part of PR #4 which addresses...
+    validations:
+      required: true
+
+  - type: textarea
+    id: task
+    attributes:
+      label: Task
+      description: What needs to be done
+      placeholder: |
+        Add validation for empty email field in signup form
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How to verify the task is complete
+      placeholder: |
+        - [ ] Empty email shows "Email is required" error
+        - [ ] Test passes for empty email case
+    validations:
+      required: true
+
+  - type: input
+    id: files
+    attributes:
+      label: Files to Modify
+      description: Where to make changes
+      placeholder: src/app/api/auth/signup/route.ts, tests/auth.test.ts
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing
+    attributes:
+      label: How to Test
+      description: Steps to verify the fix
+      placeholder: |
+        1. Run `npm run dev`
+        2. Go to /signup
+        3. Submit form with empty email
+        4. Expect validation error
+    validations:
+      required: true
+
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - Easy (< 2 hours)
+        - Medium (2-4 hours)
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: mentor
+    attributes:
+      label: Mentor / Contact
+      description: Who can help with questions
+      placeholder: "@ibrahimawadallah"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      options:
+        - frontend
+        - backend
+        - api
+        - testing
+        - documentation
+        - security
+    validations:
+      required: true

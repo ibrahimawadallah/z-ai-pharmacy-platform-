@@ -1,0 +1,95 @@
+# DrugEye GitHub Labels
+# Use with: npx github-label-sync --labels .github/labels.yml <repo>
+
+# Experience Level
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers to open source"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+- name: "beginner friendly"
+  color: "c2e0c6"
+  description: "Low complexity, well-scoped tasks"
+
+# Domain
+- name: "frontend"
+  color: "d8763e"
+  description: "React, Next.js, UI components, CSS"
+
+- name: "backend"
+  color: "0e8a16"
+  description: "API routes, database, server logic"
+
+- name: "api"
+  color: "1d76db"
+  description: "REST API endpoints, authentication"
+
+- name: "database"
+  color: "006b75"
+  description: "Prisma, migrations, data models"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Docs, README, comments"
+
+- name: "testing"
+  color: "d93f0b"
+  description: "Unit tests, integration tests, QA"
+
+- name: "security"
+  color: "ee0701"
+  description: "Auth, vulnerabilities, hardening"
+
+- name: "i18n"
+  color: "84b6eb"
+  description: "Internationalization, translations"
+
+# Size
+- name: "size:small"
+  color: "c5def5"
+  description: "Can be completed in < 2 hours"
+
+- name: "size:medium"
+  color: "bfd4f2"
+  description: "Can be completed in 2-4 hours"
+
+- name: "size:large"
+  color: "0366d6"
+  description: "Requires multiple sessions"
+
+# Priority
+- name: "priority:low"
+  color: "fef2c0"
+  description: "Nice to have, not urgent"
+
+- name: "priority:medium"
+  color: "fbca04"
+  description: "Should be addressed soon"
+
+- name: "priority:high"
+  color: "b60205"
+  description: "Critical, blocking other work"
+
+# Status
+- name: "blocked"
+  color: "b60205"
+  description: "Waiting on something else"
+
+- name: "needs review"
+  color: "5319e7"
+  description: "Needs code review"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or PR already exists"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This won't be worked on"

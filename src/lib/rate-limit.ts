@@ -70,7 +70,7 @@ export async function checkRateLimit(
     // Try to find existing rate limit record
     const existing = await db.rateLimit.findUnique({
       where: {
-        identifier_endpoint: {
+        RateLimit_identifier_endpoint_key: {
           identifier,
           endpoint
         }
@@ -78,15 +78,35 @@ export async function checkRateLimit(
     })
     
     if (!existing) {
-      // Create new record
-      await db.rateLimit.create({
-        data: {
-          identifier,
-          endpoint,
-          requests: 1,
-          windowStart: now
+      // Create new record using upsert to handle race conditions
+      try {
+        await db.rateLimit.create({
+          data: {
+            identifier,
+            endpoint,
+            requests: 1,
+            windowStart: now
+          }
+        })
+      } catch (error: any) {
+        // Handle unique constraint violation (race condition)
+        if (error.code === 'P2002') {
+          // Record was created by another request, fetch it
+          const retryExisting = await db.rateLimit.findUnique({
+            where: {
+              RateLimit_identifier_endpoint_key: {
+                identifier,
+                endpoint
+              }
+            }
+          })
+          if (retryExisting) {
+            // Continue with the existing record
+            return checkRateLimitForExisting(retryExisting, config, now, windowStart)
+          }
         }
-      })
+        throw error
+      }
       
       return {
         success: true,
@@ -96,52 +116,7 @@ export async function checkRateLimit(
       }
     }
     
-    // Check if window has expired - reset if so
-    if (existing.windowStart < windowStart) {
-      await db.rateLimit.update({
-        where: { id: existing.id },
-        data: {
-          requests: 1,
-          windowStart: now
-        }
-      })
-      
-      return {
-        success: true,
-        limit: config.requests,
-        remaining: config.requests - 1,
-        resetAt: new Date(now.getTime() + config.window * 1000)
-      }
-    }
-    
-    // Window is still active - check if limit exceeded
-    if (existing.requests >= config.requests) {
-      const resetAt = new Date(existing.windowStart.getTime() + config.window * 1000)
-      const retryAfter = Math.ceil((resetAt.getTime() - now.getTime()) / 1000)
-      
-      return {
-        success: false,
-        limit: config.requests,
-        remaining: 0,
-        resetAt,
-        retryAfter
-      }
-    }
-    
-    // Increment request count
-    await db.rateLimit.update({
-      where: { id: existing.id },
-      data: {
-        requests: { increment: 1 }
-      }
-    })
-    
-    return {
-      success: true,
-      limit: config.requests,
-      remaining: config.requests - existing.requests - 1,
-      resetAt: new Date(existing.windowStart.getTime() + config.window * 1000)
-    }
+    return checkRateLimitForExisting(existing, config, now, windowStart)
   } catch (error) {
     console.error('Rate limit check failed:', error)
     // On error, allow the request (fail open)
@@ -151,6 +126,61 @@ export async function checkRateLimit(
       remaining: 1,
       resetAt: new Date(now.getTime() + config.window * 1000)
     }
+  }
+}
+
+// Helper function to check rate limit for existing records
+async function checkRateLimitForExisting(
+  existing: any,
+  config: RateLimitConfig,
+  now: Date,
+  windowStart: Date
+): Promise<RateLimitResult> {
+  // Check if window has expired - reset if so
+  if (existing.windowStart < windowStart) {
+    await db.rateLimit.update({
+      where: { id: existing.id },
+      data: {
+        requests: 1,
+        windowStart: now
+      }
+    })
+    
+    return {
+      success: true,
+      limit: config.requests,
+      remaining: config.requests - 1,
+      resetAt: new Date(now.getTime() + config.window * 1000)
+    }
+  }
+  
+  // Window is still active - check if limit exceeded
+  if (existing.requests >= config.requests) {
+    const resetAt = new Date(existing.windowStart.getTime() + config.window * 1000)
+    const retryAfter = Math.ceil((resetAt.getTime() - now.getTime()) / 1000)
+    
+    return {
+      success: false,
+      limit: config.requests,
+      remaining: 0,
+      resetAt,
+      retryAfter
+    }
+  }
+  
+  // Increment request count
+  await db.rateLimit.update({
+    where: { id: existing.id },
+    data: {
+      requests: { increment: 1 }
+    }
+  })
+  
+  return {
+    success: true,
+    limit: config.requests,
+    remaining: config.requests - existing.requests - 1,
+    resetAt: new Date(existing.windowStart.getTime() + config.window * 1000)
   }
 }
 

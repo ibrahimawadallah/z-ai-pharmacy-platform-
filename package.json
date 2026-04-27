@@ -21,6 +21,11 @@
     "db:seed:comprehensive": "npx tsx prisma/seed-comprehensive.ts",
     "db:check-neon": "node check-neon.js",
     "db:seed:side-effects": "npx tsx scripts/generate-side-effects.ts",
+    "data:import:fda": "npx tsx scripts/import-fda-icd10.ts",
+    "data:import:who": "npx tsx scripts/import-who-atc.ts",
+    "data:import:rxnorm": "npx tsx scripts/import-rxnorm.ts",
+    "data:import:dailymed": "npx tsx scripts/import-dailymed-icd10.ts",
+    "data:update:all": "npx tsx scripts/schedule-data-updates.ts",
     "postinstall": "node -e \"require('fs').rmSync('node_modules/@types/minimatch',{recursive:true,force:true})\""
   },
   "dependencies": {

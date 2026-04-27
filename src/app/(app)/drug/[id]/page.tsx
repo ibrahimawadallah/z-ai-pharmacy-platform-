@@ -47,7 +47,7 @@ interface Drug {
   g6pdWarning?: string
   baseDoseMgPerKg?: number
   baseDoseIndication?: string
-  icd10Codes?: Array<{ code: string; description: string }>
+  icd10Codes?: Array<{ icd10Code: string; description: string }>
 }
 
 export default function DrugDetailsPage() {
@@ -368,17 +368,31 @@ export default function DrugDetailsPage() {
                             <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                               <div className="flex items-center gap-3">
                                 <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 font-mono">
-                                  {icd10.code}
+                                  {icd10.icd10Code}
                                 </Badge>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">{icd10.description}</span>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-700 dark:text-gray-300">{icd10.description}</span>
+                                  {icd10.badge && (
+                                    <Badge className={`text-xs mt-1 ${icd10.badge.color}`}>
+                                      {icd10.badge.icon} {icd10.badge.label}
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
-                              <Link 
-                                href={`https://icd.who.int/browse/Search:${encodeURIComponent(icd10.code)}`}
-                                target="_blank"
-                                className="text-xs text-cyan-600 hover:underline"
-                              >
-                                WHO Ref →
-                              </Link>
+                              <div className="flex items-center gap-2">
+                                {icd10.source && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {icd10.source}
+                                  </Badge>
+                                )}
+                                <Link 
+                                  href={`https://icd.who.int/browse/Search:${encodeURIComponent(icd10.icd10Code)}`}
+                                  target="_blank"
+                                  className="text-xs text-cyan-600 hover:underline"
+                                >
+                                  WHO Ref →
+                                </Link>
+                              </div>
                             </div>
                           ))}
                         </div>

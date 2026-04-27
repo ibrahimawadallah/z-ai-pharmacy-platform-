@@ -15,10 +15,16 @@ export default withAuth(
 export const config = {
   matcher: [
     "/(app)/:path*",
-    "/api/drugs/:path*",
+    // Protect advanced drug features but allow basic search
+    "/api/drugs/interactions/:path*",
+    "/api/drugs/export",
+    "/api/drugs/clinical-data",
     "/api/chat/:path*",
     "/api/reports/:path*",
     "/api/ai/:path*",
     "/api/admin/:path*",
+    // User-specific endpoints
+    "/api/user/:path*",
+    "/api/favorites/:path*",
   ],
 };
