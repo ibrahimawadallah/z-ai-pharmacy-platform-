@@ -12,7 +12,7 @@ async function importAll() {
     const seRecords = parse(seFile, {
       columns: true,
       delimiter: '\t',
-      from_line: 2,
+      bom: true,
       skip_empty_lines: true,
     }) as Array<{ drugbank_id?: string; side_effect_name?: string }>
 
