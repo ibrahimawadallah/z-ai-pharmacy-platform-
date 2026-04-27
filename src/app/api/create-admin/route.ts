@@ -32,10 +32,8 @@ export async function POST(req: Request) {
       success: true,
       message: "Admin account is ready",
       admin,
-      credentials: {
-        email: credentials.email,
-        password: credentials.password,
-      },
+      email: credentials.email,
+      passwordSet: true,
     })
   } catch (error) {
     console.error("Create admin error:", error)
