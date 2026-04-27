@@ -35,15 +35,16 @@ export async function upsertAdminUser(
   options: { resetPassword?: boolean } = {},
 ) {
   const email = credentials.email.toLowerCase().trim()
-  const hashedPassword = await bcrypt.hash(credentials.password, BCRYPT_ROUNDS)
-
   const existing = await db.user.findUnique({ where: { email } })
+
+  const hashPassword = () =>
+    bcrypt.hash(credentials.password, BCRYPT_ROUNDS)
 
   if (!existing) {
     return db.user.create({
       data: {
         email,
-        password: hashedPassword,
+        password: await hashPassword(),
         name: credentials.name || DEFAULT_ADMIN_NAME,
         role: "admin",
         isVerified: true,
@@ -60,14 +61,25 @@ export async function upsertAdminUser(
     })
   }
 
+  const updateData: {
+    role: "admin"
+    isVerified: true
+    password?: string
+    name?: string
+  } = {
+    role: "admin",
+    isVerified: true,
+  }
+  if (options.resetPassword) {
+    updateData.password = await hashPassword()
+  }
+  if (credentials.name) {
+    updateData.name = credentials.name
+  }
+
   return db.user.update({
     where: { email },
-    data: {
-      role: "admin",
-      isVerified: true,
-      ...(options.resetPassword ? { password: hashedPassword } : {}),
-      ...(credentials.name ? { name: credentials.name } : {}),
-    },
+    data: updateData,
     select: {
       id: true,
       email: true,
