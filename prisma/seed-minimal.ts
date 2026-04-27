@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -6,11 +7,13 @@ async function minimalSeed() {
   console.log('🚀 Starting minimal seed...')
 
   try {
+    const hashedPassword = await bcrypt.hash('demo123456', 12)
+
     // Create demo user only
     const user = await prisma.user.create({
       data: {
         email: 'demo@z-ai-pharmacy.com',
-        password: 'demo123456',
+        password: hashedPassword,
         name: 'Demo User',
         role: 'user',
         isVerified: true
