@@ -81,9 +81,14 @@ export async function upsertAdminUser(
 
 /**
  * Ensure the configured admin account exists. Used on first sign-in attempt to
- * self-heal deployments that were never explicitly seeded. Only acts when the
- * incoming sign-in attempt matches the configured admin email so we never
- * create unexpected accounts during arbitrary user logins.
+ * self-heal deployments that were never explicitly seeded.
+ *
+ * Only creates the row when it is missing AND the incoming sign-in attempt
+ * matches the configured admin email. Existing rows are never modified —
+ * promoting an existing self-registered user to admin would be a privilege
+ * escalation vector since the signup endpoint is open. To grant admin to an
+ * existing account, use the explicit `/api/seed-admin` or `/api/create-admin`
+ * endpoints (both gated by `ADMIN_API_KEY`).
  */
 export async function ensureAdminUser(attemptedEmail: string): Promise<void> {
   const configured = getConfiguredAdminCredentials()
@@ -91,18 +96,19 @@ export async function ensureAdminUser(attemptedEmail: string): Promise<void> {
 
   const existing = await db.user.findUnique({
     where: { email: configured.email },
-    select: { id: true, role: true },
+    select: { id: true },
   })
 
-  if (existing) {
-    if (existing.role !== "admin") {
-      await db.user.update({
-        where: { email: configured.email },
-        data: { role: "admin", isVerified: true },
-      })
-    }
-    return
-  }
+  if (existing) return
 
   await upsertAdminUser(configured, { resetPassword: true })
+}
+
+/**
+ * True when the given email matches the configured admin email. Used by the
+ * signup endpoint to refuse self-registration of the bootstrap admin address.
+ */
+export function isConfiguredAdminEmail(email: string): boolean {
+  if (!email) return false
+  return email.toLowerCase().trim() === getConfiguredAdminCredentials().email
 }

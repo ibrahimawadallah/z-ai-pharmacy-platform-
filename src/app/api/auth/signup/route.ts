@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import bcryptjs from 'bcryptjs';
 import postgres from 'postgres';
+import { isConfiguredAdminEmail } from '@/lib/admin-bootstrap';
 
 // Validation schema for signup
 const signupSchema = z.object({
@@ -53,7 +54,19 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, password, name } = validationResult.data;
-    const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Refuse to self-register the configured admin email so it cannot be
+    // squatted before the bootstrap seeds it.
+    if (isConfiguredAdminEmail(normalizedEmail)) {
+      return NextResponse.json<ApiResponse>(
+        {
+          success: false,
+          message: 'This email address is reserved.',
+        },
+        { status: 409 }
+      );
+    }
 
     // Check if user already exists
     const existingUser = await sql`SELECT id FROM "User" WHERE email = ${normalizedEmail}`

@@ -17,6 +17,7 @@ vi.mock('@/lib/db', () => ({
 import {
   ensureAdminUser,
   getConfiguredAdminCredentials,
+  isConfiguredAdminEmail,
   upsertAdminUser,
   DEFAULT_ADMIN_EMAIL,
 } from './admin-bootstrap'
@@ -136,12 +137,22 @@ describe('admin-bootstrap', () => {
     expect(create).toHaveBeenCalledOnce()
   })
 
-  it('ensureAdminUser leaves existing admin alone when role is correct', async () => {
-    findUnique.mockResolvedValueOnce({ id: 'u1', role: 'admin' })
+  it('ensureAdminUser is a no-op when a user with that email already exists', async () => {
+    // Even if the existing user has role !== "admin" we must not promote them,
+    // because that would be a privilege-escalation vector via open signup.
+    findUnique.mockResolvedValueOnce({ id: 'u1' })
 
     await ensureAdminUser('admin@drugeye.com')
 
     expect(update).not.toHaveBeenCalled()
     expect(create).not.toHaveBeenCalled()
+  })
+
+  it('isConfiguredAdminEmail matches case- and whitespace-insensitively', () => {
+    process.env.ADMIN_EMAIL = 'admin@drugeye.com'
+    expect(isConfiguredAdminEmail('admin@drugeye.com')).toBe(true)
+    expect(isConfiguredAdminEmail('  Admin@DrugEye.COM  ')).toBe(true)
+    expect(isConfiguredAdminEmail('user@example.com')).toBe(false)
+    expect(isConfiguredAdminEmail('')).toBe(false)
   })
 })

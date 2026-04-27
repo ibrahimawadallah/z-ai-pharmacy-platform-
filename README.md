@@ -71,9 +71,13 @@ You can seed (or reset) the admin account in three ways:
    ```
    Response confirms the admin email and that the password was set.
 3. **Auto-bootstrap on first sign-in**: when a sign-in attempt matches
-   `ADMIN_EMAIL` and the user does not yet exist, the configured admin is
-   created automatically with `ADMIN_PASSWORD`. This makes it safe to redeploy
-   to a fresh database without losing access.
+   `ADMIN_EMAIL` and **no user with that email exists yet**, the configured
+   admin is created automatically with `ADMIN_PASSWORD`. This makes it safe to
+   redeploy against a fresh database without losing access. The configured
+   admin email is also reserved on the signup endpoint, so it cannot be
+   self-registered before the bootstrap fires. If a user with the admin email
+   already exists but is not an admin, auto-bootstrap is a no-op — use the
+   `/api/seed-admin` endpoint to grant or reset admin access deliberately.
 
 Sign in at `/auth/login` with the configured email and password.
 
